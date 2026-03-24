@@ -23,18 +23,23 @@ class DigitalTwin(Scene):
         self.wait(1.5)
 
         # 3. Text on the right
-        features = VGroup(
+        box1 = VGroup(
             Text("OpenCDA-ROS", font_size=20, weight=BOLD, color=UCLA_GOLD),
-            Text("• Connects Simulation with Real", font_size=16),
-            Text("• ROS Middleware streaming", font_size=16),
-            Text(" ", font_size=10),
+            Text("• Connects Sim & Real", font_size=16),
+            Text("• ROS streaming", font_size=16)
+        ).arrange(DOWN, aligned_edge=LEFT, buff=0.2)
+        
+        box2 = VGroup(
             Text("CDA-SimBoost", font_size=20, weight=BOLD, color=UCLA_GOLD),
-            Text("• Generates edge cases (rain, fail)", font_size=16),
-            Text("• Exposes models to challenges", font_size=16)
-        ).arrange(DOWN, aligned_edge=LEFT, buff=0.2).next_to(slide_img, RIGHT, buff=0.5)
+            Text("• Generates edge cases", font_size=16),
+            Text("• Exposes to challenges", font_size=16)
+        ).arrange(DOWN, aligned_edge=LEFT, buff=0.2)
 
-        bg_box = BackgroundRectangle(features, color=BLACK, fill_opacity=0.8, buff=0.2)
-        features_group = VGroup(bg_box, features)
+        features = VGroup(box1, box2).arrange(DOWN, aligned_edge=LEFT, buff=0.7).next_to(slide_img, RIGHT, buff=0.6)
+
+        bg_box1 = BackgroundRectangle(box1, color=BLACK, fill_opacity=0.8, buff=0.2)
+        bg_box2 = BackgroundRectangle(box2, color=BLACK, fill_opacity=0.8, buff=0.2)
+        features_group = VGroup(bg_box1, box1, bg_box2, box2)
 
         self.play(FadeIn(features_group, shift=LEFT*0.3))
         self.wait(3.5)
