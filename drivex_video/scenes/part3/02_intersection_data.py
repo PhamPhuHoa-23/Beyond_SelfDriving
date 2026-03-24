@@ -65,10 +65,10 @@ class DataCollection(Scene):
 
         # 3. Mascot on right
         mascot_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../materials/images/mascot_drivex.png"))
-        mascot = ImageMobject(mascot_path).set_height(2.0).next_to(slide_img, RIGHT, buff=1.0)
+        mascot = ImageMobject(mascot_path).set_height(1.8).to_corner(DR, buff=0.5)
         self.play(FadeIn(mascot, shift=UP*0.3))
 
-        thought = ThoughtBubble(mascot, "We don't just drive\nrandomly. We design\nspecific routes and\ntime combos.", position=UP+RIGHT)
+        thought = ThoughtBubble(mascot, "We don't just drive\nrandomly. We design\nspecific routes and\ntime combos.", position=UP+LEFT)
         self.play(thought.get_pop_animation())
         self.wait(3.5)
 

@@ -28,10 +28,10 @@ class Part3Intro(Scene):
         
         # 3. Mascot Question (Split screen on the right)
         mascot_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../materials/images/mascot_drivex.png"))
-        mascot = ImageMobject(mascot_path).set_height(2.0).next_to(slide_img, RIGHT, buff=1.0)
+        mascot = ImageMobject(mascot_path).set_height(1.8).to_corner(DR, buff=0.5)
         self.play(FadeIn(mascot, shift=UP*0.3))
         
-        thought = ThoughtBubble(mascot, "Theory is solid.\nBut how do we\ndeploy this on\nactual roads?", position=UP+RIGHT)
+        thought = ThoughtBubble(mascot, "Theory is solid.\nBut how do we\ndeploy this on\nactual roads?", position=UP+LEFT)
         self.play(thought.get_pop_animation())
         self.wait(3.5)
         
