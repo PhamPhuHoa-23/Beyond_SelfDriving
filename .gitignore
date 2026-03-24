@@ -1,0 +1,20 @@
+__pycache__/
+*.pyc
+
+# Manim output
+media/
+*.mp4
+
+# Heavy assets
+*.ppm
+*.pptx
+*.pdf
+materials/images/part3/
+materials/images/part3_slides/
+ materials/manim_docs_full.zip
+materials/slides/
+
+# Editor files
+.vscode/
+.idea/
+.DS_Store
