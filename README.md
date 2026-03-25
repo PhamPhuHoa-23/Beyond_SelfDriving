@@ -8,9 +8,11 @@ Manim-based animated video series for the **ICCV 2025 "Beyond Self-Driving"** tu
 
 ### 1. Conda (Miniforge)
 
-```bash
-brew install miniforge
-```
+| OS | Command |
+|---|---|
+| **macOS** | `brew install miniforge` |
+| **Linux** | `wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh && bash Miniforge3-Linux-x86_64.sh` |
+| **Windows** | Download [Miniforge3 installer](https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Windows-x86_64.exe) and run it |
 
 ### 2. Python Environment
 
@@ -21,41 +23,61 @@ pip install -r requirements.txt
 ```
 
 > **Note:** `manim-voiceover` requires a manual patch to work with Conda.
-> In `~/miniforge3/envs/manim/lib/python3.10/site-packages/manim_voiceover/__init__.py`,
-> replace `pkg_resources` with `importlib.metadata`.
+> In `<conda_envs>/manim/lib/python3.10/site-packages/manim_voiceover/__init__.py`,
+> replace `import pkg_resources` with `import importlib.metadata as pkg_resources`.
 
-### 3. LaTeX (MacTeX) — Required for math rendering
+---
 
-Install MacTeX for `pdflatex` support:
+### 3. LaTeX — Required for math rendering
+
+#### macOS
 
 ```bash
 brew install --cask mactex-no-gui
 ```
 
-After installation, add to your shell profile (`~/.zshrc`):
-
+Add to `~/.zshrc`:
 ```bash
 export PATH="/Library/TeX/texbin:$PATH"
 ```
 
-Then reload:
+#### Linux (Ubuntu/Debian)
 
 ```bash
-source ~/.zshrc
+sudo apt install texlive-full
 ```
+
+#### Windows
+
+Download and install [MiKTeX](https://miktex.org/download) or [TeX Live](https://tug.org/texlive/windows.html).
+
+---
 
 ### 4. Latin Modern Roman font — Required for proper text rendering
 
-The project uses **Latin Modern Roman** (included with MacTeX).
-After installing MacTeX, copy the fonts to the system font directory:
+Latin Modern Roman is included with any full TeX installation. After installing LaTeX, register the fonts with your system:
+
+#### macOS
 
 ```bash
-# Copy Latin Modern fonts for Pango/Manim to detect
-find /usr/local/texlive -name "lmroman*.otf" 2>/dev/null | head -5 | xargs -I{} cp {} ~/Library/Fonts/
+# Copy fonts so Pango/Manim can detect them
+find /usr/local/texlive -name "lmroman*.otf" 2>/dev/null | xargs -I{} cp {} ~/Library/Fonts/
 fc-cache -fv
 ```
 
-Verify the font is detected:
+#### Linux
+
+```bash
+sudo apt install fonts-lmodern   # or: texlive-fonts-recommended
+fc-cache -fv
+```
+
+#### Windows
+
+Fonts are installed automatically with MiKTeX/TeX Live.  
+If needed, copy `.otf` files from `C:\texlive\...\fonts\opentype\` to `C:\Windows\Fonts\`.
+
+Verify detection on macOS/Linux:
 
 ```bash
 fc-list | grep "Latin Modern Roman"
@@ -77,9 +99,9 @@ Beyond_SelfDriving/
 │       └── mascot_fx.py    # ThoughtBubble animation component
 ├── materials/
 │   └── images/             # Slide assets (part1/, part2/, etc.)
-├── render_part1.sh         # Render all Part 1 scenes
-├── render_part2.sh         # Render all Part 2 scenes
-├── render_part3.sh         # Render all Part 3 scenes
+├── render_part1.sh         # Render all Part 1 scenes (macOS/Linux)
+├── render_part2.sh         # Render all Part 2 scenes (macOS/Linux)
+├── render_part3.sh         # Render all Part 3 scenes (macOS/Linux)
 └── requirements.txt
 ```
 
@@ -94,33 +116,27 @@ conda activate manim
 
 # Preview quality
 bash render_part1.sh -ql
-bash render_part2.sh -ql
 
 # High quality (for final export)
 bash render_part1.sh -qh
 bash render_part2.sh -qh
 ```
 
-Output videos are saved to:
-```
-media/videos/<scene_file>/1080p60/<SceneName>.mp4
-```
-
-### Render a single scene
-
+**Windows** — run each scene manually:
 ```bash
-conda activate manim
-manim -qh drivex_video/scenes/part1/04_challenges.py CornerCases
+manim -qh drivex_video/scenes/part1/01_intro.py TitleScene
 ```
+
+Output: `media/videos/<scene_file>/1080p60/<SceneName>.mp4`
 
 ---
 
 ## 🎨 Design System
 
-- **Font:** Latin Modern Roman (LaTeX standard serif font)
-- **Background:** `#1C1C1C` (deep dark gray)
-- **Accent colors:** UCLA Blue `#2774AE`, UCLA Gold `#FFD100`, Sky Blue `#58C4DD`
-- **Style config:** `drivex_video/styles/theme.py`
+- **Font:** Latin Modern Roman (LaTeX standard serif)
+- **Background:** `#1C1C1C`
+- **Colors:** UCLA Blue `#2774AE` · UCLA Gold `#FFD100` · Sky Blue `#58C4DD`
+- **Config:** `drivex_video/styles/theme.py`
 
 ---
 
@@ -128,14 +144,12 @@ manim -qh drivex_video/scenes/part1/04_challenges.py CornerCases
 
 Part 3 scenes require slide images extracted from `Part 3.pdf`:
 
-1. Place `Part 3.pdf` at `materials/slides/Part 3.pdf`
-2. Run:
 ```bash
-conda activate manim
+# Place PDF at materials/slides/Part 3.pdf, then:
 pip install pymupdf
 python extract_part3_slides.py
+bash render_part3.sh -qh
 ```
-3. Then render: `bash render_part3.sh -qh`
 
 ---
 
@@ -143,7 +157,7 @@ python extract_part3_slides.py
 
 | Problem | Fix |
 |---|---|
-| `pdflatex not found` | Add `/Library/TeX/texbin` to PATH |
-| Latin Modern Roman not detected | Run `fc-cache -fv` then restart terminal |
-| `ModuleNotFoundError: pkg_resources` | Patch `manim_voiceover/__init__.py` (see setup step 2) |
-| Broken letter spacing in Text() | Increase `font_size` to ≥ 22 for Latin Modern Roman |
+| `pdflatex not found` | Add TeX bin dir to PATH (see step 3) |
+| `Latin Modern Roman` not detected | Run `fc-cache -fv`, restart terminal |
+| `ModuleNotFoundError: pkg_resources` | Patch `manim_voiceover/__init__.py` (see step 2) |
+| Broken letter spacing in small text | Increase `font_size` to ≥ 22 for Latin Modern Roman |
