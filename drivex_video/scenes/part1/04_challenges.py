@@ -7,7 +7,7 @@ from drivex_video.styles.theme import UCLA_GOLD, DRIVEX_ACCENT
 
 class CornerCases(Scene):
     def construct(self):
-        title = Text("The 'Long Tail' Challenge", font_size=42, weight=BOLD)
+        title = Text("The 'Long Tail' Challenge", font="Latin Modern Roman", font_size=42, weight=BOLD)
         title.to_edge(UP, buff=0.4).set_color(DRIVEX_ACCENT)
         
         # Mascot (Auto-updated since we use the same path)
@@ -25,7 +25,7 @@ class CornerCases(Scene):
             p_path = os.path.abspath(os.path.join(os.path.dirname(__file__), asset_dir + img_name))
             img = ImageMobject(p_path)
             img.height = 2.5
-            cap = Text(captions[i], font_size=14).next_to(img, DOWN, buff=0.15)
+            cap = Text(captions[i], font="Latin Modern Roman", font_size=22).next_to(img, DOWN, buff=0.15)
             photos.append(Group(img, cap))
             
         photo_grid = Group(*photos).arrange(RIGHT, buff=0.4).next_to(title, DOWN, buff=0.8)
@@ -37,7 +37,7 @@ class CornerCases(Scene):
         self.play(LaggedStart(*[FadeIn(p, shift=UP*0.2) for p in photos], lag_ratio=0.5))
         self.wait(1.5)
         
-        tail_text = Text("We need contextual reasoning to solve these.", font_size=20, slant=ITALIC)
+        tail_text = Text("We need contextual reasoning to solve these.", font="Latin Modern Roman", font_size=22)
         tail_text.set_color(UCLA_GOLD).next_to(photo_grid, DOWN, buff=0.8)
         
         self.play(FadeIn(tail_text, shift=UP*0.2))

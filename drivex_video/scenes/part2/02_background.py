@@ -11,14 +11,14 @@ class BackgroundStats(Scene):
         self.camera.background_color = BLACK
         
         # 1. Title
-        title = Text("PART 2: TOWARDS COOPERATIVE AUTOMATION", font_size=32, color=DRIVEX_ACCENT).to_edge(UP, buff=0.8)
+        title = Text("PART 2: TOWARDS COOPERATIVE AUTOMATION", font="Latin Modern Roman", font_size=32, color=DRIVEX_ACCENT).to_edge(UP, buff=0.8)
         
         # 2. Stats vs Image Layout
         # Left side: Stats
         stats = VGroup(
-            VGroup(Text("1.19M", color=RED, weight=BOLD), Text("Traffic deaths/year", font_size=16)).arrange(DOWN, aligned_edge=LEFT),
-            VGroup(Text("94%", color=RED, weight=BOLD), Text("Human error", font_size=16)).arrange(DOWN, aligned_edge=LEFT),
-            VGroup(Text("80%", color=GREEN, weight=BOLD), Text("Safety gain (AI)", font_size=16)).arrange(DOWN, aligned_edge=LEFT)
+            VGroup(Text("1.19M", font="Latin Modern Roman", color=RED, weight=BOLD), Text("Traffic deaths/year", font="Latin Modern Roman", font_size=22)).arrange(DOWN, aligned_edge=LEFT),
+            VGroup(Text("94%", font="Latin Modern Roman", color=RED, weight=BOLD), Text("Human error", font="Latin Modern Roman", font_size=22)).arrange(DOWN, aligned_edge=LEFT),
+            VGroup(Text("80%", font="Latin Modern Roman", color=GREEN, weight=BOLD), Text("Safety gain (AI)", font="Latin Modern Roman", font_size=22)).arrange(DOWN, aligned_edge=LEFT)
         ).arrange(DOWN, buff=0.6, aligned_edge=LEFT).to_edge(LEFT, buff=1.0)
 
         # Right side: Image (Delivery Robots - p2_s03_slide_003.png)
@@ -26,7 +26,7 @@ class BackgroundStats(Scene):
         img_path = os.path.abspath(os.path.join(os.path.dirname(__file__), asset_dir + "p2_s03_slide_003.png"))
         img = ImageMobject(img_path).set_height(4.0).to_edge(RIGHT, buff=0.8)
         
-        caption = Text("Logistics Robots (Future of Delivery)", font_size=16, slant=ITALIC, color=UCLA_GOLD).next_to(img, DOWN)
+        caption = Text("Logistics Robots (Future of Delivery)", font="Latin Modern Roman", font_size=22, color=UCLA_GOLD).next_to(img, DOWN)
 
         self.play(Write(title))
         self.play(FadeIn(stats, shift=RIGHT*0.3), FadeIn(img, shift=LEFT*0.3), Write(caption))

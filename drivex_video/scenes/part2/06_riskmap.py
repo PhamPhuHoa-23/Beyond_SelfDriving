@@ -11,7 +11,7 @@ class RiskMap_Planning(Scene):
         self.camera.background_color = BLACK
         
         # 1. Title
-        title = Text("RISKMAP: INTERPRETABLE PLANNING", font_size=32, weight=BOLD, color=DRIVEX_ACCENT).to_edge(UP, buff=0.8)
+        title = Text("RISKMAP: INTERPRETABLE PLANNING", font="Latin Modern Roman", font_size=32, weight=BOLD, color=DRIVEX_ACCENT).to_edge(UP, buff=0.8)
         self.play(Write(title))
 
         # 2. RiskMap Diagram (p2_s23_riskmap_054.png)
@@ -28,10 +28,10 @@ class RiskMap_Planning(Scene):
 
         # 3. Features Sidebar (Positioned to NOT overlap the center diagram)
         features = VGroup(
-            Text("THE MIDDLEWARE", font_size=20, weight=BOLD, color=UCLA_GOLD),
-            Text("✔ Explicit Risk Map", font_size=16),
-            Text("✔ Safe Trajectories", font_size=16),
-            Text("✔ Traceable Logic", font_size=16)
+            Text("THE MIDDLEWARE", font="Latin Modern Roman", font_size=22, weight=BOLD, color=UCLA_GOLD),
+            Text("✔ Explicit Risk Map", font="Latin Modern Roman", font_size=22),
+            Text("✔ Safe Trajectories", font="Latin Modern Roman", font_size=22),
+            Text("✔ Traceable Logic", font="Latin Modern Roman", font_size=22)
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.25).to_edge(LEFT, buff=0.8).shift(UP*0.5)
 
         self.play(FadeIn(features, shift=RIGHT*0.3))
@@ -57,23 +57,23 @@ class Part2Conclusion(Scene):
         summary_path = os.path.abspath(os.path.join(os.path.dirname(__file__), asset_dir + "p2_s26_summary_060.png"))
         summary_img = ImageMobject(summary_path).set_height(4.0).shift(UP*0.3)
         
-        title = Text("PART 2 SUMMARY: COOPERATIVE AUTOMATION", font_size=32, weight=BOLD, color=DRIVEX_ACCENT).next_to(summary_img, UP, buff=0.5)
+        title = Text("PART 2 SUMMARY: COOPERATIVE AUTOMATION", font="Latin Modern Roman", font_size=32, weight=BOLD, color=DRIVEX_ACCENT).next_to(summary_img, UP, buff=0.5)
         
         self.play(FadeIn(summary_img, scale=0.9), Write(title))
         self.wait(1.5)
 
         # 2. Pillars
         pillars = VGroup(
-            Text("• Foundations: V2XPnP (AISTATS 2024)", font_size=18),
-            Text("• Performance: TurboTrain (ICCV 2025)", font_size=18),
-            Text("• Logic: RiskMap (Proposed Middleware)", font_size=18)
+            Text("• Foundations: V2XPnP (AISTATS 2024)", font="Latin Modern Roman", font_size=22),
+            Text("• Performance: TurboTrain (ICCV 2025)", font="Latin Modern Roman", font_size=22),
+            Text("• Logic: RiskMap (Proposed Middleware)", font="Latin Modern Roman", font_size=22)
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.3).to_edge(LEFT, buff=1.0).shift(DOWN*1.0)
         
         self.play(LaggedStart(*[FadeIn(p, shift=UP*0.2) for p in pillars], lag_ratio=0.5))
         self.wait(2.5)
         
         # 3. Final Bridge
-        bridge = Text("NEXT: BRIDGING SENSORS TO REAL WORLD ROADS...", font_size=18, slant=ITALIC, color=UCLA_GOLD).to_edge(DOWN, buff=0.8)
+        bridge = Text("NEXT: BRIDGING SENSORS TO REAL WORLD ROADS...", font="Latin Modern Roman", font_size=22, color=UCLA_GOLD).to_edge(DOWN, buff=0.8)
         self.play(Write(bridge))
         self.play(Indicate(bridge))
         self.wait(4)

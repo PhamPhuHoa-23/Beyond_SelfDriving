@@ -11,7 +11,7 @@ class ShiftToE2E(Scene):
         self.camera.background_color = BLACK
         
         # 1. Title Section
-        title = Text("PARADIGM SHIFT: SINGLE-AGENT STACK", font_size=32, weight=BOLD).set_color(DRIVEX_ACCENT).to_edge(UP, buff=0.8)
+        title = Text("PARADIGM SHIFT: SINGLE-AGENT STACK", font="Latin Modern Roman", font_size=32, weight=BOLD).set_color(DRIVEX_ACCENT).to_edge(UP, buff=0.8)
         self.play(Write(title))
 
         # 2. UniAD Diagram (Smaller to avoid mascot overlap)
@@ -29,9 +29,9 @@ class ShiftToE2E(Scene):
 
         # 3. Evolution Callouts (No overlapping text)
         evolution = VGroup(
-            Text("From Modular", font_size=20, color=RED),
+            Text("From Modular", font="Latin Modern Roman", font_size=22, color=RED),
             Arrow(UP, DOWN, color=GRAY),
-            Text("To End-to-End (UniAD)", font_size=24, color=GREEN)
+            Text("To End-to-End (UniAD)", font="Latin Modern Roman", font_size=24, color=GREEN)
         ).arrange(DOWN, buff=0.3).to_edge(LEFT, buff=0.8).shift(UP*0.5)
 
         self.play(Write(evolution))

@@ -7,7 +7,7 @@ from drivex_video.styles.theme import UCLA_GOLD, DRIVEX_ACCENT
 
 class FoundationEmpowerment(Scene):
     def construct(self):
-        title = Text("Foundation Models empower AV", font_size=42, weight=BOLD)
+        title = Text("Foundation Models empower AV", font="Latin Modern Roman", font_size=42, weight=BOLD)
         title.to_edge(UP, buff=0.4).set_color(DRIVEX_ACCENT)
         
         # Mascot
@@ -21,7 +21,7 @@ class FoundationEmpowerment(Scene):
         diagram.height = 4.5
         diagram.next_to(title, DOWN, buff=0.4)
 
-        text_bubble = Text("Not replacing,\nbut empowering!", font_size=18, color=UCLA_GOLD).next_to(mascot, UP)
+        text_bubble = Text("Not replacing,\nbut empowering!", font="Latin Modern Roman", font_size=22, color=UCLA_GOLD).next_to(mascot, UP)
 
         self.play(Write(title))
         self.play(FadeIn(diagram, shift=UP*0.2))
@@ -34,7 +34,7 @@ class FoundationEmpowerment(Scene):
 
 class VLARoadmap(Scene):
     def construct(self):
-        title = Text("The VLA Roadmap for AV", font_size=42, weight=BOLD)
+        title = Text("The VLA Roadmap for AV", font="Latin Modern Roman", font_size=42, weight=BOLD)
         title.to_edge(UP, buff=0.4).set_color(DRIVEX_ACCENT)
         
         asset_dir = "../../../materials/images/part1_new/"
@@ -45,10 +45,10 @@ class VLARoadmap(Scene):
         diagram.next_to(title, DOWN, buff=0.5)
 
         categories = VGroup(
-            Text("1. Text Actions", font_size=18),
-            Text("2. Numerical Actions", font_size=18),
-            Text("3. Explicit Guidance", font_size=18),
-            Text("4. Implicit Transfer", font_size=18)
+            Text("1. Text Actions", font="Latin Modern Roman", font_size=22),
+            Text("2. Numerical Actions", font="Latin Modern Roman", font_size=22),
+            Text("3. Explicit Guidance", font="Latin Modern Roman", font_size=22),
+            Text("4. Implicit Transfer", font="Latin Modern Roman", font_size=22)
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.3).to_edge(LEFT, buff=1.0)
 
         self.play(Write(title))
@@ -65,7 +65,7 @@ class VLARoadmap(Scene):
 
 class VLADatasets(Scene):
     def construct(self):
-        title = Text("New Generation of AV Datasets", font_size=42, weight=BOLD)
+        title = Text("New Generation of AV Datasets", font="Latin Modern Roman", font_size=42, weight=BOLD)
         title.to_edge(UP, buff=0.4).set_color(DRIVEX_ACCENT)
         
         asset_dir = "../../../materials/images/part1_new/"
@@ -76,9 +76,9 @@ class VLADatasets(Scene):
         visual.center().shift(RIGHT*2)
 
         datasets = VGroup(
-            Text("• DriveLM (Graph Reasoning)", font_size=24),
-            Text("• CoVLA (Video-Language)", font_size=24),
-            Text("• Impromptu VLA (Real Scenarios)", font_size=24)
+            Text("• DriveLM (Graph Reasoning)", font="Latin Modern Roman", font_size=24),
+            Text("• CoVLA (Video-Language)", font="Latin Modern Roman", font_size=24),
+            Text("• Impromptu VLA (Real Scenarios)", font="Latin Modern Roman", font_size=24)
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.6).to_edge(LEFT, buff=1.5)
 
         self.play(Write(title))

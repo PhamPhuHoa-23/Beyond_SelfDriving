@@ -1,0 +1,10 @@
+manim==0.19.1
+manim-voiceover==0.3.7
+numpy==2.2.6
+pillow==12.1.1
+scipy==1.15.3
+pydub==0.25.1
+mutagen==1.47.0
+tqdm==4.67.3
+rich==14.3.3
+setuptools

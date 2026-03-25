@@ -11,7 +11,7 @@ class V2XPnP_Framework(Scene):
         self.camera.background_color = BLACK
         
         # 1. Title
-        title = Text("V2XPnP: SPATIO-TEMPORAL FUSION", font_size=32, weight=BOLD, color=DRIVEX_ACCENT).to_edge(UP, buff=0.8)
+        title = Text("V2XPnP: SPATIO-TEMPORAL FUSION", font="Latin Modern Roman", font_size=32, weight=BOLD, color=DRIVEX_ACCENT).to_edge(UP, buff=0.8)
         self.play(Write(title))
 
         # 2. Main Architecture Diagram (p2_s06_related_works_v_research_gaps_019.png)
@@ -29,9 +29,9 @@ class V2XPnP_Framework(Scene):
 
         # 3. Key Concepts (Positioned to NOT overlap the center diagram)
         concepts = VGroup(
-            Text("WHAT: 3 Fusion Schemes", font_size=16, color=BLUE_A),
-            Text("WHEN: One-Step Flow", font_size=16, color=BLUE_A),
-            Text("HOW: Spatial-Temporal Fusion", font_size=16, color=BLUE_A)
+            Text("WHAT: 3 Fusion Schemes", font="Latin Modern Roman", font_size=22, color=BLUE_A),
+            Text("WHEN: One-Step Flow", font="Latin Modern Roman", font_size=22, color=BLUE_A),
+            Text("HOW: Spatial-Temporal Fusion", font="Latin Modern Roman", font_size=22, color=BLUE_A)
         ).arrange(RIGHT, buff=0.8).to_edge(DOWN, buff=1.2)
 
         self.play(FadeIn(concepts, shift=UP*0.3))
@@ -53,7 +53,7 @@ class TurboTrain(Scene):
         self.camera.background_color = BLACK
         
         # 1. Title
-        title = Text("TURBOTRAIN: SOLVING GRADIENT CONFLICTS", font_size=32, weight=BOLD, color=DRIVEX_ACCENT).to_edge(UP, buff=0.8)
+        title = Text("TURBOTRAIN: SOLVING GRADIENT CONFLICTS", font="Latin Modern Roman", font_size=32, weight=BOLD, color=DRIVEX_ACCENT).to_edge(UP, buff=0.8)
         self.play(Write(title))
 
         # 2. Results Chart (p2_s16_turbotrain_iccv_2025_037.png)
@@ -70,15 +70,15 @@ class TurboTrain(Scene):
         pretrain_img = ImageMobject(pretrain_path).set_width(5.0)
         pretrain_img.to_edge(LEFT, buff=0.8).shift(UP*0.3)
         
-        p_label = Text("Stage 1: Pretrain-then-Balance", font_size=16, color=UCLA_GOLD).next_to(pretrain_img, UP)
+        p_label = Text("Stage 1: Pretrain-then-Balance", font="Latin Modern Roman", font_size=22, color=UCLA_GOLD).next_to(pretrain_img, UP)
 
         self.play(FadeIn(pretrain_img, shift=RIGHT*0.3), Write(p_label))
         self.wait(2)
 
         # 4. Efficiency Stats (Bottom, center)
         efficiency = VGroup(
-            Text("• 45 Epochs vs 120 Epochs", font_size=18, color=GREEN),
-            Text("• No Human Tuning Needed", font_size=18, color=GREEN)
+            Text("• 45 Epochs vs 120 Epochs", font="Latin Modern Roman", font_size=22, color=GREEN),
+            Text("• No Human Tuning Needed", font="Latin Modern Roman", font_size=22, color=GREEN)
         ).arrange(DOWN, aligned_edge=LEFT).to_edge(DOWN, buff=1.0)
 
         self.play(FadeIn(efficiency, shift=UP*0.3))

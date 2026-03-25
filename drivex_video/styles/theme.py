@@ -1,4 +1,8 @@
 from manim import *
+import os
+
+# Ensure LaTeX (MacTeX) is in PATH for Tex/MathTex rendering
+os.environ["PATH"] = "/Library/TeX/texbin:" + os.environ.get("PATH", "")
 
 # --- 3Blue1Brown-inspired Color Palette ---
 UCLA_BLUE = "#2774AE"
@@ -14,8 +18,9 @@ BG_COLOR = "#1C1C1C"       # Deep Dark Gray (Almost Black)
 TEXT_COLOR = WHITE
 
 # --- Typography ---
-# Pre-configure default font (assuming Inter/Roboto is installed or falls back)
-config.font = "Inter"
+# Use LaTeX rendering (Computer Modern font, same as 3Blue1Brown)
+# Text() still uses Pango; use Tex() for LaTeX font in scenes
+config.font = "Latin Modern Roman"
 config.background_color = BG_COLOR
 
 class DriveXStyle:

@@ -11,7 +11,7 @@ class OcclusionProblem(Scene):
         self.camera.background_color = BLACK
         
         # 1. Title Section
-        title = Text("PHYSICAL LIMITS: THE OCCLUSION WALL", font_size=32, weight=BOLD).set_color(DRIVEX_ACCENT).to_edge(UP, buff=0.8)
+        title = Text("PHYSICAL LIMITS: THE OCCLUSION WALL", font="Latin Modern Roman", font_size=32, weight=BOLD).set_color(DRIVEX_ACCENT).to_edge(UP, buff=0.8)
         self.play(Write(title))
 
         # 2. LiDAR Matrix (p2_s05_gii_hn_ca_single_agent_occlusion_011.png)
@@ -21,8 +21,8 @@ class OcclusionProblem(Scene):
         lidar_img.shift(DOWN*0.3)
         
         # Labels for the matrix
-        single_agent_label = Text("SINGLE-AGENT (BLIND SCARS)", font_size=18, color=RED).to_edge(UP, buff=1.8).align_to(lidar_img, LEFT).shift(RIGHT*1.0)
-        multi_agent_label = Text("MULTI-AGENT (CLEAR VISION)", font_size=18, color=GREEN).to_edge(DOWN, buff=1.5).align_to(lidar_img, LEFT).shift(RIGHT*1.0)
+        single_agent_label = Text("SINGLE-AGENT (BLIND SCARS)", font="Latin Modern Roman", font_size=22, color=RED).to_edge(UP, buff=1.8).align_to(lidar_img, LEFT).shift(RIGHT*1.0)
+        multi_agent_label = Text("MULTI-AGENT (CLEAR VISION)", font="Latin Modern Roman", font_size=22, color=GREEN).to_edge(DOWN, buff=1.5).align_to(lidar_img, LEFT).shift(RIGHT*1.0)
         
         self.play(FadeIn(lidar_img, scale=0.9))
         self.play(Write(single_agent_label), Write(multi_agent_label))
@@ -45,7 +45,7 @@ class ResearchGaps(Scene):
         self.camera.background_color = BLACK
         
         # 1. Title Section
-        title = Text("CRITICAL RESEARCH GAPS", font_size=32, weight=BOLD).set_color(DRIVEX_ACCENT).to_edge(UP, buff=0.8)
+        title = Text("CRITICAL RESEARCH GAPS", font="Latin Modern Roman", font_size=32, weight=BOLD).set_color(DRIVEX_ACCENT).to_edge(UP, buff=0.8)
         self.play(Write(title))
 
         # 2. Gap Diagram (p2_s09_research_gap_single_frame_multi_frame_multi_task_027.png)
@@ -61,10 +61,10 @@ class ResearchGaps(Scene):
         gap1 = RoundedRectangle(corner_radius=0.1, width=3.2, height=1.0, 
                                 fill_color=WHITE, fill_opacity=0.1, stroke_width=1, stroke_color=UCLA_GOLD)
         gap1.to_edge(LEFT, buff=0.5).shift(UP*1.0)
-        g1_text = VGroup(Text("GAP 1", font_size=16, weight=BOLD), Text("Single-Frame vs Temporal", font_size=14)).arrange(DOWN, aligned_edge=LEFT).move_to(gap1.get_center())
+        g1_text = VGroup(Text("GAP 1", font="Latin Modern Roman", font_size=22, weight=BOLD), Text("Single-Frame vs Temporal", font="Latin Modern Roman", font_size=22)).arrange(DOWN, aligned_edge=LEFT).move_to(gap1.get_center())
         
         gap2 = gap1.copy().shift(DOWN*2.5)
-        g2_text = VGroup(Text("GAP 2", font_size=16, weight=BOLD), Text("Decoupled vs End-to-End", font_size=14)).arrange(DOWN, aligned_edge=LEFT).move_to(gap2.get_center())
+        g2_text = VGroup(Text("GAP 2", font="Latin Modern Roman", font_size=22, weight=BOLD), Text("Decoupled vs End-to-End", font="Latin Modern Roman", font_size=22)).arrange(DOWN, aligned_edge=LEFT).move_to(gap2.get_center())
 
         self.play(Create(gap1), Write(g1_text))
         self.wait(1)

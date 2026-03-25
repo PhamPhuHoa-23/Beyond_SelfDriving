@@ -5,12 +5,12 @@ class ThoughtBubble(VGroup):
         super().__init__(**kwargs)
         
         # Premium Styling: Rounded corners
-        self.text = Text(text, font_size=20, color="#1C1C1C", line_spacing=1.2)
+        self.text = Text(text, font="Georgia", font_size=24, color="#1C1C1C")
         
         # Calculate padding based on text
-        padding = 0.5
-        w = max(self.text.width + padding, 2.5)
-        h = max(self.text.height + padding, 1.5)
+        padding = 0.6
+        w = max(self.text.width + padding, 3.0)
+        h = max(self.text.height + padding, 1.6)
         
         # Premium Bubble
         self.bubble = RoundedRectangle(

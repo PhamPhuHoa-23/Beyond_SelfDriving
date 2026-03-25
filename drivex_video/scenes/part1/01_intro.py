@@ -19,13 +19,13 @@ class IntroQuestion(Scene):
             "Why is it that in 2025, with all that AI has achieved\n"
             "— coding, art, answering every question —\n"
             "self-driving cars still aren't everywhere?",
-            font_size=32, line_spacing=1.5,
+            font="Latin Modern Roman", font_size=32, line_spacing=1.5,
             t2c={"Why is it that in 2025": UCLA_GOLD}
         )
         
         answer_lead = Text(
             "To answer that, we need to understand where AI stands\nand where autonomous driving stands.",
-            font_size=24, color=GRAY_B
+            font="Latin Modern Roman", font_size=24, color=GRAY_B
         ).next_to(question, DOWN, buff=1.0)
 
         # Mascot animation: Slide in and "wave" (subtle shift)
@@ -40,7 +40,7 @@ class IntroQuestion(Scene):
 
 class IntroOutline(Scene):
     def construct(self):
-        title = Text("The Three-Step Journey", font_size=42, weight=BOLD).set_color(DRIVEX_ACCENT).to_edge(UP)
+        title = Text("The Three-Step Journey", font="Latin Modern Roman", font_size=42, weight=BOLD).set_color(DRIVEX_ACCENT).to_edge(UP)
         
         # Mascot
         mascot_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../materials/images/mascot_drivex.png"))
@@ -48,9 +48,9 @@ class IntroOutline(Scene):
         mascot.to_corner(UL, buff=0.5)
 
         steps = VGroup(
-            Text("1. Overview (AI & AV Today)", font_size=32),
-            Text("2. The Bridge (Current Research)", font_size=32),
-            Text("3. The Future (Challenges & Roadmap)", font_size=32)
+            Text("1. Overview (AI & AV Today)", font="Latin Modern Roman", font_size=32),
+            Text("2. The Bridge (Current Research)", font="Latin Modern Roman", font_size=32),
+            Text("3. The Future (Challenges & Roadmap)", font="Latin Modern Roman", font_size=32)
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.6).center().shift(RIGHT*0.5)
 
         self.play(Write(title))
@@ -71,14 +71,14 @@ class TitleScene(Scene):
         self.camera.background_color = "#1C1C1C"
         
         # 2. Creating Text Elements
-        title = Text("Beyond Self-Driving", font_size=72, weight=BOLD)
+        title = Text("Beyond Self-Driving", font="Latin Modern Roman", font_size=72, weight=BOLD)
         title.set_color(DRIVEX_ACCENT)
         
-        subtitle = Text("Exploring Three Levels of Driving Automation", font_size=36)
+        subtitle = Text("Exploring Three Levels of Driving Automation", font="Latin Modern Roman", font_size=36)
         subtitle.next_to(title, DOWN, buff=0.5)
         subtitle.set_color(UCLA_GOLD)
         
-        venue = Text("ICCV 2025 Tutorial", font_size=24, slant=ITALIC)
+        venue = Text("ICCV 2025 Tutorial", font="Latin Modern Roman", font_size=24)
         venue.to_edge(DOWN, buff=1.0)
         venue.set_color(GRAY_B)
 

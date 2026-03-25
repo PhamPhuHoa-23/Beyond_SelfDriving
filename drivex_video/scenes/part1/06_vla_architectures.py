@@ -7,7 +7,7 @@ from drivex_video.styles.theme import UCLA_GOLD, DRIVEX_ACCENT
 
 class VLAArchitectures(Scene):
     def construct(self):
-        title = Text("State-of-the-Art VLA Architectures", font_size=42, weight=BOLD)
+        title = Text("State-of-the-Art VLA Architectures", font="Latin Modern Roman", font_size=42, weight=BOLD)
         title.to_edge(UP, buff=0.4).set_color(DRIVEX_ACCENT)
         
         # Mascot
@@ -23,10 +23,10 @@ class VLAArchitectures(Scene):
         diagram.next_to(title, DOWN, buff=0.5)
 
         arch_list = VGroup(
-            Text("GPT-Driver: Zero-shot Planning", font_size=20),
-            Text("BEVDriver: 3D Aware Reasoning", font_size=20),
-            Text("EMMA: Multimodal End-to-End", font_size=20),
-            Text("DriveVLM: Hybrid Dual-System", font_size=20)
+            Text("GPT-Driver: Zero-shot Planning", font="Latin Modern Roman", font_size=22),
+            Text("BEVDriver: 3D Aware Reasoning", font="Latin Modern Roman", font_size=22),
+            Text("EMMA: Multimodal End-to-End", font="Latin Modern Roman", font_size=22),
+            Text("DriveVLM: Hybrid Dual-System", font="Latin Modern Roman", font_size=22)
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.4).to_edge(LEFT, buff=0.5)
 
         self.play(Write(title))
@@ -45,7 +45,7 @@ class VLAArchitectures(Scene):
 
 class ArchitectureComparison(Scene):
     def construct(self):
-        title = Text("Which Paradigm Wins?", font_size=42, weight=BOLD).set_color(DRIVEX_ACCENT).to_edge(UP)
+        title = Text("Which Paradigm Wins?", font="Latin Modern Roman", font_size=42, weight=BOLD).set_color(DRIVEX_ACCENT).to_edge(UP)
         asset_dir = "../../../materials/images/part1_new/"
         # Comparison grid: p1_new-080.jpg
         img_path = os.path.abspath(os.path.join(os.path.dirname(__file__), asset_dir + "p1_new-080.jpg"))

@@ -7,7 +7,7 @@ from drivex_video.styles.theme import UCLA_GOLD, DRIVEX_ACCENT
 
 class AutoVLA_Concept(Scene):
     def construct(self):
-        title = Text("AutoVLA: Dual Thinking Modes", font_size=42, weight=BOLD)
+        title = Text("AutoVLA: Dual Thinking Modes", font="Latin Modern Roman", font_size=42, weight=BOLD)
         title.to_edge(UP, buff=0.4).set_color(DRIVEX_ACCENT)
         
         # Mascot
@@ -22,8 +22,8 @@ class AutoVLA_Concept(Scene):
         diagram.next_to(title, DOWN, buff=0.4)
 
         modes = VGroup(
-            Text("System 1: FAST (Reactive)", font_size=24, color=BLUE_A),
-            Text("System 2: SLOW (Reasoning)", font_size=24, color=UCLA_GOLD)
+            Text("System 1: FAST (Reactive)", font="Latin Modern Roman", font_size=24, color=BLUE_A),
+            Text("System 2: SLOW (Reasoning)", font="Latin Modern Roman", font_size=24, color=UCLA_GOLD)
         ).arrange(RIGHT, buff=1.0).next_to(diagram, DOWN, buff=0.5)
 
         self.play(Write(title))
@@ -42,12 +42,12 @@ class AutoVLA_Concept(Scene):
 
 class AutoVLA_Results(Scene):
     def construct(self):
-        title = Text("AutoVLA Results (nuPlan)", font_size=42, weight=BOLD).set_color(DRIVEX_ACCENT).to_edge(UP)
+        title = Text("AutoVLA Results (nuPlan)", font="Latin Modern Roman", font_size=42, weight=BOLD).set_color(DRIVEX_ACCENT).to_edge(UP)
         
         stats = VGroup(
-            Text("+10.6% Planning Score Improvement", font_size=28),
-            Text("-66.8% Runtime Reduction (Fast Mode)", font_size=28),
-            Text("Superior OOD Generalization", font_size=28)
+            Text("+10.6% Planning Score Improvement", font="Latin Modern Roman", font_size=28),
+            Text("-66.8% Runtime Reduction (Fast Mode)", font="Latin Modern Roman", font_size=28),
+            Text("Superior OOD Generalization", font="Latin Modern Roman", font_size=28)
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.6).center()
 
         self.play(Write(title))

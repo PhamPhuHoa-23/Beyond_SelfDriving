@@ -12,7 +12,7 @@ class Part2Intro(Scene):
         self.camera.background_color = BLACK
         
         # 2. Title Section
-        title = Text("PART 2: TOWARDS E2E COOPERATIVE AUTOMATION", font_size=32, weight=BOLD)
+        title = Text("PART 2: TOWARDS E2E COOPERATIVE AUTOMATION", font="Latin Modern Roman", font_size=32, weight=BOLD)
         title.set_color_by_gradient(UCLA_GOLD, WHITE).to_edge(UP, buff=0.8)
         
         self.play(Write(title))
@@ -31,7 +31,7 @@ class Part2Intro(Scene):
         self.wait(2)
         
         # 5. Core Message
-        message = Text("From Individual Reasoning\nto Collective Intelligence", font_size=32, weight=MEDIUM, slant=ITALIC)
+        message = Text("From Individual Reasoning\nto Collective Intelligence", font="Latin Modern Roman", font_size=32)
         message.set_color(BLUE_A).shift(UP*0.5)
         
         self.play(FadeOut(thought), Write(message))
