@@ -5,11 +5,12 @@ Timeline: V2VNet → V2X-ViT → Where2comm → CodeFilling.
 Datasets: OPV2V (sim) → V2X-Real (real).
 Two gap cards: Model Gap + Data Gap.
 """
-import sys, os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
-
-from manim import *
 from drivex.components.colors import *
+from manim import *
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '../../..')))
 
 
 class P02S05RelatedWorks(Scene):
@@ -21,17 +22,17 @@ class P02S05RelatedWorks(Scene):
     METHODS = [
         ("V2VNet",     "CoRL'20",  "GNN",       COL_BLUE),
         ("V2X-ViT",   "ECCV'22",  "Attention",  COL_PURPLE),
-        ("Where2comm","NeurIPS'22","Sparse",     COL_GREEN),
+        ("Where2comm", "NeurIPS'22", "Sparse",     COL_GREEN),
         ("CoBEVT",    "CoRL'22",  "Swin Xfmr",  COL_PURPLE),
-        ("Where2comm","NeurIPS'22","Sparse",     COL_GREEN),
-        ("CodeFilling","CVPR'24", "Codebook",    COL_GOLD),
+        ("Where2comm", "NeurIPS'22", "Sparse",     COL_GREEN),
+        ("CodeFilling", "CVPR'24", "Codebook",    COL_GOLD),
     ]
 
     # Deduplicate for display
     METHODS = [
         ("V2VNet",      "CoRL'20",  "GNN",       COL_BLUE),
-        ("V2X-ViT",    "ECCV'22",  "Transformer",COL_PURPLE),
-        ("Where2comm", "NeurIPS'22","Sparse",     COL_GREEN),
+        ("V2X-ViT",    "ECCV'22",  "Transformer", COL_PURPLE),
+        ("Where2comm", "NeurIPS'22", "Sparse",     COL_GREEN),
         ("CodeFilling", "CVPR'24", "Codebook",    COL_GOLD),
         ("OPV2V",       "CVPR'22", "Sim data",    "#888888"),
         ("V2X-Real",    "CVPR'24", "Real data",   COL_GREEN),
@@ -41,7 +42,8 @@ class P02S05RelatedWorks(Scene):
         self.camera.background_color = BG_DARK
 
         # ═══════════════ PART A — Timeline ══════════════════════
-        header = Text("Related Works", font_size=28, color=COL_GOLD, weight=BOLD)
+        header = Text("Related Works", font_size=28,
+                      color=COL_GOLD, weight=BOLD)
         header.to_edge(UP, buff=0.35)
         self.play(FadeIn(header), run_time=0.3)
 
@@ -49,14 +51,16 @@ class P02S05RelatedWorks(Scene):
         spine.move_to(ORIGIN + DOWN * 0.1)
         self.play(Create(spine), run_time=0.5)
 
-        n  = len(self.METHODS)
-        xs = [spine.get_left()[0] + i * spine.get_width() / (n - 1) for i in range(n)]
+        n = len(self.METHODS)
+        xs = [spine.get_left()[0] + i * spine.get_width() / (n - 1)
+              for i in range(n)]
         y0 = spine.get_y()
 
+        node_grp = VGroup()
         for i, (name, venue, cat, color) in enumerate(self.METHODS):
             side = 1 if i % 2 == 0 else -1
-            dot  = Dot(point=[xs[i], y0, 0], radius=0.11, color=color)
-            lbl  = VGroup(
+            dot = Dot(point=[xs[i], y0, 0], radius=0.11, color=color)
+            lbl = VGroup(
                 Text(name,  font_size=14, color=COL_WHITE, weight=BOLD),
                 Text(venue, font_size=12, color=COL_LIGHT_BLUE),
             ).arrange(DOWN, buff=0.05)
@@ -68,10 +72,13 @@ class P02S05RelatedWorks(Scene):
             tag_txt = Text(cat, font_size=10, color=BG_DARK)
             tag_box.next_to(lbl, DOWN * side, buff=0.08)
             tag_txt.move_to(tag_box.get_center())
-            self.play(FadeIn(VGroup(dot, lbl, tag_box, tag_txt)), run_time=0.2)
+            node_elem = VGroup(dot, lbl, tag_box, tag_txt)
+            self.play(FadeIn(node_elem), run_time=0.2)
+            node_grp.add(node_elem)
 
         # dataset brackets
-        sim_line  = Line([xs[4], y0 - 0.9, 0], [xs[4], y0 - 0.9, 0], color=COL_RED)  # placeholder
+        sim_line = Line([xs[4], y0 - 0.9, 0], [xs[4], y0 -
+                        0.9, 0], color=COL_RED)  # placeholder
         # Sim bracket: methods 0-3, Real bracket: method 4+
         sim_brace_x = (xs[0] + xs[3]) / 2
         real_brace_x = (xs[4] + xs[5]) / 2
@@ -92,10 +99,11 @@ class P02S05RelatedWorks(Scene):
 
         # ═══════════════ PART B — Gap Cards ══════════════════════
         self.play(FadeOut(VGroup(header, spine, sim_bracket, sim_lbl,
-                                  real_bracket, real_lbl)),
+                                 real_bracket, real_lbl, node_grp)),
                   run_time=0.4)
 
-        gap_header = Text("Critical Research Gaps", font_size=26, color=COL_RED, weight=BOLD)
+        gap_header = Text("Critical Research Gaps",
+                          font_size=26, color=COL_RED, weight=BOLD)
         gap_header.to_edge(UP, buff=0.4)
         self.play(FadeIn(gap_header), run_time=0.3)
 
@@ -112,7 +120,8 @@ class P02S05RelatedWorks(Scene):
                        color=COL_RED, stroke_opacity=0.5, stroke_width=1)
             sep.move_to([x, card.get_top()[1] - 0.8, 0])
             b_group = VGroup(*[
-                Text(f"• {b}", font_size=14, color=COL_WHITE, t2c={"•": COL_RED})
+                Text(f"• {b}", font_size=14,
+                     color=COL_WHITE, t2c={"•": COL_RED})
                 for b in bullets
             ]).arrange(DOWN, buff=0.22, aligned_edge=LEFT)
             b_group.next_to(sep, DOWN, buff=0.25)

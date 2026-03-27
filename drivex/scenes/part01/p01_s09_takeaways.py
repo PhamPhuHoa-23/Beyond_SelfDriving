@@ -7,16 +7,17 @@
 # CAR mascot waves at the end
 # ─────────────────────────────────────────────────────────────────
 
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
-
-from manim import *
+from drivex.components.mascots import create_car_mascot, idle_bounce
 from drivex.components.colors import (
     COL_NAVY, COL_BLUE, COL_GOLD, COL_WHITE, COL_LIGHT_BLUE,
     COL_GREEN, COL_DEEP_BLUE, COL_DEEP_GREEN,
 )
-from drivex.components.mascots import create_car_mascot, idle_bounce
+from manim import *
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../..")))
+
 
 _BG = COL_NAVY
 
@@ -48,7 +49,7 @@ _TAKEAWAYS = [
 ]
 
 
-def _takeaway_card(num, title, body, color, width=4.8, height=1.5):
+def _takeaway_card(num, title, body, color, width=5.4, height=1.5):
     bg = RoundedRectangle(
         corner_radius=0.2, width=width, height=height,
         fill_color=COL_DEEP_BLUE, fill_opacity=1,
@@ -58,8 +59,9 @@ def _takeaway_card(num, title, body, color, width=4.8, height=1.5):
     num_mob.move_to(bg.get_left() + RIGHT * 0.55)
 
     title_mob = Text(title, font_size=16, color=COL_WHITE, weight=BOLD)
-    body_mob  = Text(body,  font_size=13, color=COL_LIGHT_BLUE)
-    text_grp  = VGroup(title_mob, body_mob).arrange(DOWN, aligned_edge=LEFT, buff=0.1)
+    body_mob = Text(body,  font_size=13, color=COL_LIGHT_BLUE)
+    text_grp = VGroup(title_mob, body_mob).arrange(
+        DOWN, aligned_edge=LEFT, buff=0.1)
     text_grp.move_to(bg.get_center() + RIGHT * 0.45)
 
     return VGroup(bg, num_mob, text_grp)
@@ -79,10 +81,10 @@ class P01S09Takeaways(Scene):
 
         # Build 2×2 card grid
         cards = [_takeaway_card(*t) for t in _TAKEAWAYS]
-        grid  = VGroup(
-            VGroup(cards[0], cards[1]).arrange(RIGHT, buff=0.4),
-            VGroup(cards[2], cards[3]).arrange(RIGHT, buff=0.4),
-        ).arrange(DOWN, buff=0.35).center().shift(DOWN * 0.2)
+        grid = VGroup(
+            VGroup(cards[0], cards[1]).arrange(RIGHT, buff=0.55),
+            VGroup(cards[2], cards[3]).arrange(RIGHT, buff=0.55),
+        ).arrange(DOWN, buff=0.4).center().shift(DOWN * 0.2)
 
         for i, card in enumerate(cards):
             self.play(FadeIn(card, shift=UP * 0.08), run_time=0.4)

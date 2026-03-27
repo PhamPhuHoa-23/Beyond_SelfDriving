@@ -10,16 +10,17 @@
 #   D: DriveVLM   (dual-system: VLM slow + 3D fast)
 # ─────────────────────────────────────────────────────────────────
 
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
-
-from manim import *
 from drivex.components.colors import (
     COL_BLUE, COL_GOLD, COL_WHITE, COL_LIGHT_BLUE,
     COL_GREEN, COL_PURPLE, COL_DEEP_BLUE, COL_DEEP_GREEN,
     COL_DEEP_PURPLE, COL_NAVY, BG_DARK,
 )
+from manim import *
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../..")))
+
 
 _BG = "#0F172A"
 
@@ -68,12 +69,12 @@ class P01S07VLAArch(Scene):
         sec_lbl.to_corner(UL, buff=0.5)
         self.play(FadeIn(sec_lbl), run_time=0.3)
 
-        inp_a  = _io_box("Language\nDescription of Scene",
-                         COL_DEEP_BLUE, COL_BLUE, width=2.8, height=0.9)
-        gpt_a  = _io_box("GPT-3.5\n(Zero-shot)",
-                         "#1A1A3A", "#7C3AED", width=2.4, height=0.9)
-        out_a  = _io_box("Motion\nPlanning Result",
-                         COL_DEEP_GREEN, COL_GREEN, width=2.8, height=0.9)
+        inp_a = _io_box("Language\nDescription of Scene",
+                        COL_DEEP_BLUE, COL_BLUE, width=2.8, height=0.9)
+        gpt_a = _io_box("GPT-3.5\n(Zero-shot)",
+                        "#1A1A3A", "#7C3AED", width=2.4, height=0.9)
+        out_a = _io_box("Motion\nPlanning Result",
+                        COL_DEEP_GREEN, COL_GREEN, width=2.8, height=0.9)
         zero_badge = _badge("Zero-shot")
 
         row_a = VGroup(inp_a, _arrow_right(), gpt_a, _arrow_right(), out_a)
@@ -97,7 +98,8 @@ class P01S07VLAArch(Scene):
         # Sub-scene B: BEVDriver
         # ══════════════════════════════════════════════════════
         _sub_intro(self, "BEVDriver")
-        sec_lbl_b = Text("BEVDriver", font_size=24, color=COL_GOLD, weight=BOLD)
+        sec_lbl_b = Text("BEVDriver", font_size=24,
+                         color=COL_GOLD, weight=BOLD)
         sec_lbl_b.to_corner(UL, buff=0.5)
         self.play(FadeIn(sec_lbl_b), run_time=0.3)
 
@@ -111,22 +113,28 @@ class P01S07VLAArch(Scene):
         # grid lines on BEV box
         for i in range(3):
             bev_b.add(Line(bev_b[0].get_left() + RIGHT * (0.6 * (i + 1)) * (2.4 / 4),
-                           bev_b[0].get_left() + RIGHT * (0.6 * (i + 1)) * (2.4 / 4) + UP * 0.9,
+                           bev_b[0].get_left() + RIGHT * (0.6 * (i + 1)
+                                                          ) * (2.4 / 4) + UP * 0.9,
                            stroke_color=COL_BLUE, stroke_width=0.5, stroke_opacity=0.4))
 
-        llm_b  = _io_box("LLM\n(Reasoning)",
-                         COL_DEEP_PURPLE, COL_PURPLE, width=2.2, height=1.0)
-        out_b  = VGroup(*[
+        llm_b = _io_box("LLM\n(Reasoning)",
+                        COL_DEEP_PURPLE, COL_PURPLE, width=2.2, height=1.0)
+        out_b = VGroup(*[
             Dot(radius=0.08, color=COL_GREEN).move_to(
                 np.array([0.3 * (j - 2), 0.2 * j, 0])
             )
             for j in range(5)
         ])
-        out_b_box = _io_box("Waypoints", COL_DEEP_GREEN, COL_GREEN, width=2.0, height=0.9)
+        out_b_box = _io_box("Waypoints", COL_DEEP_GREEN,
+                            COL_GREEN, width=2.0, height=0.9)
 
         row_b = VGroup(sensors_b, _arrow_right(), bev_b, _arrow_right(), llm_b,
                        _arrow_right(), out_b_box)
-        row_b.arrange(RIGHT, buff=0.45).center()
+        row_b.arrange(RIGHT, buff=0.45)
+        # Force all major blocks to same vertical center for clean alignment
+        for elem in [sensors_b, bev_b, llm_b, out_b_box]:
+            elem.set_y(0)
+        row_b.center()
 
         tag_b = Text("3D Spatial + Language Reasoning",
                      font_size=15, color=COL_LIGHT_BLUE)
@@ -144,13 +152,16 @@ class P01S07VLAArch(Scene):
         # Sub-scene C: EMMA (Waymo)
         # ══════════════════════════════════════════════════════
         _sub_intro(self, "EMMA (Waymo)")
-        sec_lbl_c = Text("EMMA (Waymo)", font_size=24, color=COL_GOLD, weight=BOLD)
+        sec_lbl_c = Text("EMMA (Waymo)", font_size=24,
+                         color=COL_GOLD, weight=BOLD)
         sec_lbl_c.to_corner(UL, buff=0.5)
         self.play(FadeIn(sec_lbl_c), run_time=0.3)
 
         inp_c = VGroup(
-            _io_box("Camera Frames", COL_DEEP_BLUE, COL_BLUE, width=2.4, height=0.6),
-            _io_box("Text Instruction", COL_DEEP_BLUE, COL_BLUE, width=2.4, height=0.6),
+            _io_box("Camera Frames", COL_DEEP_BLUE,
+                    COL_BLUE, width=2.4, height=0.6),
+            _io_box("Text Instruction", COL_DEEP_BLUE,
+                    COL_BLUE, width=2.4, height=0.6),
         ).arrange(DOWN, buff=0.15).shift(LEFT * 3.8)
 
         emma_c = _io_box("EMMA\n(Gemini)\nThinking…",
@@ -160,10 +171,14 @@ class P01S07VLAArch(Scene):
         think_lbl = emma_c[1]
 
         outputs_c = VGroup(
-            _io_box("Chain-of-Thought",   COL_DEEP_BLUE,   COL_BLUE,   width=2.2, height=0.6),
-            _io_box("Trajectory",         COL_DEEP_GREEN,  COL_GREEN,  width=2.2, height=0.6),
-            _io_box("Perception BBoxes",  "#2A1A00",       COL_GOLD,   width=2.2, height=0.6),
-            _io_box("Road Graph",         "#2A0A3A",       COL_PURPLE, width=2.2, height=0.6),
+            _io_box("Chain-of-Thought",   COL_DEEP_BLUE,
+                    COL_BLUE,   width=2.2, height=0.6),
+            _io_box("Trajectory",         COL_DEEP_GREEN,
+                    COL_GREEN,  width=2.2, height=0.6),
+            _io_box("Perception BBoxes",  "#2A1A00",
+                    COL_GOLD,   width=2.2, height=0.6),
+            _io_box("Road Graph",         "#2A0A3A",
+                    COL_PURPLE, width=2.2, height=0.6),
         ).arrange(DOWN, buff=0.12).shift(RIGHT * 4.0)
 
         arrow_in_c = Arrow(inp_c.get_right(), emma_c.get_left(),
@@ -231,14 +246,18 @@ class P01S07VLAArch(Scene):
                        stroke_color=COL_GREEN, stroke_width=2, buff=0.15)
 
         self.play(FadeIn(sensor_d), run_time=0.3)
-        self.play(GrowArrow(arr_d1), FadeIn(vlm_d), FadeIn(hz_vlm), run_time=0.5)
-        self.play(GrowArrow(arr_d2), FadeIn(pipe_d), FadeIn(hz_pipe), run_time=0.5)
+        self.play(GrowArrow(arr_d1), FadeIn(vlm_d),
+                  FadeIn(hz_vlm), run_time=0.5)
+        self.play(GrowArrow(arr_d2), FadeIn(pipe_d),
+                  FadeIn(hz_pipe), run_time=0.5)
 
         # Frequency flash: 3D flashes 2× while VLM flashes 1×
         self.play(
             Succession(
-                pipe_d.animate(rate_func=there_and_back, run_time=0.3).scale(1.08),
-                pipe_d.animate(rate_func=there_and_back, run_time=0.3).scale(1.08),
+                pipe_d.animate(rate_func=there_and_back,
+                               run_time=0.3).scale(1.08),
+                pipe_d.animate(rate_func=there_and_back,
+                               run_time=0.3).scale(1.08),
             ),
             vlm_d.animate(rate_func=there_and_back, run_time=0.6).scale(1.04),
             run_time=0.6,

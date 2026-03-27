@@ -7,17 +7,17 @@
 #   "AI đang ở đâu?"  and  "AV đang ở đâu?"
 # ─────────────────────────────────────────────────────────────────
 
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
-
-from manim import *
+from drivex.components.thought_bubble import PIBubble
+from drivex.components.mascots import create_pi_mascot, idle_bounce
 from drivex.components.colors import (
     COL_NAVY, COL_BLUE, COL_WHITE, COL_LIGHT_BLUE,
     COL_GOLD, BG_DARK,
 )
-from drivex.components.mascots import create_pi_mascot, idle_bounce
-from drivex.components.thought_bubble import PIBubble
+from manim import *
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../..")))
 
 
 class P01S01Opening(Scene):
@@ -34,17 +34,17 @@ class P01S01Opening(Scene):
             font_size=30,
             color=COL_WHITE,
             line_spacing=1.4,
-        ).center().shift(UP * 0.6)
+        ).center().shift(UP * 1.4)
 
         # PI mascot on left
         pi = create_pi_mascot(height=1.0)
         pi.to_edge(LEFT, buff=0.8).shift(DOWN * 0.8)
 
         # Speech bubbles
-        bubble1 = PIBubble(pi, "AI đang ở đâu?",
+        bubble1 = PIBubble(pi, "Where is AI today?",
                            position=UP + RIGHT, font_size=20)
-        bubble2 = PIBubble(pi, "AV đang ở đâu?",
-                           position=RIGHT, font_size=20)
+        bubble2 = PIBubble(pi, "Where is AV today?",
+                           position=UP + RIGHT, font_size=20)
 
         # Animations
         self.play(Write(question), run_time=1.5)

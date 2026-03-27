@@ -12,17 +12,17 @@
 #   - CAR mascot bottom-right, idle
 # ─────────────────────────────────────────────────────────────────
 
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
-
-from manim import *
+from drivex.components.slide_helper import SlideImage
+from drivex.components.mascots import create_car_mascot, idle_bounce
 from drivex.components.colors import (
     COL_NAVY, COL_BLUE, COL_GOLD, COL_LIGHT_BLUE,
     COL_WHITE, BG_DARK,
 )
-from drivex.components.mascots import create_car_mascot, idle_bounce
-from drivex.components.slide_helper import SlideImage
+from manim import *
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../..")))
 
 
 class I01TitleCard(Scene):

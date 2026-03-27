@@ -6,16 +6,16 @@
 # Spec: spec_part03.md → SCENE 3-01
 # ─────────────────────────────────────────────────────────────────
 
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
-
-from manim import *
+from drivex.components.title_card import make_part_title_card
 from drivex.components.colors import (
     COL_NAVY, COL_BLUE, COL_GOLD, COL_WHITE, COL_PURPLE,
     COL_GREEN, BG_DARK,
 )
-from drivex.components.title_card import make_part_title_card
+from manim import *
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../..")))
 
 
 class P03S01Title(Scene):

@@ -4,11 +4,12 @@ Scene 2-06 — The Three Core Questions
 Multi-Agent + Multi-Frame + Multi-Task → What / When / How to fuse?
 → V2XPnP answers.
 """
-import sys, os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
-
-from manim import *
 from drivex.components.colors import *
+from manim import *
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '../../..')))
 
 
 class P02S06ThreeQuestions(Scene):
@@ -46,8 +47,8 @@ class P02S06ThreeQuestions(Scene):
             "When to transmit?",
             "How to fuse?",
         ]
-        q_boxes   = VGroup()
-        q_labels  = VGroup()
+        q_boxes = VGroup()
+        q_labels = VGroup()
         for q in questions:
             box = RoundedRectangle(
                 width=3.8, height=1.2, corner_radius=0.15,

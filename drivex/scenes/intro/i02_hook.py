@@ -11,15 +11,15 @@
 # Bookended by the core quote lines.
 # ─────────────────────────────────────────────────────────────────
 
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
-
-from manim import *
 from drivex.components.colors import (
     BG_BLACK, COL_BLUE, COL_GOLD, COL_WHITE,
     COL_RED, COL_GREEN,
 )
+from manim import *
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../..")))
 
 
 class I02Hook(Scene):
@@ -73,7 +73,8 @@ class I02Hook(Scene):
         ), run_time=0.8)
 
         # FM icons (small labeled boxes near car)
-        fm1 = self._fm_icon("GPT").next_to(car_a, UP + LEFT, buff=0.15).scale(0.6)
+        fm1 = self._fm_icon("GPT").next_to(
+            car_a, UP + LEFT, buff=0.15).scale(0.6)
         fm2 = self._fm_icon("VLM").next_to(fm1, RIGHT, buff=0.15).scale(0.6)
         self.play(FadeIn(fm1), FadeIn(fm2), run_time=0.4)
 
@@ -118,8 +119,10 @@ class I02Hook(Scene):
         # ═══════════════════════════════════════════════════════
         # Sub-scene C: Multi-agent cooperation
         # ═══════════════════════════════════════════════════════
-        car_b = self._make_car(color=COL_GREEN).scale(0.7).move_to(RIGHT * 3.0 + UP * 1.8)
-        car_c = self._make_car(color=COL_GREEN).scale(0.7).move_to(RIGHT * 3.0 + DOWN * 1.8)
+        car_b = self._make_car(color=COL_GREEN).scale(
+            0.7).move_to(RIGHT * 3.0 + UP * 1.8)
+        car_c = self._make_car(color=COL_GREEN).scale(
+            0.7).move_to(RIGHT * 3.0 + DOWN * 1.8)
 
         self.play(FadeOut(blind_zone), FadeOut(blocked), run_time=0.3)
         self.play(FadeIn(car_b), FadeIn(car_c), run_time=0.6)
@@ -147,7 +150,7 @@ class I02Hook(Scene):
         self.play(FadeIn(hidden_human), run_time=0.4)
 
         i_see = Text("I see.", font_size=18, color=COL_GREEN, weight=BOLD)
-        i_see.next_to(car_a, UP, buff=0.15)
+        i_see.next_to(car_a, UP, buff=1.2)
         self.play(Write(i_see), run_time=0.5)
         self.wait(0.5)
 

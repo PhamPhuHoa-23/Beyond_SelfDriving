@@ -4,11 +4,12 @@ Scene 2-04 — The Physics Limit: Occlusion
 Top-down LiDAR visualisation (single-agent vs multi-agent).
 Blind zones shrink when a second agent shares its view.
 """
-import sys, os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
-
-from manim import *
 from drivex.components.colors import *
+from manim import *
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '../../..')))
 
 
 class P02S04Occlusion(Scene):
@@ -18,7 +19,8 @@ class P02S04Occlusion(Scene):
     """
 
     def _make_agent(self, pos, color=COL_BLUE):
-        body = Circle(radius=0.18, fill_color=color, fill_opacity=1, stroke_width=0)
+        body = Circle(radius=0.18, fill_color=color,
+                      fill_opacity=1, stroke_width=0)
         body.move_to(pos)
         return body
 
@@ -45,17 +47,20 @@ class P02S04Occlusion(Scene):
                        stroke_opacity=0.3, stroke_width=1)
         divider.move_to(ORIGIN)
 
-        lbl_single = Text("Single Agent", font_size=20, color=COL_WHITE, weight=BOLD)
-        lbl_multi  = Text("Multi Agent",  font_size=20, color=COL_WHITE, weight=BOLD)
+        lbl_single = Text("Single Agent", font_size=20,
+                          color=COL_WHITE, weight=BOLD)
+        lbl_multi = Text("Multi Agent",  font_size=20,
+                         color=COL_WHITE, weight=BOLD)
         lbl_single.move_to(LEFT * 5.5 + UP * 1.6)
         lbl_multi.move_to(LEFT * 5.5 + DOWN * 1.6)
 
-        self.play(Create(divider), FadeIn(lbl_single), FadeIn(lbl_multi), run_time=0.5)
+        self.play(Create(divider), FadeIn(lbl_single),
+                  FadeIn(lbl_multi), run_time=0.5)
 
         # ── TOP: single-agent panel ────────────────────────────────
         center_s = UP * 1.5
-        agent_s  = self._make_agent(center_s, COL_BLUE)
-        sweep_s  = self._make_lidar_sweep(center_s, radius=2.3)
+        agent_s = self._make_agent(center_s, COL_BLUE)
+        sweep_s = self._make_lidar_sweep(center_s, radius=2.3)
 
         # four blind zones (simulated buildings / trucks)
         blind_zones_s = VGroup(
@@ -86,7 +91,8 @@ class P02S04Occlusion(Scene):
         self.play(Create(sweep_s), run_time=0.8)
         self.play(FadeIn(agent_s), FadeIn(blind_zones_s), run_time=0.5)
 
-        lbl_dark = Text("Dark regions = blind spots", font_size=15, color=COL_RED)
+        lbl_dark = Text("Dark regions = blind spots",
+                        font_size=15, color=COL_RED)
         lbl_dark.next_to(blind_zones_s, RIGHT, buff=0.3)
         arr_dark = Arrow(lbl_dark.get_left(), lbl_dark.get_left() + LEFT * 0.8,
                          color=COL_RED, buff=0, max_tip_length_to_length_ratio=0.3)
@@ -96,10 +102,11 @@ class P02S04Occlusion(Scene):
         # ── BOTTOM: multi-agent panel ──────────────────────────────
         center_m1 = DOWN * 1.5 + RIGHT * 0.2
         center_m2 = DOWN * 1.5 + RIGHT * 2.8
-        agent_m1  = self._make_agent(center_m1, COL_BLUE)
-        agent_m2  = self._make_agent(center_m2, COL_PURPLE)
-        sweep_m1  = self._make_lidar_sweep(center_m1, radius=2.3)
-        sweep_m2  = self._make_lidar_sweep(center_m2, radius=2.0, color=COL_PURPLE)
+        agent_m1 = self._make_agent(center_m1, COL_BLUE)
+        agent_m2 = self._make_agent(center_m2, COL_PURPLE)
+        sweep_m1 = self._make_lidar_sweep(center_m1, radius=2.3)
+        sweep_m2 = self._make_lidar_sweep(
+            center_m2, radius=2.0, color=COL_PURPLE)
 
         # smaller remaining blind zones
         blind_zones_m = VGroup(
@@ -121,7 +128,8 @@ class P02S04Occlusion(Scene):
                                dash_length=0.15, dashed_ratio=0.5)
 
         self.play(Create(sweep_m1), Create(sweep_m2), run_time=0.7)
-        self.play(FadeIn(agent_m1), FadeIn(agent_m2), FadeIn(blind_zones_m), run_time=0.4)
+        self.play(FadeIn(agent_m1), FadeIn(agent_m2),
+                  FadeIn(blind_zones_m), run_time=0.4)
         self.play(FadeIn(gain_zone, rate_func=smooth), run_time=0.6)
         self.play(Create(comm_link), run_time=0.4)
 

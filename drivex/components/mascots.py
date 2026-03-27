@@ -85,12 +85,16 @@ class CarMascot(VGroup):
                          fill_color="#222222", fill_opacity=1,
                          stroke_color=WHITE, stroke_width=1.5)
         wheel_r_obj = wheel_l.copy()
-        wheel_l.move_to(body.get_bottom() + LEFT * w * 0.28 + UP * wheel_r * 0.3)
-        wheel_r_obj.move_to(body.get_bottom() + RIGHT * w * 0.28 + UP * wheel_r * 0.3)
+        wheel_l.move_to(body.get_bottom() + LEFT *
+                        w * 0.28 + UP * wheel_r * 0.3)
+        wheel_r_obj.move_to(body.get_bottom() + RIGHT *
+                            w * 0.28 + UP * wheel_r * 0.3)
 
         # Hubcap dots
-        hub_l = Dot(radius=wheel_r * 0.3, color=WHITE).move_to(wheel_l.get_center())
-        hub_r = Dot(radius=wheel_r * 0.3, color=WHITE).move_to(wheel_r_obj.get_center())
+        hub_l = Dot(radius=wheel_r * 0.3,
+                    color=WHITE).move_to(wheel_l.get_center())
+        hub_r = Dot(radius=wheel_r * 0.3,
+                    color=WHITE).move_to(wheel_r_obj.get_center())
 
         # Headlight
         headlight = Dot(radius=h * 0.08, color="#FFD700").move_to(
@@ -156,7 +160,8 @@ class PiMascot(VGroup):
         smile.move_to(head.get_center() + DOWN * r * 0.15)
 
         # π symbol on chest area
-        pi_text = Text("π", font_size=int(r * 55), color="#1A1A1A", weight=BOLD)
+        pi_text = Text("π", font_size=int(r * 55),
+                       color="#1A1A1A", weight=BOLD)
         pi_text.move_to(head.get_center() + DOWN * r * 0.25)
 
         self.body = head

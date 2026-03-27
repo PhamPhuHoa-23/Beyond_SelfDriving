@@ -3,11 +3,12 @@ Scene 3-12 — CDA-SimBoost
 ============================
 5-step circular pipeline + edge cases + long-tail distribution.
 """
-import sys, os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
-
-from manim import *
 from drivex.components.colors import *
+from manim import *
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '../../..')))
 
 
 class P03S12SimBoost(Scene):
@@ -20,7 +21,8 @@ class P03S12SimBoost(Scene):
     def construct(self):
         self.camera.background_color = BG_BLACK
 
-        heading = Text("CDA-SimBoost", font_size=28, color=COL_GOLD, weight=BOLD)
+        heading = Text("CDA-SimBoost", font_size=28,
+                       color=COL_GOLD, weight=BOLD)
         heading.to_edge(UP, buff=0.4)
         self.play(FadeIn(heading), run_time=0.3)
 
@@ -32,17 +34,18 @@ class P03S12SimBoost(Scene):
             ("Train",                COL_GREEN),
             ("Validate",             COL_SENSOR_CYAN),
         ]
-        n     = len(steps)
-        R     = 1.7   # circle radius
-        angs  = [PI / 2 + 2 * PI * i / n for i in range(n)]   # spread around circle
+        n = len(steps)
+        R = 1.7   # circle radius
+        # spread around circle
+        angs = [PI / 2 + 2 * PI * i / n for i in range(n)]
         nodes = []
 
         for (label, color), ang in zip(steps, angs):
-            pos  = R * np.array([np.cos(ang), np.sin(ang), 0]) + LEFT * 2.0
-            box  = RoundedRectangle(width=1.5, height=0.6, corner_radius=0.15,
-                                     fill_color=color, fill_opacity=0.9, stroke_width=0)
+            pos = R * np.array([np.cos(ang), np.sin(ang), 0]) + LEFT * 2.0
+            box = RoundedRectangle(width=1.5, height=0.6, corner_radius=0.15,
+                                   fill_color=color, fill_opacity=0.9, stroke_width=0)
             box.move_to(pos)
-            txt  = Text(label, font_size=11, color=COL_WHITE, weight=BOLD)
+            txt = Text(label, font_size=11, color=COL_WHITE, weight=BOLD)
             txt.move_to(box.get_center())
             nodes.append(VGroup(box, txt))
 
@@ -53,7 +56,7 @@ class P03S12SimBoost(Scene):
             src = nodes[i].get_center()
             dst = nodes[(i + 1) % n].get_center()
             arc = CurvedArrow(src, dst, angle=-PI / 4, color=COL_WHITE,
-                               stroke_width=1.5, tip_length=0.12)
+                              stroke_width=1.5, tip_length=0.12)
             self.play(Create(arc), run_time=0.18)
 
         self.wait(0.4)
@@ -81,11 +84,13 @@ class P03S12SimBoost(Scene):
 
         # Main distribution (blue)
         main_curve = ax.plot(lambda x: np.exp(-0.8 * x) * 1.0, x_range=[0, 5.5],
-                              color=COL_BLUE, stroke_width=2)
+                             color=COL_BLUE, stroke_width=2)
         # Simulation fills the tail (green fill)
-        tail_fill = ax.get_area(main_curve, x_range=[3, 5.5], color=COL_GREEN, opacity=0.5)
+        tail_fill = ax.get_area(main_curve, x_range=[
+                                3, 5.5], color=COL_GREEN, opacity=0.5)
 
-        dist_lbl  = Text("Simulation fills\nlong tail", font_size=10, color=COL_GREEN)
+        dist_lbl = Text("Simulation fills\nlong tail",
+                        font_size=10, color=COL_GREEN)
         dist_lbl.next_to(ax, DOWN, buff=0.1)
 
         self.play(Create(main_curve), run_time=0.4)

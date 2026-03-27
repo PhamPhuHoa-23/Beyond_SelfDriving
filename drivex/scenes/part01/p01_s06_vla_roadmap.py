@@ -7,15 +7,16 @@
 # Language emphasis box → DriveLM QA chain diagram
 # ─────────────────────────────────────────────────────────────────
 
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
-
-from manim import *
 from drivex.components.colors import (
     COL_BLUE, COL_GOLD, COL_WHITE, COL_LIGHT_BLUE,
     COL_GREEN, COL_PURPLE, COL_DEEP_BLUE, BG_DARK,
 )
+from manim import *
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../..")))
+
 
 _BG = "#0F172A"
 
@@ -45,7 +46,8 @@ def _model_node(label, year_str, above, color):
     n_lbl = Text(label, font_size=12, color=COL_WHITE)
     y_lbl = Text(year_str, font_size=10, color=COL_LIGHT_BLUE)
     y_off = 0.7 if above else -0.7
-    n_lbl.next_to(dot, UP * y_off, buff=0.1) if above else n_lbl.next_to(dot, DOWN * abs(y_off), buff=0.1)
+    n_lbl.next_to(dot, UP * y_off, buff=0.1) if above else n_lbl.next_to(dot,
+                                                                         DOWN * abs(y_off), buff=0.1)
     y_lbl.next_to(n_lbl, DOWN if above else UP, buff=0.05)
     return VGroup(dot, n_lbl, y_lbl)
 
@@ -90,9 +92,9 @@ class P01S06VLARoadmap(Scene):
         # ── Category legend (right side) ─────────────────────────
         legend = VGroup()
         for cat, color in _CATEGORIES:
-            bar  = Rectangle(width=0.25, height=0.25,
-                             fill_color=color, fill_opacity=0.85,
-                             stroke_width=0)
+            bar = Rectangle(width=0.25, height=0.25,
+                            fill_color=color, fill_opacity=0.85,
+                            stroke_width=0)
             cat_lbl = Text(cat, font_size=12, color=COL_WHITE)
             row = VGroup(bar, cat_lbl).arrange(RIGHT, buff=0.12)
             legend.add(row)
@@ -115,11 +117,11 @@ class P01S06VLARoadmap(Scene):
 
         # Dim timeline, bring up DriveLM chain
         self.play(
-            spine.animate.set_opacity(0.3),
-            nodes.animate.set_opacity(0.3),
-            legend.animate.set_opacity(0.3),
-            lang_box.animate.shift(UP * 2.5),
-            lang_lbl.animate.shift(UP * 2.5),
+            FadeOut(spine),
+            FadeOut(nodes),
+            FadeOut(legend),
+            lang_box.animate.move_to(UP * 2.0),
+            lang_lbl.animate.move_to(UP * 2.0),
             run_time=0.5,
         )
 
@@ -131,7 +133,8 @@ class P01S06VLARoadmap(Scene):
             ("Act:\nExact trajectory",      COL_GREEN),
         ]
         steps = [_drivelm_step(t, c) for t, c in step_data]
-        steps_grp = VGroup(*steps).arrange(RIGHT, buff=0.3).center().shift(DOWN * 0.4)
+        steps_grp = VGroup(*steps).arrange(RIGHT,
+                                           buff=0.3).center().shift(DOWN * 0.4)
 
         chain_arrows = VGroup(*[
             Arrow(

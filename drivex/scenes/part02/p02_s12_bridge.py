@@ -4,13 +4,14 @@ Scene 2-12 — Bridge to Part 03
 Simulation panel vs Reality panel, with a GOLD bridge arc.
 CAR mascot: "Sim-to-Real. Let's go."
 """
-import sys, os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
-
-from manim import *
-from drivex.components.colors import *
-from drivex.components.mascots import CarMascot, idle_bounce
 from drivex.components.thought_bubble import SpeechBubble
+from drivex.components.mascots import CarMascot, idle_bounce
+from drivex.components.colors import *
+from manim import *
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '../../..')))
 
 
 class P02S12Bridge(Scene):
@@ -42,14 +43,16 @@ class P02S12Bridge(Scene):
         road_v.move_to(sim_box.get_center())
 
         building1 = Rectangle(width=0.7, height=0.6,
-                               fill_color="#2A3A4A", fill_opacity=1, stroke_width=0)
+                              fill_color="#2A3A4A", fill_opacity=1, stroke_width=0)
         building2 = Rectangle(width=0.5, height=0.8,
-                               fill_color="#2A3A4A", fill_opacity=1, stroke_width=0)
+                              fill_color="#2A3A4A", fill_opacity=1, stroke_width=0)
         building1.move_to(sim_box.get_center() + UL * 0.6)
         building2.move_to(sim_box.get_center() + DR * 0.5)
 
-        sim_car = Dot(radius=0.12, color=COL_BLUE).move_to(sim_box.get_center() + UR * 0.3)
-        sim_full = VGroup(sim_box, sim_lbl, road_h, road_v, building1, building2, sim_car)
+        sim_car = Dot(radius=0.12, color=COL_BLUE).move_to(
+            sim_box.get_center() + UR * 0.3)
+        sim_full = VGroup(sim_box, sim_lbl, road_h, road_v,
+                          building1, building2, sim_car)
 
         # ── real panel ─────────────────────────────────────────────
         real_box = RoundedRectangle(
@@ -66,7 +69,8 @@ class P02S12Bridge(Scene):
             fill_color="#2A2A2A", fill_opacity=1, stroke_width=0
         )
         real_placeholder.move_to(real_box.get_center())
-        real_ph_lbl = Text("[real road photo]", font_size=14, color=GREY_B, slant=ITALIC)
+        real_ph_lbl = Text("[real road photo]", font_size=14,
+                           color=GREY_B, slant=ITALIC)
         real_ph_lbl.move_to(real_placeholder.get_center())
         real_full = VGroup(real_box, real_lbl, real_placeholder, real_ph_lbl)
 
@@ -87,14 +91,14 @@ class P02S12Bridge(Scene):
 
         # ── Part 03 label ──────────────────────────────────────────
         p03_lbl = Text("Part 03: Bridging Sim and Reality",
-                        font_size=24, color=COL_GOLD, weight=BOLD)
+                       font_size=24, color=COL_GOLD, weight=BOLD)
         p03_lbl.to_edge(DOWN, buff=1.2)
         self.play(Write(p03_lbl), run_time=0.6)
 
         # ── CAR mascot ─────────────────────────────────────────────
         car = CarMascot(height=1.0)
         car.to_corner(DR, buff=0.5)
-        bubble = SpeechBubble(car, "Sim-to-Real.\nLet's go.", position=UL)
+        bubble = SpeechBubble(car, "Sim-to-Real.\nLet's go.", position=UP)
         self.play(FadeIn(car), run_time=0.4)
         self.play(FadeIn(bubble), run_time=0.3)
         self.play(idle_bounce(car, 0.07, 1.0), run_time=1.0)

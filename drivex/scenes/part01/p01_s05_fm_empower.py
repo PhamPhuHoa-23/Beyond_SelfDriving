@@ -9,17 +9,18 @@
 # Bottom goal text: "Long-tail Generalization and Generalist Experience"
 # ─────────────────────────────────────────────────────────────────
 
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
-
-from manim import *
 from drivex.components.colors import (
     COL_NAVY, COL_BLUE, COL_GOLD, COL_WHITE, COL_LIGHT_BLUE,
     COL_GREEN, COL_DEEP_BLUE, COL_DEEP_GREEN, BG_DARK,
 )
+from manim import *
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../..")))
 
-_BG = COL_NAVY
+
+_BG = BG_DARK
 
 
 def _fm_row(label, sub, color):
@@ -87,7 +88,8 @@ class P01S05FMEmpower(Scene):
             buff=0,
             max_tip_length_to_length_ratio=0.25,
         )
-        empower_lbl = Text("Empower", font_size=18, color=COL_GOLD, weight=BOLD)
+        empower_lbl = Text("Empower", font_size=18,
+                           color=COL_GOLD, weight=BOLD)
         empower_lbl.next_to(empower_arrow, UP, buff=0.12)
 
         # ── Bottom goal text ──────────────────────────────────────
@@ -117,7 +119,7 @@ class P01S05FMEmpower(Scene):
         # Pulse the arrow
         self.play(
             empower_arrow.animate(rate_func=there_and_back, run_time=0.3)
-                          .scale(1.1),
+            .scale(1.1),
         )
 
         self.play(Write(goal), run_time=0.8)

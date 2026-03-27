@@ -10,15 +10,16 @@
 #   - Nodes pulse, then Part 1 highlights gold
 # ─────────────────────────────────────────────────────────────────
 
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
-
-from manim import *
+from drivex.components.roadmap import RoadmapStrip
 from drivex.components.colors import (
     COL_NAVY, COL_BLUE, COL_GOLD, COL_WHITE, COL_LIGHT_BLUE,
 )
-from drivex.components.roadmap import RoadmapStrip
+from manim import *
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../..")))
+
 
 PART_TITLES_LONG = [
     "Individual Reasoning\n(Foundation Models)",

@@ -8,22 +8,23 @@
 # Weakness labels (✗/✓) appear after each column.
 # ─────────────────────────────────────────────────────────────────
 
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
-
-from manim import *
 from drivex.components.colors import (
     COL_BLUE, COL_WHITE, COL_LIGHT_BLUE, COL_RED, COL_GREEN,
     COL_GOLD, COL_DEEP_BLUE, COL_DEEP_GREEN, COL_DEEP_PURPLE,
     COL_NAVY, BG_DARK,
 )
+from manim import *
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../..")))
+
 
 _BG = "#0F172A"
 _PIPE_W = 2.2   # column width
-_BOX_W  = 1.9   # pipeline box width
-_BOX_H  = 0.38
-_COL_X  = [-4.2, 0.0, 4.2]   # column centers
+_BOX_W = 1.9   # pipeline box width
+_BOX_H = 0.38
+_COL_X = [-4.2, 0.0, 4.2]   # column centers
 
 
 def _pipeline_box(label, color=COL_DEEP_BLUE, stroke=COL_BLUE):
@@ -82,8 +83,8 @@ def _build_modular_column(cx):
 def _build_e2e_column(cx):
     """Build End-to-End pipeline."""
     sensor = _pipeline_box("Sensor")
-    nn     = _pipeline_box("Neural Network\n(E2E)",
-                           color=COL_DEEP_PURPLE, stroke="#7C3AED")
+    nn = _pipeline_box("Neural Network\n(E2E)",
+                       color=COL_DEEP_PURPLE, stroke="#7C3AED")
     nn[0].set_height(0.8)   # make NN box taller
     nn[1].move_to(nn[0])
     action = _pipeline_box("Action", color=COL_DEEP_GREEN, stroke=COL_GREEN)
@@ -102,10 +103,11 @@ def _build_e2e_column(cx):
 def _build_hybrid_column(cx):
     """Build Hybrid pipeline."""
     sensor = _pipeline_box("Sensor")
-    ml     = _pipeline_box("ML (Perception\n+ Planning)",
-                           color=COL_DEEP_GREEN, stroke=COL_GREEN)
-    ml[0].set_height(0.7); ml[1].move_to(ml[0])
-    ctrl   = _pipeline_box("Control Module")
+    ml = _pipeline_box("ML (Perception\n+ Planning)",
+                       color=COL_DEEP_GREEN, stroke=COL_GREEN)
+    ml[0].set_height(0.7)
+    ml[1].move_to(ml[0])
+    ctrl = _pipeline_box("Control Module")
     action = _pipeline_box("Action", color=COL_DEEP_GREEN, stroke=COL_GREEN)
 
     col = VGroup(sensor, _down_arrow(), ml, _down_arrow(), ctrl,
@@ -128,31 +130,34 @@ class P01S03AVArch(Scene):
 
         # Column headers
         headers = VGroup(
-            Text("Modular",    font_size=22, color=COL_WHITE, weight=BOLD).move_to([_COL_X[0], 3.2, 0]),
-            Text("End-to-End", font_size=22, color=COL_WHITE, weight=BOLD).move_to([_COL_X[1], 3.2, 0]),
-            Text("Hybrid",     font_size=22, color=COL_WHITE, weight=BOLD).move_to([_COL_X[2], 3.2, 0]),
+            Text("Modular",    font_size=22, color=COL_WHITE,
+                 weight=BOLD).move_to([_COL_X[0], 3.2, 0]),
+            Text("End-to-End", font_size=22, color=COL_WHITE,
+                 weight=BOLD).move_to([_COL_X[1], 3.2, 0]),
+            Text("Hybrid",     font_size=22, color=COL_WHITE,
+                 weight=BOLD).move_to([_COL_X[2], 3.2, 0]),
         )
         # Separator lines under headers
         seps = VGroup(*[
             Line(LEFT * 1.0 + [cx, 0, 0], RIGHT * 1.0 + [cx, 0, 0],
                  stroke_color=COL_BLUE, stroke_width=1)
-                 .next_to(headers[i], DOWN, buff=0.1)
+            .next_to(headers[i], DOWN, buff=0.1)
             for i, cx in enumerate(_COL_X)
         ])
 
         # Build columns
-        mod_col,  mod_weak  = _build_modular_column(_COL_X[0])
-        e2e_col,  e2e_weak  = _build_e2e_column(_COL_X[1])
-        hyb_col,  hyb_str   = _build_hybrid_column(_COL_X[2])
+        mod_col,  mod_weak = _build_modular_column(_COL_X[0])
+        e2e_col,  e2e_weak = _build_e2e_column(_COL_X[1])
+        hyb_col,  hyb_str = _build_hybrid_column(_COL_X[2])
 
         # ── Column 1: Modular ─────────────────────────────────────
         self.play(Write(headers[0]), Create(seps[0]), run_time=0.4)
         pipe_boxes = [c for c in mod_col if isinstance(c, VGroup)]
-        arrows     = [c for c in mod_col if isinstance(c, Arrow)]
+        arrows = [c for c in mod_col if isinstance(c, Arrow)]
         for box in pipe_boxes:
             self.play(FadeIn(box, shift=DOWN * 0.05), run_time=0.22)
         self.play(LaggedStart(*[FadeIn(w, shift=UP * 0.05) for w in mod_weak],
-                               lag_ratio=0.15), run_time=0.5)
+                              lag_ratio=0.15), run_time=0.5)
 
         # ── Column 2: E2E ─────────────────────────────────────────
         self.play(Write(headers[1]), Create(seps[1]), run_time=0.4)

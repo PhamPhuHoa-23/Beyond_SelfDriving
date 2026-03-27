@@ -60,7 +60,8 @@ class ThoughtBubble(VGroup):
         bubble_grp.next_to(target, position, buff=buff)
 
         # Triangular tail
-        tip = target.get_critical_point(position) * 0.5 + target.get_center() * 0.5
+        tip = target.get_critical_point(
+            position) * 0.5 + target.get_center() * 0.5
         anchor = bubble.get_corner(-position)
         direction = tip - anchor
         length = np.linalg.norm(direction)
