@@ -1,0 +1,340 @@
+from manimlib import *
+sys.path.append('/Users/stephen/manim/videos/welch_assets')
+from welch_axes import *
+CHILL_BROWN = '#948979'
+YELLOW = '#ffd35a'
+BLUE = '#65c8d0'
+
+class Dot3D(Sphere):
+
+    def __init__(self, center=ORIGIN, radius=0.05, **kwargs):
+        super().__init__(radius=radius, **kwargs)
+        self.move_to(center)
+data_dir = '/Users/stephen/Stephencwelch Dropbox/Stephen Welch/welch_labs/backpropagation/hackin/'
+
+class P31(InteractiveScene):
+
+    def construct(self):
+        surf = 2.0 * np.load(data_dir + 'p_24_28_losses_4.npy') + 0.8
+        xy = np.load(data_dir + 'p_24_28_losses_4xy.npy')
+        axes = ThreeDAxes(x_range=[-1, 4, 1], y_range=[-1, 4, 1], z_range=[0.0, 3.5, 0.6], height=5, width=5, depth=4, axis_config={'include_ticks': True, 'color': CHILL_BROWN, 'stroke_width': 2, 'include_tip': True, 'tip_config': {'fill_opacity': 1, 'width': 0.1, 'length': 0.1}})
+        x_label = Tex('\\theta_{1}', font_size=40).set_color(CHILL_BROWN)
+        y_label = Tex('\\theta_{2}', font_size=40).set_color(CHILL_BROWN)
+        z_label = Tex('Loss', font_size=30).set_color(CHILL_BROWN)
+        x_label.next_to(axes.x_axis, RIGHT)
+        y_label.next_to(axes.y_axis, UP)
+        z_label.next_to(axes.z_axis, OUT)
+        z_label.rotate(90 * DEGREES, [1, 0, 0])
+
+        def param_surface(u, v):
+            u_idx = np.abs(xy[0] - u).argmin()
+            v_idx = np.abs(xy[1] - v).argmin()
+            try:
+                z = surf[u_idx, v_idx]
+            except IndexError:
+                z = 0
+            return np.array([u, v, z])
+        surface = ParametricSurface(param_surface, u_range=[-1, 4], v_range=[-1, 4], resolution=(512, 512))
+        ts = TexturedSurface(surface, data_dir + 'p_24_28_losses_4.png')
+        ts.set_shading(0.0, 0.1, 0)
+        ts.set_opacity(0.7)
+        num_lines = 20
+        num_points = 1024
+        u_gridlines = VGroup()
+        v_gridlines = VGroup()
+        u_values = np.linspace(-1, 4, num_lines)
+        v_points = np.linspace(-1, 4, num_points)
+        for u in u_values:
+            points = [param_surface(u, v) for v in v_points]
+            line = VMobject()
+            line.set_points_smoothly(points)
+            line.set_stroke(width=1, color=WHITE, opacity=0.3)
+            u_gridlines.add(line)
+        u_points = np.linspace(-1, 4, num_points)
+        for v in u_values:
+            points = [param_surface(u, v) for u in u_points]
+            line = VMobject()
+            line.set_points_smoothly(points)
+            line.set_stroke(width=1, color=WHITE, opacity=0.3)
+            v_gridlines.add(line)
+        offset = surface.get_corner(BOTTOM + LEFT) - axes.get_corner(BOTTOM + LEFT)
+        axes.shift(offset)
+        x_label.shift(offset)
+        y_label.shift(offset)
+        z_label.shift(offset)
+        self.add(axes, x_label, y_label, z_label)
+        self.frame.reorient(-24, 60, 0, (1.71, 1.77, 2.21), 8.03)
+        self.wait()
+        self.play(ShowCreation(u_gridlines), ShowCreation(v_gridlines), self.frame.animate.reorient(42, 46, 0, (1.56, 1.37, 2.4), 7.78), run_time=4)
+        self.play(FadeIn(ts))
+        self.wait()
+        u_min = 0.95
+        v_min = 2.3
+        global_min = Dot3D(center=param_surface(u_min, v_min), radius=0.1, color='$FF00FF')
+        self.add(global_min)
+        self.wait()
+        self.play(self.frame.animate.reorient(0, 48, 0, (1.47, 1.55, 2.62), 7.78), run_time=6)
+        self.wait()
+        self.embed()
+        self.wait(20)
+
+class P24v4(InteractiveScene):
+
+    def construct(self):
+        surf = 2.0 * np.load(data_dir + 'p_24_28_losses_4.npy') + 0.8
+        xy = np.load(data_dir + 'p_24_28_losses_4xy.npy')
+        axes = ThreeDAxes(x_range=[-1, 4, 1], y_range=[-1, 4, 1], z_range=[0.0, 3.5, 0.6], height=5, width=5, depth=4, axis_config={'include_ticks': True, 'color': CHILL_BROWN, 'stroke_width': 2, 'include_tip': True, 'tip_config': {'fill_opacity': 1, 'width': 0.1, 'length': 0.1}})
+        x_label = Tex('\\theta_{1}', font_size=40).set_color(CHILL_BROWN)
+        y_label = Tex('\\theta_{2}', font_size=40).set_color(CHILL_BROWN)
+        z_label = Tex('Loss', font_size=30).set_color(CHILL_BROWN)
+        x_label.next_to(axes.x_axis, RIGHT)
+        y_label.next_to(axes.y_axis, UP)
+        z_label.next_to(axes.z_axis, OUT)
+        z_label.rotate(90 * DEGREES, [1, 0, 0])
+
+        def param_surface(u, v):
+            u_idx = np.abs(xy[0] - u).argmin()
+            v_idx = np.abs(xy[1] - v).argmin()
+            try:
+                z = surf[u_idx, v_idx]
+            except IndexError:
+                z = 0
+            return np.array([u, v, z])
+        surface = ParametricSurface(param_surface, u_range=[-1, 4], v_range=[-1, 4], resolution=(512, 512))
+        ts = TexturedSurface(surface, data_dir + 'p_24_28_losses_4.png')
+        ts.set_shading(0.0, 0.1, 0)
+        ts.set_opacity(0.7)
+        num_lines = 20
+        num_points = 1024
+        u_gridlines = VGroup()
+        v_gridlines = VGroup()
+        u_values = np.linspace(-1, 4, num_lines)
+        v_points = np.linspace(-1, 4, num_points)
+        for u in u_values:
+            points = [param_surface(u, v) for v in v_points]
+            line = VMobject()
+            line.set_points_smoothly(points)
+            line.set_stroke(width=1, color=WHITE, opacity=0.3)
+            u_gridlines.add(line)
+        u_points = np.linspace(-1, 4, num_points)
+        for v in u_values:
+            points = [param_surface(u, v) for u in u_points]
+            line = VMobject()
+            line.set_points_smoothly(points)
+            line.set_stroke(width=1, color=WHITE, opacity=0.3)
+            v_gridlines.add(line)
+        offset = surface.get_corner(BOTTOM + LEFT) - axes.get_corner(BOTTOM + LEFT)
+        axes.shift(offset)
+        x_label.shift(offset)
+        y_label.shift(offset)
+        z_label.shift(offset)
+        self.add(axes, x_label, y_label, z_label)
+        self.frame.reorient(-24, 60, 0, (1.71, 1.77, 2.21), 8.03)
+        self.wait()
+        self.play(ShowCreation(u_gridlines), ShowCreation(v_gridlines), self.frame.animate.reorient(38, 61, 0, (1.33, 1.43, 2.61), 7.78), run_time=4)
+        self.play(FadeIn(ts))
+        self.wait()
+        self.play(self.frame.animate.reorient(0, 91, 0, (1.71, 1.05, 3.47), 6.46), x_label.animate.rotate(90 * DEGREES, [1, 0, 0]), ts.animate.set_opacity(0.2), u_gridlines.animate.set_stroke(opacity=0.15), v_gridlines.animate.set_stroke(opacity=0.15), run_time=3)
+        self.wait()
+        u_points = np.linspace(-1, 4, num_points)
+        points = [param_surface(u, 0) for u in u_points]
+        slice_1 = VMobject()
+        slice_1.set_points_smoothly(points)
+        slice_1.set_stroke(width=4, color=YELLOW, opacity=0.8)
+        self.play(ShowCreation(slice_1), run_time=2)
+        self.wait()
+        slice_t_bottom = Dot(param_surface(1.61, 0), radius=0.08, fill_color=YELLOW)
+        slice_t_bottom.rotate(90 * DEGREES, [1, 0, 0])
+        self.add(slice_t_bottom)
+        self.wait()
+        y_label.rotate(90 * DEGREES, [0, 0, 1])
+        self.play(self.frame.animate.reorient(79, 98, 0, (1.71, 1.59, 3.29), 6.21), y_label.animate.rotate(90 * DEGREES, [0, 1, 0]), run_time=4)
+        self.wait()
+        v_points = np.linspace(-1, 4, num_points)
+        points = [param_surface(1.61, v) for v in v_points]
+        slice_2 = VMobject()
+        slice_2.set_points_smoothly(points)
+        slice_2.set_stroke(width=4, color=BLUE, opacity=0.8)
+        self.play(ShowCreation(slice_2), run_time=2)
+        self.wait()
+        u_points = np.linspace(-1, 4, num_points)
+        points = [param_surface(u, 1.76) for u in u_points]
+        slice_3 = VMobject()
+        slice_3.set_points_smoothly(points)
+        slice_3.set_stroke(width=4, color=YELLOW, opacity=0.8)
+        self.wait()
+        slice_bottom_2 = Dot(param_surface(1.61, 1.76), radius=0.08, fill_color=BLUE)
+        slice_bottom_2.rotate(90 * DEGREES, [1, 0, 0])
+        slice_bottom_2.rotate(90 * DEGREES, [0, 0, 1])
+        self.add(slice_bottom_2)
+        self.wait()
+        self.play(ShowCreation(slice_3))
+        self.wait()
+        self.play(self.frame.animate.reorient(1, 96, 0, (1.4, 1.57, 3.52), 6.57), slice_1.animate.set_stroke(opacity=0.4), run_time=4)
+        self.wait()
+        slice_bottom_3 = Dot(param_surface(1.11, 1.76), radius=0.08, fill_color=YELLOW)
+        slice_bottom_3.rotate(90 * DEGREES, [1, 0, 0])
+        self.add(slice_bottom_3)
+        self.wait()
+        self.play(self.frame.animate.reorient(42, 46, 0, (1.5, 1.67, 2.4), 7.61), ts.animate.set_opacity(0.6), u_gridlines.animate.set_stroke(opacity=0.2), v_gridlines.animate.set_stroke(opacity=0.2), run_time=4)
+        self.wait()
+        self.play(slice_1.animate.set_opacity(0.0), slice_2.animate.set_opacity(0.0), slice_3.animate.set_opacity(0.0), slice_bottom_2.animate.set_opacity(0.0), slice_t_bottom.animate.set_opacity(0.0), slice_bottom_3.animate.set_opacity(0.0), self.frame.animate.reorient(0, 49, 0, (1.48, 1.79, 2.54), 7.61), run_time=6)
+        self.wait()
+        u_min = 0.95
+        v_min = 2.3
+        global_min = Dot3D(center=param_surface(u_min, v_min), radius=0.1, color='$FF00FF')
+        self.add(global_min)
+        self.wait()
+        self.play(ts.animate.set_opacity(0.0), u_gridlines.animate.set_opacity(0.0), v_gridlines.animate.set_opacity(0.0), x_label.animate.rotate(-90 * DEGREES, [1, 0, 0]), y_label.animate.rotate(-90 * DEGREES, [0, 1, 0]).rotate(-90 * DEGREES, [0, 0, 1]), self.frame.animate.reorient(0, 0, 0, (1.54, 1.54, 2.52), 5.59), run_time=6)
+        self.wait()
+        self.embed()
+        self.wait(20)
+
+class P24v5(InteractiveScene):
+
+    def construct(self):
+        surf = 2.0 * np.load(data_dir + 'p_24_28_losses_4.npy') + 0.8
+        xy = np.load(data_dir + 'p_24_28_losses_4xy.npy')
+        axes = ThreeDAxes(x_range=[-1, 4, 1], y_range=[-1, 4, 1], z_range=[0.0, 3.5, 0.6], height=5, width=5, depth=4, axis_config={'include_ticks': True, 'color': CHILL_BROWN, 'stroke_width': 2, 'include_tip': True, 'tip_config': {'fill_opacity': 1, 'width': 0.1, 'length': 0.1}})
+        x_label = Tex('\\theta_{1}', font_size=40).set_color(CHILL_BROWN)
+        y_label = Tex('\\theta_{2}', font_size=40).set_color(CHILL_BROWN)
+        z_label = Tex('Loss', font_size=30).set_color(CHILL_BROWN)
+        x_label.next_to(axes.x_axis, RIGHT)
+        y_label.next_to(axes.y_axis, UP)
+        z_label.next_to(axes.z_axis, OUT)
+        z_label.rotate(90 * DEGREES, [1, 0, 0])
+
+        def param_surface(u, v):
+            u_idx = np.abs(xy[0] - u).argmin()
+            v_idx = np.abs(xy[1] - v).argmin()
+            try:
+                z = surf[u_idx, v_idx]
+            except IndexError:
+                z = 0
+            return np.array([u, v, z])
+        surface = ParametricSurface(param_surface, u_range=[-1, 4], v_range=[-1, 4], resolution=(512, 512))
+        ts = TexturedSurface(surface, data_dir + 'p_24_28_losses_4.png')
+        ts.set_shading(0.0, 0.1, 0)
+        ts.set_opacity(0.7)
+        num_lines = 20
+        num_points = 1024
+        u_gridlines = VGroup()
+        v_gridlines = VGroup()
+        u_values = np.linspace(-1, 4, num_lines)
+        v_points = np.linspace(-1, 4, num_points)
+        for u in u_values:
+            points = [param_surface(u, v) for v in v_points]
+            line = VMobject()
+            line.set_points_smoothly(points)
+            line.set_stroke(width=1, color=WHITE, opacity=0.3)
+            u_gridlines.add(line)
+        u_points = np.linspace(-1, 4, num_points)
+        for v in u_values:
+            points = [param_surface(u, v) for u in u_points]
+            line = VMobject()
+            line.set_points_smoothly(points)
+            line.set_stroke(width=1, color=WHITE, opacity=0.3)
+            v_gridlines.add(line)
+        offset = surface.get_corner(BOTTOM + LEFT) - axes.get_corner(BOTTOM + LEFT)
+        axes.shift(offset)
+        x_label.shift(offset)
+        y_label.shift(offset)
+        z_label.shift(offset)
+        self.add(axes, x_label, y_label, z_label)
+        self.frame.reorient(-24, 60, 0, (1.71, 1.77, 2.21), 8.03)
+        self.wait()
+        self.play(ShowCreation(u_gridlines), ShowCreation(v_gridlines), self.frame.animate.reorient(38, 61, 0, (1.33, 1.43, 2.61), 7.78), run_time=4)
+        self.play(FadeIn(ts))
+        self.wait()
+
+        def get_fallen_points(line, progress):
+            original_points = line.get_points()
+            fallen_points = np.array(original_points)
+            fallen_points[:, 2] = original_points[:, 2] * (1 - progress)
+            return fallen_points
+        falling_animations_u = []
+        for line in u_gridlines:
+            falling_animations_u.append(UpdateFromAlphaFunc(line, lambda mob, alpha: mob.set_points(get_fallen_points(mob, alpha / 6.0))))
+        falling_animations_v = []
+        for line in v_gridlines:
+            falling_animations_v.append(UpdateFromAlphaFunc(line, lambda mob, alpha: mob.set_points(get_fallen_points(mob, alpha / 6.0))))
+        self.wait()
+        self.play(*falling_animations_u, *falling_animations_v, FadeOut(axes), FadeOut(x_label), FadeOut(y_label), FadeOut(z_label), ts.animate.set_opacity(0.0), u_gridlines.animate.set_stroke(opacity=0.6), v_gridlines.animate.set_stroke(opacity=0.6), self.frame.animate.reorient(0, 0, 0, (1.62, 1.38, 2.23), 6.84), run_time=6)
+        self.wait()
+        intersection_dots = VGroup()
+        for u in u_values:
+            for v in u_values:
+                dot = Dot([u, v, 0], radius=0.03, fill_color=WHITE, fill_opacity=0.8)
+                intersection_dots.add(dot)
+        self.play(ShowCreation(intersection_dots))
+        self.wait()
+        self.embed()
+        self.wait(20)
+
+class P24_2d(InteractiveScene):
+
+    def construct(self):
+        surf = np.load(data_dir + 'p_24_28_losses_4.npy')
+        xy = np.load(data_dir + 'p_24_28_losses_4xy.npy')
+
+        def param_surface(u, v):
+            u_idx = np.abs(xy[0] - u).argmin()
+            v_idx = np.abs(xy[1] - v).argmin()
+            try:
+                z = surf[u_idx, v_idx]
+            except IndexError:
+                z = 0
+            return np.array([u, v, z])
+        surface = ParametricSurface(param_surface, u_range=[-1, 4], v_range=[-1, 4], resolution=(512, 512))
+        x_axis_1 = WelchXAxis(x_min=-1.0, x_max=4.0, x_ticks=[-1.0, 0, 1.0, 2.0, 3.0], x_tick_height=0.15, x_label_font_size=22, stroke_width=3.0, arrow_tip_scale=0.1, axis_length_on_canvas=4)
+        y_axis_1 = WelchYAxis(y_min=0.2, y_max=1.6, y_ticks=[0.4, 0.6, 0.8, 1.0, 1.2, 1.4], y_tick_width=0.15, y_label_font_size=22, stroke_width=3.0, arrow_tip_scale=0.1, axis_length_on_canvas=3)
+        x_label_1 = Tex('\\theta_1', font_size=36).set_color(CHILL_BROWN)
+        y_label_1 = Tex('Loss', font_size=28).set_color(CHILL_BROWN)
+        x_label_1.next_to(x_axis_1, RIGHT, buff=0.05)
+        y_label_1.next_to(y_axis_1, UP, buff=0.08)
+        num_points = 1024
+        u_points = np.linspace(-1, 4, num_points)
+        points = [param_surface(u, 0) for u in u_points]
+        points = np.array(points)
+        mapped_x_1 = x_axis_1.map_to_canvas(points[:, 0])
+        mapped_y_1 = y_axis_1.map_to_canvas(points[:, 2])
+        curve_1 = VMobject()
+        curve_1.set_points_smoothly(np.vstack((mapped_x_1, mapped_y_1, np.zeros_like(mapped_x_1))).T)
+        curve_1.set_stroke(width=4, color=YELLOW, opacity=1.0)
+        self.frame.reorient(0, 0, 0, (1.44, -0.6, 0.0), 8.36)
+        self.add(x_axis_1, y_axis_1, x_label_1, y_label_1)
+        self.wait()
+        self.play(ShowCreation(curve_1), run_time=5)
+        self.wait()
+        x_axis_2 = WelchXAxis(x_min=-1.0, x_max=4.0, x_ticks=[-1.0, 0, 1.0, 2.0, 3.0], x_tick_height=0.15, x_label_font_size=22, stroke_width=3.0, arrow_tip_scale=0.1, axis_length_on_canvas=4)
+        y_axis_2 = WelchYAxis(y_min=0.2, y_max=1.6, y_ticks=[0.4, 0.6, 0.8, 1.0, 1.2, 1.4], y_tick_width=0.15, y_label_font_size=22, stroke_width=3.0, arrow_tip_scale=0.1, axis_length_on_canvas=3)
+        x_label_2 = Tex('\\theta_2', font_size=36).set_color(CHILL_BROWN)
+        y_label_2 = Tex('Loss', font_size=28).set_color(CHILL_BROWN)
+        x_label_2.next_to(x_axis_2, RIGHT, buff=0.05)
+        y_label_2.next_to(y_axis_2, UP, buff=0.08)
+        num_points = 1024
+        v_points = np.linspace(-1, 4, num_points)
+        points = [param_surface(1.61, v) for v in v_points]
+        points = np.array(points)
+        mapped_x_1 = x_axis_2.map_to_canvas(points[:, 1])
+        mapped_y_1 = y_axis_2.map_to_canvas(points[:, 2])
+        curve_2 = VMobject()
+        curve_2.set_points_smoothly(np.vstack((mapped_x_1, mapped_y_1, np.zeros_like(mapped_x_1))).T)
+        curve_2.set_stroke(width=4, color=BLUE, opacity=1.0)
+        curve_2_group = VGroup(x_axis_2, y_axis_2, x_label_2, y_label_2, curve_2)
+        curve_2_group.shift([0, -4, 0])
+        self.add(x_axis_2, y_axis_2, x_label_2, y_label_2)
+        self.wait()
+        self.play(ShowCreation(curve_2), run_time=5)
+        self.wait()
+        num_points = 1024
+        u_points = np.linspace(-1, 4, num_points)
+        points = [param_surface(u, 1.76) for u in u_points]
+        points = np.array(points)
+        mapped_x_1 = x_axis_1.map_to_canvas(points[:, 0])
+        mapped_y_1 = y_axis_1.map_to_canvas(points[:, 2])
+        curve_3 = VMobject()
+        curve_3.set_points_smoothly(np.vstack((mapped_x_1, mapped_y_1, np.zeros_like(mapped_x_1))).T)
+        curve_3.set_stroke(width=4, color=YELLOW, opacity=1.0)
+        self.play(ShowCreation(curve_3), curve_1.animate.set_stroke(color='#806a2d'), run_time=5)
+        self.wait(20)

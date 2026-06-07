@@ -1,0 +1,26 @@
+P01S01Opening: vị trí linh vật quá cao, làm overlap chữ, hạ thấp linh vật xuông
+P01S02GenAIBoom: box của linh vật góc trên phải overlap với góc dưới trái của box fms, có thể là sau khi hiển thị thì nâng cao box FMs lên một xíu
+P01S04LongTail: vấn đang hiện 2 cái trục sau khi hiện phân phối. đúng ra 2 linh vật noi chuyện với nhau sau khi ẩn phân phối đi, nhưng hiện tại đang nói trước là mất đi coherent
+P01S05FMEmpower: tăng chiều rộng cho box bên trái, tăng chung 5 cái vì cái cuối chư multimodal overlap vơis clip/llava/blip
+P01S06VLARoadmap: vẫn là text trên roadmap quá gần line, không đọc được
+P01S07VLAArch: mũi tên ở gptdriver ngắn quá, bevdriver, vân chưa căn chỉnh chính giữa 1 dòng cho các block phía sau
+P01S08AutoVLA: chỉnh sau mà kéo cái region stage xuống dưới làm overlap với các block nội dung liên quan 
+P02S02Background: box 80% reduction bị đề vô cái hình, để dọc theo chữ 94% gì đó cũng được
+P02S04Occlusion: lỗi animation, chắc là time, tôi nghĩ bạn nên vẽ 1 cái cục màu xanh thay thế hoàn toàn cục đỏ, hoặc cục đỏ đổi màu thành cục xanh, hiện tại animation khi hiện 2 addition car lên thì blind field của xe đầu bị fade đi hết, xong nó hiện cục màu xanh lên rồi mấy cục màu đó hồi nãy mới hiện tại, tôi nghĩ bạn nên check code timing và animation + gợi ý của tôi cho chuẩn, với lại đừng vẽ vòng tròn, kiểu một vòng tròn dần dần expand ra tới cái radius như vậy cho giống sóng thấy đẹp hơn
+P02S05RelatedWorks: vẫn là text trên roadmap quá gần line, không đọc được, mấy cái box nhỏ quá, chắc là không chừa chỗ cho chèn hình ảnh luôn á, bảo rồi, đừng có để nó xen kẽ trên dưới, bỏ lên trên hết tài vì khúc hiển thị 2 cái line đỏ, line xanh nó đè lên các cái văn bản (overlap ấy) 
+P02S06ThreeQuestions: chĩa thành 3 mũi tên hay hơn
+P02S07V2XPnP: tôi nghĩ bạn nên move tổng thể pipeline lên trên, để middle xong không có space, VẤN ĐỀ 2 mũi tên từ feature trỏ vào khối spatial attention vẫn lỗi, giờ lỗi nặng hơn là khối đó overlap với temporal feature luôn, overlap với khối màu vàng multiagent spatio-temporal. bạn cần align lại sao cho middle của khối spatial attention theo chiều ngang sẽ là trung tâm của 2 middle của 2 khối feature, các độ dài ngang ra xa một xíu để có space cho mũi tên, tiếp theo đó là hãy chía mũi tên xuống tới khối sopatio-temporal tại vì nhét 1 hàng ngang là không có đủ chỗ, rồi 2 khối detection và prediction thì tôi nghĩ flow nên kiểu từ trái qua phải xong từ trên xuống dưới xong từ phải qua trái thì sẽ có nhiều space và nói được các bước
+P02S09TurboTrain: gần như chưa fix gì, lỗi cũ: Cái pipeline stage bên phải overlap với cái chú thích, nếu được thì mmovecais chú thích sang gần chỗ cái hệ trục, tiếp theo là stage 2 hhiện4 cái mũi tên chĩa ra phía ngang liên tiếp (tôi không rõ nghĩa của việc này)
+P02S10RiskMap: chưa fix, lỗi cũ: Chữ riskmap bị overlap, tôi nghĩ bạn nên move x và tick xuống dưới thay vì ở trên 1 dòng với các block module để có thể move các block qua bên phải thì sẽ hết overlap
+P03S01Title: chư theory + enginerring gì đó đè lên chỗ presenter rồi, dịch nó xuống dưới câu quote đi
+P03S02FourPillars: lỗi cũ chưa fix, move cái pipeline 4 block sang trái còn vấn đề sang phải, hiện tại 1 cái ơ giữa 1 cái bên phải overlap nhau tùm lum
+P03S03SmartIntersection: LỖI CŨ CHƯA FIX, thêm cái chú thích intersection ở đâu, 2 cái chú thích infa node với connect, mình xếp theo chiều dọc và cho nó qua trái luôn, bạn xếp nó thành 1 hàng ngang thì box infra node bị overlap với cái hình sau khi đã thu nhỏ, box nói chuyện xong rồi thì ẩn xuống tại để đó thì nó overlap
+P03S04CalibrationTime: tôi nghĩ là nên vẽ kiểu này (nhưng trước tiên là fix cái đường gạch trước, vạch kẻ đường hiện cuối cùng, rất kỳ cục), giờ chỉ có một xe chạy đến 1 position, xong rồi nó dừng lại rồi tạo thêm 1 cái y chang nó tại position hiên tại đó đi tiếp thêm 50 ms và ghi khoảng cách 1m
+P03S05CalibrationSpace: hệ trục tọa độ đang bi overlap với chữ without calibration gì đó, tôi nghĩ bạn nên nâng 4 cái hệ trục nhỏ lên cao để có chỗ cho hệ trục bên dưới và chữ sao cho đỡ overlap
+P03S10V2XReaLO: cái điểm màu vàng cuối cùng đang plot lệch khỏi center sang bên phải, vơi lại cái cân đó nhỏ quá, vẽ bự lên xíu không sao đâu
+P04S01Title: tôi nghỉ là bỏ 3 cái box data training rồi inference đi, tại vì nó đè hết lên title, presenter etc.
+P04S04CooPre: align cái grid map sao cho nó center của 2 cái center kia theo chiều ngang, để cái mũi tên nhìn nó đều
+P04S07LatencyChain: LÔIX CŨ CHƯA FIX: ở scene đầu cái total time thì để nó xuống dòng đi, để kế bên bố cục nó không có cân, 3 cái block thì nên xa nhau thì mũi tên mới rõ hơn. scene 2 cái bar chart thì cái chart đứng, cái chữ nó đè lên cái chart đỏ cao và tôi nghĩ mình nên consistency giữa 2 cái chart luôn, một cái ngang 1 cái đứng thì cũng kỳ, và tôi nghĩ bạn có thể tận dụng không gian bên dưới tại vì như bạn vẽ từ đâu đó center lên á, nên phía dưới trống và scene này cũng không có text gì nhiều, chúng ta có thêr tăng kích thước lên kiểu vậy
+P04S08QuantV2X: 3 cái buller tick point ở đầu đang bị overlap với fp32, move nó xuống dưới một xíu để tránh overlap
+P04S10Bridge: move bullet tick point sang trái hơn nữa và tick thẳng hàng với nhau nha, tại nó đang overlap với mấy cái fig nhỏ nhỏ giống con người
+

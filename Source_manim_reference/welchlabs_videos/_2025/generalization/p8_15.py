@@ -1,0 +1,452 @@
+from manimlib import *
+import os
+import scipy.special
+CHILL_BROWN = '#948979'
+YELLOW = '#ffd35a'
+YELLOW_FADE = '#7f6a2d'
+BLUE = '#65c8d0'
+GREEN = '#00a14b'
+CHILL_GREEN = '#6c946f'
+CHILL_BLUE = '#3d5c6f'
+FRESH_TAN = '#dfd0b9'
+CYAN = '#00FFFF'
+TEST_BLUE = '#008080'
+graphics_dir = '/Users/stephen/Stephencwelch Dropbox/welch_labs/double_descent/graphics/'
+svg_dir = '/Users/stephen/Stephencwelch Dropbox/welch_labs/double_descent/graphics/to_manim'
+
+def fit_legendre_pinv(x_train, y_train, degree, x_min=-2, x_max=2):
+    x_scaled = 2 * (x_train - x_min) / (x_max - x_min) - 1
+    feature_degrees = np.arange(degree + 1)[:, None]
+    X_train_poly = scipy.special.eval_legendre(feature_degrees, x_scaled).T
+    beta_hat = np.linalg.pinv(X_train_poly) @ y_train
+    return beta_hat
+
+def eval_legendre_poly(beta, x, degree, x_min=-2, x_max=2):
+    x_scaled = 2 * (x - x_min) / (x_max - x_min) - 1
+    feature_degrees = np.arange(degree + 1)[:, None]
+    X_poly = scipy.special.eval_legendre(feature_degrees, x_scaled).T
+    return X_poly @ beta
+
+def get_noisy_data(n_points=10, noise_level=0.2, random_seed=428):
+    np.random.seed(random_seed)
+    x = np.random.uniform(-2, 2, n_points)
+    y = f(x) + noise_level * np.random.randn(n_points)
+    return (x, y)
+
+def f(x):
+    return 0.5 * x ** 2
+
+class P8_15V2(InteractiveScene):
+
+    def construct(self):
+        random_seed = 428
+        n_points = 10
+        noise_level = 0.2
+        curve_fit_axis_svg = SVGMobject(svg_dir + '/p8_15_2a.svg')[1:]
+        curve_fit_axis_svg.scale(4.0)
+        curve_fit_axis_svg.move_to([-2.86, 0.6, 0])
+        all_x = np.linspace(-2, 2, 128)
+        all_y = f(all_x)
+        n_train_points = int(np.floor(n_points * 0.5))
+        n_test_points = n_points - n_train_points
+        x, y = get_noisy_data(n_points, noise_level, random_seed)
+        x_train, y_train = (x[:n_train_points], y[:n_train_points])
+        x_test, y_test = (x[n_train_points:], y[n_train_points:])
+        axes_1 = Axes(x_range=[-2.0, 2.0, 1], y_range=[-0.5, 2.0, 1], width=6, height=5, axis_config={'color': CHILL_BROWN, 'include_ticks': True, 'include_numbers': True, 'include_tip': True, 'stroke_width': 3, 'tip_config': {'width': 0.02, 'length': 0.02}})
+        axes_1.move_to([-3, 0, 0])
+        parabola = axes_1.get_graph(lambda x: f(x), x_range=[-2, 2], color=CHILL_BROWN)
+        parabola.set_stroke(width=3)
+        train_dots = VGroup(*[Dot(axes_1.c2p(x_train[i], y_train[i]), radius=0.08) for i in range(len(x_train))])
+        test_dots = VGroup(*[Dot(axes_1.c2p(x_test[i], y_test[i]), radius=0.08) for i in range(len(x_test))])
+        all_dots = VGroup(test_dots, train_dots)
+        all_dots.set_color(YELLOW)
+        dots_with_x = []
+        for i, dot in enumerate(train_dots):
+            dots_with_x.append((x_train[i], dot, 'train'))
+        for i, dot in enumerate(test_dots):
+            dots_with_x.append((x_test[i], dot, 'test'))
+        dots_with_x.sort(key=lambda item: item[0])
+        sorted_dots = [item[1] for item in dots_with_x]
+        '# Create Legend\n        # Legend for Degree 1\n        legend_train_dot_1 = Dot(radius=0.06).set_color(YELLOW)\n        legend_train_text_1 = Text("Training Data", font_size=22, font=\'myraid-pro\').set_color(CHILL_BROWN)\n        # Arrange without aligned_edge so items are vertically centered\n        legend_train_1 = VGroup(legend_train_dot_1, legend_train_text_1)\n        \n        legend_test_dot_1 = Dot(radius=0.06).set_color(TEST_BLUE)\n        legend_test_text_1 = Text("Testing Data", font_size=22, font=\'myraid-pro\').set_color(CHILL_BROWN)\n        legend_test_1 = VGroup(legend_test_dot_1, legend_test_text_1)\n        \n        legend_line_1_1 = Line(LEFT * 0.15, RIGHT * 0.15, color=GREEN, stroke_width=3)\n        legend_line_1_text_1 = Tex(r"y = ax+b", font_size=26).set_color(GREEN)\n        # Adjust legend_line_1_item_1 to align equation to the right\n        legend_line_1_item_1 = VGroup(legend_line_1_1, legend_line_1_text_1)\n\n        legend_items_1 = VGroup(legend_train_1, legend_test_1, legend_line_1_item_1).arrange(RIGHT, buff=0.5)\n\n        legend_box_1 = RoundedRectangle(\n            width=legend_items_1.get_width() + 0.8,\n            height=legend_items_1.get_height() + 0.4,\n            corner_radius=0.08,\n            stroke_color=CHILL_BROWN,\n            stroke_width=2,\n            fill_color=None,\n            fill_opacity=0.0\n        )\n        legend_box_1.set_stroke(opacity=0.7)\n        legend_items_1.move_to(legend_box_1.get_center())\n        \n        legend_1 = VGroup(legend_box_1, legend_items_1)\n        legend_1.scale(0.9)\n        legend_1.move_to(ORIGIN + DOWN * 3.2)\n\n        # Legend for Degree 2\n        legend_train_dot_2 = Dot(radius=0.06).set_color(YELLOW)\n        legend_train_text_2 = Text("Training Data", font_size=22, font=\'myraid-pro\').set_color(CHILL_BROWN)\n        legend_train_2 = VGroup(legend_train_dot_2, legend_train_text_2).arrange(RIGHT, buff=0.2)\n        \n        legend_test_dot_2 = Dot(radius=0.06).set_color(TEST_BLUE)\n        legend_test_text_2 = Text("Testing Data", font_size=22, font=\'myraid-pro\').set_color(CHILL_BROWN)\n        legend_test_2 = VGroup(legend_test_dot_2, legend_test_text_2).arrange(RIGHT, buff=0.2)\n        \n        legend_line_2_2 = Line(LEFT * 0.15, RIGHT * 0.15, color=YELLOW, stroke_width=3)\n        legend_line_2_text_2 = Tex(r"y = ax^2+bx+c", font_size=26).set_color(YELLOW)\n        # Adjust legend_line_2_item_2 to align equation to the right\n        legend_line_2_item_2 = VGroup(legend_line_2_2, legend_line_2_text_2).arrange(RIGHT, buff=0.1, aligned_edge=RIGHT)\n\n        legend_items_2 = VGroup(legend_train_2, legend_test_2, legend_line_1_item_1, legend_line_2_item_2).arrange(RIGHT, buff=0.5)\n\n        legend_box_2 = RoundedRectangle(\n            width=legend_items_2.get_width() + 0.8,\n            height=legend_items_2.get_height() + 0.4,\n            corner_radius=0.08,\n            stroke_color=CHILL_BROWN,\n            stroke_width=2,\n            fill_color=None,\n            fill_opacity=0.0\n        )\n        legend_box_2.set_stroke(opacity=0.7)\n        legend_items_2.move_to(legend_box_2.get_center())\n        \n        legend_2 = VGroup(legend_box_2, legend_items_2)\n        legend_2.scale(0.9)\n        legend_2.move_to(ORIGIN + DOWN * 3.2)\n\n        # Legend for Degree 3\n        legend_train_dot_3 = Dot(radius=0.06).set_color(YELLOW)\n        legend_train_text_3 = Text("Training Data", font_size=22, font=\'myraid-pro\').set_color(CHILL_BROWN)\n        legend_train_3 = VGroup(legend_train_dot_3, legend_train_text_3).arrange(RIGHT, buff=0.2)\n        \n        legend_test_dot_3 = Dot(radius=0.06).set_color(TEST_BLUE)\n        legend_test_text_3 = Text("Testing Data", font_size=22, font=\'myraid-pro\').set_color(CHILL_BROWN)\n        legend_test_3 = VGroup(legend_test_dot_3, legend_test_text_3).arrange(RIGHT, buff=0.2)\n        \n        legend_line_3_3 = Line(LEFT * 0.15, RIGHT * 0.15, color=ORANGE, stroke_width=3)\n        legend_line_3_text_3 = Tex(r"y = ax^3+bx^2+cx+d", font_size=26).set_color(ORANGE)\n        # Adjust legend_line_3_item_3 to align equation to the right\n        legend_line_3_item_3 = VGroup(legend_line_3_3, legend_line_3_text_3).arrange(RIGHT, buff=0.1, aligned_edge=RIGHT)\n\n        legend_items_3 = VGroup(legend_train_3, legend_test_3, legend_line_1_item_1, legend_line_2_item_2, legend_line_3_item_3).arrange(RIGHT, buff=0.5)\n\n        legend_box_3 = RoundedRectangle(\n            width=legend_items_3.get_width() + 0.8,\n            height=legend_items_3.get_height() + 0.4,\n            corner_radius=0.08,\n            stroke_color=CHILL_BROWN,\n            stroke_width=2,\n            fill_color=None,\n            fill_opacity=0.0\n        )\n        legend_box_3.set_stroke(opacity=0.7)\n        legend_items_3.move_to(legend_box_3.get_center())\n        \n        legend_3 = VGroup(legend_box_3, legend_items_3)\n        legend_3.scale(0.9)\n        legend_3.move_to(ORIGIN + DOWN * 3.2)\n\n        # Legend for Degree 4\n        legend_train_dot_4 = Dot(radius=0.06).set_color(YELLOW)\n        legend_train_text_4 = Text("Training Data", font_size=22, font=\'myraid-pro\').set_color(CHILL_BROWN)\n        legend_train_4 = VGroup(legend_train_dot_4, legend_train_text_4).arrange(RIGHT, buff=0.2)\n        \n        legend_test_dot_4 = Dot(radius=0.06).set_color(TEST_BLUE)\n        legend_test_text_4 = Text("Testing Data", font_size=22, font=\'myraid-pro\').set_color(CHILL_BROWN)\n        legend_test_4 = VGroup(legend_test_dot_4, legend_test_text_4).arrange(RIGHT, buff=0.2)\n        \n        legend_line_4_4 = Line(LEFT * 0.15, RIGHT * 0.15, color=MAROON_B, stroke_width=3)\n        legend_line_4_text_4 = Tex(r"y = ax^4+bx^3+cx^2+dx+e", font_size=26).set_color(MAROON_B)\n        # Adjust legend_line_4_item_4 to align equation to the right\n        legend_line_4_item_4 = VGroup(legend_line_4_4, legend_line_4_text_4).arrange(RIGHT, buff=0.1, aligned_edge=RIGHT)\n\n        legend_items_4 = VGroup(legend_train_4, legend_test_4, legend_line_1_item_1, legend_line_2_item_2, legend_line_3_item_3, legend_line_4_item_4).arrange(RIGHT, buff=0.5)\n\n        legend_box_4 = RoundedRectangle(\n            width=legend_items_4.get_width() + 0.8,\n            height=legend_items_4.get_height() + 0.4,\n            corner_radius=0.08,\n            stroke_color=CHILL_BROWN,\n            stroke_width=2,\n            fill_color=None,\n            fill_opacity=0.0\n        )\n        legend_box_4.set_stroke(opacity=0.7)\n        legend_items_4.move_to(legend_box_4.get_center())\n        \n        legend_4 = VGroup(legend_box_4, legend_items_4)\n        legend_4.scale(0.9)\n        legend_4.move_to(ORIGIN + DOWN * 3.2)'
+        legend = VGroup()
+        legend_training_dot = Dot(radius=0.06).set_color(YELLOW)
+        legend_training_text = Text('Training Data', font_size=20, font='myraid-pro').set_color(CHILL_BROWN)
+        legend_training = VGroup(legend_training_dot, legend_training_text).arrange(RIGHT, buff=0.15, aligned_edge=ORIGIN)
+        legend_testing_dot = Dot(radius=0.06).set_color(TEST_BLUE)
+        legend_testing_text = Text('Testing Data', font_size=20, font='myraid-pro').set_color(CHILL_BROWN)
+        legend_testing = VGroup(legend_testing_dot, legend_testing_text).arrange(RIGHT, buff=0.15, aligned_edge=ORIGIN)
+        legend_target_line = Line(LEFT * 0.2, RIGHT * 0.2, color=CHILL_BROWN, stroke_width=3)
+        legend_target_text = Text('Target Function', font_size=20, font='myraid-pro').set_color(CHILL_BROWN)
+        legend_target = VGroup(legend_target_line, legend_target_text).arrange(RIGHT, buff=0.15, aligned_edge=ORIGIN)
+        legend_items = VGroup(legend_training, legend_testing, legend_target).arrange(RIGHT, buff=0.4)
+        legend_box = RoundedRectangle(width=legend_items.get_width() + 0.5, height=legend_items.get_height() + 0.35, corner_radius=0.08, stroke_color=CHILL_BROWN, stroke_width=2, fill_color=None, fill_opacity=0.0)
+        legend_box.set_stroke(opacity=0.7)
+        legend_items.move_to(legend_box.get_center())
+        legend.add(legend_box, legend_items)
+        legend.scale(0.85)
+        legend.move_to([-3, -3.2, 0])
+        self.frame.reorient(0, 0, 0, (-2.94, 0.08, 0.0), 7.45)
+        self.play(Write(curve_fit_axis_svg), run_time=3)
+        self.play(ShowCreation(parabola), run_time=2)
+        self.play(LaggedStart(*[FadeIn(dot) for dot in sorted_dots], lag_ratio=0.15), run_time=2)
+        self.wait()
+        self.play(test_dots.animate.set_color(TEST_BLUE), FadeIn(legend))
+        self.wait()
+        degree = 1
+        beta_hat = fit_legendre_pinv(x_train, y_train, degree)
+        all_y_fit = eval_legendre_poly(beta_hat, all_x, degree)
+        y_train_pred = eval_legendre_poly(beta_hat, x_train, degree)
+        y_test_pred = eval_legendre_poly(beta_hat, x_test, degree)
+        train_error_1 = np.mean((y_train - y_train_pred) ** 2)
+        test_error_1 = np.mean((y_test - y_test_pred) ** 2)
+        degree2 = 2
+        beta_hat2 = fit_legendre_pinv(x_train, y_train, degree2)
+        all_y_fit2 = eval_legendre_poly(beta_hat2, all_x, degree2)
+        y_train_pred2 = eval_legendre_poly(beta_hat2, x_train, degree2)
+        y_test_pred2 = eval_legendre_poly(beta_hat2, x_test, degree2)
+        train_error_2 = np.mean((y_train - y_train_pred2) ** 2)
+        test_error_2 = np.mean((y_test - y_test_pred2) ** 2)
+        degree3 = 3
+        beta_hat3 = fit_legendre_pinv(x_train, y_train, degree3)
+        all_y_fit3 = eval_legendre_poly(beta_hat3, all_x, degree3)
+        y_train_pred3 = eval_legendre_poly(beta_hat3, x_train, degree3)
+        y_test_pred3 = eval_legendre_poly(beta_hat3, x_test, degree3)
+        train_error_3 = np.mean((y_train - y_train_pred3) ** 2)
+        test_error_3 = np.mean((y_test - y_test_pred3) ** 2)
+        degree4 = 4
+        beta_hat4 = fit_legendre_pinv(x_train, y_train, degree4)
+        all_y_fit4 = eval_legendre_poly(beta_hat4, all_x, degree4)
+        y_train_pred4 = eval_legendre_poly(beta_hat4, x_train, degree4)
+        y_test_pred4 = eval_legendre_poly(beta_hat4, x_test, degree4)
+        train_error_4 = np.mean((y_train - y_train_pred4) ** 2)
+        test_error_4 = np.mean((y_test - y_test_pred4) ** 2)
+        fit_points = [axes_1.c2p(all_x[i], all_y_fit[i]) for i in range(len(all_x))]
+        fit_line_1 = VMobject(color=GREEN, stroke_width=3)
+        fit_line_1.set_points_smoothly(fit_points)
+        eq_1 = Tex('y = ax + b', font_size=40).set_color(GREEN)
+        line_y_at_center = axes_1.c2p(0, eval_legendre_poly(beta_hat, np.array([0]), degree)[0])[1]
+        eq_1.move_to([-3, line_y_at_center + 0.6, 0])
+        self.play(ShowCreation(fit_line_1), Write(eq_1), run_time=1.5)
+        self.bring_to_front(fit_line_1)
+        self.wait()
+        axes_2 = Axes(x_range=[0, 4, 1], y_range=[0, 1.2, 1], width=6, height=5, axis_config={'color': CHILL_BROWN, 'include_ticks': True, 'include_numbers': True, 'include_tip': True, 'stroke_width': 3, 'tip_config': {'width': 0.02, 'length': 0.02}})
+        axes_2.move_to([4.0, 0.48, 0])
+        degrees = [1, 2, 3, 4]
+        train_errors = [0.22135, 0.031825, 0.000803, 0.0]
+        test_errors = [0.691636, 0.079449, 0.727023, 1.328535]
+        train_error_dots = VGroup(*[Dot(axes_2.c2p(degrees[i], train_errors[i]), radius=0.08) for i in range(len(degrees))])
+        test_error_dots = VGroup(*[Dot(axes_2.c2p(degrees[i], test_errors[i]), radius=0.08) for i in range(len(degrees))])
+        train_error_dots.set_color(YELLOW)
+        test_error_dots.set_color(TEST_BLUE)
+        error_axis_svg = SVGMobject(svg_dir + '/p8_15_2-05.svg')
+        error_axis_svg.scale(2.95)
+        error_axis_svg.move_to([4.79, 0.75, 0])
+        train_error_bars = VGroup()
+        for i in range(len(x_train)):
+            point_pos = axes_1.c2p(x_train[i], y_train[i])
+            fit_pos = axes_1.c2p(x_train[i], y_train_pred[i])
+            if point_pos[1] > fit_pos[1]:
+                error_bar = Line(fit_pos, point_pos, color=YELLOW, stroke_width=3)
+            else:
+                error_bar = Line(point_pos, fit_pos, color=YELLOW, stroke_width=3)
+            train_error_bars.add(error_bar)
+        target_train_bars = VGroup()
+        bar_height = train_errors[0] / len(train_error_bars)
+        x_pos = degrees[0]
+        for i in range(len(train_error_bars)):
+            bottom_y = i * bar_height
+            top_y = (i + 1) * bar_height
+            bottom = axes_2.c2p(x_pos, bottom_y)
+            top = axes_2.c2p(x_pos, top_y)
+            target_bar = Line(bottom, top, color=YELLOW, stroke_width=3)
+            target_train_bars.add(target_bar)
+        test_error_bars = VGroup()
+        for i in range(len(x_test)):
+            point_pos = axes_1.c2p(x_test[i], y_test[i])
+            fit_pos = axes_1.c2p(x_test[i], y_test_pred[i])
+            if point_pos[1] > fit_pos[1]:
+                error_bar = Line(fit_pos, point_pos, color=TEST_BLUE, stroke_width=3)
+            else:
+                error_bar = Line(point_pos, fit_pos, color=TEST_BLUE, stroke_width=3)
+            test_error_bars.add(error_bar)
+        target_test_bars = VGroup()
+        bar_height = test_errors[0] / len(test_error_bars)
+        x_pos = degrees[0]
+        for i in range(len(test_error_bars)):
+            bottom_y = i * bar_height
+            top_y = (i + 1) * bar_height
+            bottom = axes_2.c2p(x_pos, bottom_y)
+            top = axes_2.c2p(x_pos, top_y)
+            target_bar = Line(bottom, top, color=TEST_BLUE, stroke_width=3)
+            target_test_bars.add(target_bar)
+        self.wait()
+        self.play(LaggedStart(*[ShowCreation(bar) for bar in train_error_bars], lag_ratio=0.1), run_time=1.5)
+        self.bring_to_front(fit_line_1)
+        train_error_bars_copy = train_error_bars.copy()
+        self.add(train_error_bars_copy)
+        self.bring_to_front(fit_line_1)
+        train_error_bars.set_opacity(0.5)
+        self.wait()
+        self.play(self.frame.animate.reorient(0, 0, 0, (0.82, 0.46, 0.0), 8.86), Write(error_axis_svg), ReplacementTransform(train_error_bars, target_train_bars), run_time=4)
+        self.play(ShowCreation(train_error_dots[0]))
+        self.wait()
+        error_curves_svg = SVGMobject(svg_dir + '/p8_15_2-06.svg')
+        error_curves_svg.scale(3.15)
+        error_curves_svg.move_to([4.84, 0.74, 0])
+        error_curves_svg.shift(UP * 0.51)
+        error_curves_svg[0].set_color(TEST_BLUE)
+        self.wait()
+        self.play(LaggedStart(*[ShowCreation(bar) for bar in test_error_bars], lag_ratio=0.1), run_time=1.5)
+        self.bring_to_front(fit_line_1)
+        test_error_bars_copy = test_error_bars.copy()
+        self.add(test_error_bars_copy)
+        self.bring_to_front(fit_line_1)
+        self.play(target_train_bars.animate.set_opacity(0.0), run_time=1.5)
+        self.bring_to_front(train_error_dots[0])
+        self.bring_to_front(fit_line_1)
+        self.play(ReplacementTransform(test_error_bars_copy, target_test_bars), run_time=3.0)
+        self.bring_to_front(train_error_dots[0])
+        self.play(ShowCreation(test_error_dots[0]))
+        self.wait()
+        self.play(FadeOut(train_error_bars_copy), FadeOut(test_error_bars), run_time=1.0)
+        fit_points_2 = [axes_1.c2p(all_x[i], all_y_fit2[i]) for i in range(len(all_x))]
+        fit_line_2 = VMobject(color=YELLOW, stroke_width=3)
+        fit_line_2.set_points_smoothly(fit_points_2)
+        eq_2 = Tex('y = ax^2 + bx + c', font_size=40).set_color(YELLOW)
+        eq_2.move_to([-3, 3.2, 0])
+        self.play(ShowCreation(fit_line_2), fit_line_1.animate.set_stroke(opacity=0.3), FadeOut(eq_1), run_time=2)
+        self.play(Write(eq_2))
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.wait()
+        train_error_bars_2 = VGroup()
+        for i in range(len(x_train)):
+            point_pos = axes_1.c2p(x_train[i], y_train[i])
+            fit_pos_2 = axes_1.c2p(x_train[i], y_train_pred2[i])
+            if point_pos[1] > fit_pos_2[1]:
+                error_bar = Line(fit_pos_2, point_pos, color=YELLOW, stroke_width=3)
+            else:
+                error_bar = Line(point_pos, fit_pos_2, color=YELLOW, stroke_width=3)
+            train_error_bars_2.add(error_bar)
+        target_train_bars_2 = VGroup()
+        bar_height_2 = train_errors[1] / len(train_error_bars_2)
+        x_pos_2 = degrees[1]
+        for i in range(len(train_error_bars_2)):
+            bottom_y = i * bar_height_2
+            top_y = (i + 1) * bar_height_2
+            bottom = axes_2.c2p(x_pos_2, bottom_y)
+            top = axes_2.c2p(x_pos_2, top_y)
+            target_bar = Line(bottom, top, color=YELLOW, stroke_width=3)
+            target_train_bars_2.add(target_bar)
+        self.play(LaggedStart(*[ShowCreation(bar) for bar in train_error_bars_2], lag_ratio=0.1), run_time=1.5)
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        train_error_bars_2_copy = train_error_bars_2.copy()
+        self.add(train_error_bars_2_copy)
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        train_error_bars_2.set_opacity(0.5)
+        self.wait()
+        self.play(target_test_bars.animate.set_opacity(0.0), run_time=1.5)
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.play(ReplacementTransform(train_error_bars_2, target_train_bars_2), run_time=3.0)
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.play(ShowCreation(train_error_dots[1]))
+        self.wait()
+        test_error_bars_2 = VGroup()
+        for i in range(len(x_test)):
+            point_pos = axes_1.c2p(x_test[i], y_test[i])
+            fit_pos_2 = axes_1.c2p(x_test[i], y_test_pred2[i])
+            if point_pos[1] > fit_pos_2[1]:
+                error_bar = Line(fit_pos_2, point_pos, color=TEST_BLUE, stroke_width=3)
+            else:
+                error_bar = Line(point_pos, fit_pos_2, color=TEST_BLUE, stroke_width=3)
+            test_error_bars_2.add(error_bar)
+        target_test_bars_2 = VGroup()
+        bar_height_test_2 = test_errors[1] / len(test_error_bars_2)
+        x_pos_test_2 = degrees[1]
+        for i in range(len(test_error_bars_2)):
+            bottom_y = i * bar_height_test_2
+            top_y = (i + 1) * bar_height_test_2
+            bottom = axes_2.c2p(x_pos_test_2, bottom_y)
+            top = axes_2.c2p(x_pos_test_2, top_y)
+            target_bar = Line(bottom, top, color=TEST_BLUE, stroke_width=3)
+            target_test_bars_2.add(target_bar)
+        self.play(LaggedStart(*[ShowCreation(bar) for bar in test_error_bars_2], lag_ratio=0.1), run_time=1.5)
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        test_error_bars_2_copy = test_error_bars_2.copy()
+        self.add(test_error_bars_2_copy)
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.play(target_train_bars_2.animate.set_opacity(0.0), run_time=1.5)
+        self.bring_to_front(train_error_dots[1])
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.play(ReplacementTransform(test_error_bars_2_copy, target_test_bars_2), run_time=3.0)
+        self.bring_to_front(train_error_dots[1])
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.play(ShowCreation(test_error_dots[1]))
+        self.wait()
+        self.play(FadeOut(train_error_bars_2_copy), FadeOut(test_error_bars_2), run_time=1.0)
+        fit_points_3 = [axes_1.c2p(all_x[i], all_y_fit3[i]) for i in range(len(all_x))]
+        fit_line_3 = VMobject(color=ORANGE, stroke_width=3)
+        fit_line_3.set_points_smoothly(fit_points_3)
+        eq_3 = Tex('y = ax^3 + bx^2 + cx + d', font_size=40).set_color(ORANGE)
+        eq_3.move_to([-3, 3.2, 0])
+        self.play(ShowCreation(fit_line_3), fit_line_2.animate.set_stroke(opacity=0.3), FadeOut(eq_2), run_time=2)
+        self.play(Write(eq_3))
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.bring_to_front(fit_line_3)
+        self.wait()
+        train_error_bars_3 = VGroup()
+        for i in range(len(x_train)):
+            point_pos = axes_1.c2p(x_train[i], y_train[i])
+            fit_pos_3 = axes_1.c2p(x_train[i], y_train_pred3[i])
+            if point_pos[1] > fit_pos_3[1]:
+                error_bar = Line(fit_pos_3, point_pos, color=YELLOW, stroke_width=3)
+            else:
+                error_bar = Line(point_pos, fit_pos_3, color=YELLOW, stroke_width=3)
+            train_error_bars_3.add(error_bar)
+        target_train_bars_3 = VGroup()
+        bar_height_3 = train_errors[2] / len(train_error_bars_3)
+        x_pos_3 = degrees[2]
+        for i in range(len(train_error_bars_3)):
+            bottom_y = i * bar_height_3
+            top_y = (i + 1) * bar_height_3
+            bottom = axes_2.c2p(x_pos_3, bottom_y)
+            top = axes_2.c2p(x_pos_3, top_y)
+            target_bar = Line(bottom, top, color=YELLOW, stroke_width=3)
+            target_train_bars_3.add(target_bar)
+        self.play(LaggedStart(*[ShowCreation(bar) for bar in train_error_bars_3], lag_ratio=0.1), run_time=1.5)
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.bring_to_front(fit_line_3)
+        train_error_bars_3_copy = train_error_bars_3.copy()
+        self.add(train_error_bars_3_copy)
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.bring_to_front(fit_line_3)
+        train_error_bars_3.set_opacity(0.5)
+        self.wait()
+        self.play(target_test_bars_2.animate.set_opacity(0.0), run_time=1.5)
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.bring_to_front(fit_line_3)
+        self.play(ReplacementTransform(train_error_bars_3, target_train_bars_3), run_time=3.0)
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.bring_to_front(fit_line_3)
+        self.play(ShowCreation(train_error_dots[2]))
+        self.wait()
+        test_error_bars_3 = VGroup()
+        for i in range(len(x_test)):
+            point_pos = axes_1.c2p(x_test[i], y_test[i])
+            fit_pos_3 = axes_1.c2p(x_test[i], y_test_pred3[i])
+            if point_pos[1] > fit_pos_3[1]:
+                error_bar = Line(fit_pos_3, point_pos, color=TEST_BLUE, stroke_width=3)
+            else:
+                error_bar = Line(point_pos, fit_pos_3, color=TEST_BLUE, stroke_width=3)
+            test_error_bars_3.add(error_bar)
+        target_test_bars_3 = VGroup()
+        bar_height_test_3 = test_errors[2] / len(test_error_bars_3)
+        x_pos_test_3 = degrees[2]
+        for i in range(len(test_error_bars_3)):
+            bottom_y = i * bar_height_test_3
+            top_y = (i + 1) * bar_height_test_3
+            bottom = axes_2.c2p(x_pos_test_3, bottom_y)
+            top = axes_2.c2p(x_pos_test_3, top_y)
+            target_bar = Line(bottom, top, color=TEST_BLUE, stroke_width=3)
+            target_test_bars_3.add(target_bar)
+        self.play(LaggedStart(*[ShowCreation(bar) for bar in test_error_bars_3], lag_ratio=0.1), run_time=1.5)
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.bring_to_front(fit_line_3)
+        test_error_bars_3_copy = test_error_bars_3.copy()
+        self.add(test_error_bars_3_copy)
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.bring_to_front(fit_line_3)
+        self.play(target_train_bars_3.animate.set_opacity(0.0), run_time=1.5)
+        self.bring_to_front(train_error_dots[2])
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.bring_to_front(fit_line_3)
+        self.play(ReplacementTransform(test_error_bars_3_copy, target_test_bars_3), run_time=3.0)
+        self.bring_to_front(train_error_dots[2])
+        self.play(ShowCreation(test_error_dots[2]))
+        self.wait()
+        self.play(FadeOut(train_error_bars_3_copy), FadeOut(test_error_bars_3), run_time=1.0)
+        fit_points_4 = [axes_1.c2p(all_x[i], all_y_fit4[i]) for i in range(len(all_x))]
+        fit_line_4 = VMobject(color=MAROON_B, stroke_width=3)
+        fit_line_4.set_points_smoothly(fit_points_4)
+        eq_4 = Tex('y = ax^4 + bx^3 + cx^2 + dx + e', font_size=40).set_color(MAROON_B)
+        eq_4.move_to([-3, 3.2, 0])
+        self.play(ShowCreation(fit_line_4), fit_line_3.animate.set_stroke(opacity=0.3), FadeOut(eq_3), run_time=2)
+        self.play(Write(eq_4))
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.bring_to_front(fit_line_3)
+        self.bring_to_front(fit_line_4)
+        self.wait()
+        self.play(target_test_bars_3.animate.set_opacity(0.0), run_time=1.5)
+        self.play(ShowCreation(train_error_dots[3]))
+        self.wait()
+        test_error_bars_4 = VGroup()
+        for i in range(len(x_test)):
+            point_pos = axes_1.c2p(x_test[i], y_test[i])
+            fit_pos_4 = axes_1.c2p(x_test[i], y_test_pred4[i])
+            if point_pos[1] > fit_pos_4[1]:
+                error_bar = Line(fit_pos_4, point_pos, color=TEST_BLUE, stroke_width=3)
+            else:
+                error_bar = Line(point_pos, fit_pos_4, color=TEST_BLUE, stroke_width=3)
+            test_error_bars_4.add(error_bar)
+        target_test_bars_4 = VGroup()
+        bar_height_test_4 = test_errors[3] / len(test_error_bars_4)
+        x_pos_test_4 = degrees[3]
+        for i in range(len(test_error_bars_4)):
+            bottom_y = i * bar_height_test_4
+            top_y = (i + 1) * bar_height_test_4
+            bottom = axes_2.c2p(x_pos_test_4, bottom_y)
+            top = axes_2.c2p(x_pos_test_4, top_y)
+            target_bar = Line(bottom, top, color=TEST_BLUE, stroke_width=3)
+            target_test_bars_4.add(target_bar)
+        self.play(LaggedStart(*[ShowCreation(bar) for bar in test_error_bars_4], lag_ratio=0.1), run_time=1.5)
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.bring_to_front(fit_line_3)
+        self.bring_to_front(fit_line_4)
+        test_error_bars_4_copy = test_error_bars_4.copy()
+        self.add(test_error_bars_4_copy)
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.bring_to_front(fit_line_3)
+        self.bring_to_front(fit_line_4)
+        self.bring_to_front(train_error_dots[3])
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.bring_to_front(fit_line_3)
+        self.bring_to_front(fit_line_4)
+        self.play(ReplacementTransform(test_error_bars_4_copy, target_test_bars_4), run_time=3.0)
+        self.bring_to_front(train_error_dots[3])
+        self.bring_to_front(fit_line_1)
+        self.bring_to_front(fit_line_2)
+        self.bring_to_front(fit_line_3)
+        self.bring_to_front(fit_line_4)
+        self.play(ShowCreation(test_error_dots[3]))
+        self.wait()
+        self.play(FadeOut(test_error_bars_4), FadeOut(target_test_bars_4), run_time=1.0)
+        self.play(fit_line_1.animate.set_stroke(opacity=0.15), fit_line_2.animate.set_stroke(opacity=0.15), fit_line_3.animate.set_stroke(opacity=0.15), fit_line_4.animate.set_stroke(opacity=0.15), FadeOut(eq_4), run_time=1.5)
+        self.wait()
+        self.play(FadeIn(error_curves_svg[0]))
+        self.play(FadeIn(error_curves_svg[1]))
+        self.wait()
+        self.wait()
+        self.play(FadeOut(legend), FadeOut(parabola), FadeOut(fit_line_1), FadeOut(fit_line_2), FadeOut(fit_line_3), FadeOut(fit_line_4), FadeOut(curve_fit_axis_svg), FadeOut(train_dots), FadeOut(test_dots), FadeOut(train_error_dots), FadeOut(test_error_dots), FadeOut(error_curves_svg[1]), self.frame.animate.reorient(0, 0, 0, (4.53, 1.33, 0.0), 9.13), run_time=4)
+        self.wait()
+        self.wait(20)
+        self.embed()

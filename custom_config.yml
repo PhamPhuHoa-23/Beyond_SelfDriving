@@ -1,0 +1,5 @@
+tex:
+  template: "studio"
+
+directories:
+  output: "videos"

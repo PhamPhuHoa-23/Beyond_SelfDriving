@@ -9,10 +9,25 @@ media/
 *.ppm
 *.pptx
 *.pdf
-materials/images/part3/
-materials/images/part3_slides/
+materials/images/
  materials/manim_docs_full.zip
 materials/slides/
+
+# QA / check images & render artifacts (keep remote clean)
+**/_check_*.png
+**/_check_*/
+**/_qa_frames/
+**/_qa_loop/
+**/_phase*_check*/
+**/_phase*_hero_check/
+**/_phase0_font_test/
+_phase3_hero_check/
+videos/*.png
+*.log
+
+# Render caches & junk binaries
+latex_cache/
+bins/media/
 
 # Editor files
 .vscode/

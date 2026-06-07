@@ -1,0 +1,595 @@
+from manimlib import *
+from functools import partial
+from itertools import combinations
+import math
+CHILL_BROWN = '#948979'
+YELLOW = '#ffd35a'
+YELLOW_FADE = '#7f6a2d'
+BLUE = '#65c8d0'
+GREEN = '#6e9671'
+CHILL_GREEN = '#6c946f'
+CHILL_BLUE = '#3d5c6f'
+FRESH_TAN = '#dfd0b9'
+
+def get_polygon_corners_multi(joint_points_list, extent=1):
+    valid_lines = []
+    for joint_points in joint_points_list:
+        if joint_points and len(joint_points) >= 2:
+            valid_lines.append(joint_points[:2])
+    if len(valid_lines) == 0:
+        return [[[-extent, -extent], [extent, -extent], [extent, extent], [-extent, extent]]]
+
+    def line_equation(p1, p2):
+        x1, y1 = p1
+        x2, y2 = p2
+        a = y2 - y1
+        b = x1 - x2
+        c = x2 * y1 - x1 * y2
+        return (a, b, c)
+
+    def evaluate_line(point, a, b, c):
+        return a * point[0] + b * point[1] + c
+
+    def line_intersection(p1, p2, p3, p4):
+        x1, y1 = p1
+        x2, y2 = p2
+        x3, y3 = p3
+        x4, y4 = p4
+        denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+        if abs(denom) < 1e-10:
+            return None
+        t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom
+        x = x1 + t * (x2 - x1)
+        y = y1 + t * (y2 - y1)
+        return [x, y]
+
+    def clip_polygon_by_line(polygon, line_p1, line_p2):
+        if not polygon:
+            return []
+        a, b, c = line_equation(line_p1, line_p2)
+        output_polygon = []
+        n = len(polygon)
+        for i in range(n):
+            current_vertex = polygon[i]
+            previous_vertex = polygon[i - 1]
+            current_side = evaluate_line(current_vertex, a, b, c)
+            previous_side = evaluate_line(previous_vertex, a, b, c)
+            if current_side >= -1e-10:
+                if previous_side < -1e-10:
+                    intersection = line_intersection(previous_vertex, current_vertex, line_p1, line_p2)
+                    if intersection:
+                        output_polygon.append(intersection)
+                output_polygon.append(current_vertex)
+            elif previous_side >= -1e-10:
+                intersection = line_intersection(previous_vertex, current_vertex, line_p1, line_p2)
+                if intersection:
+                    output_polygon.append(intersection)
+        return output_polygon
+    initial_square = [[-extent, -extent], [extent, -extent], [extent, extent], [-extent, extent]]
+    n_lines = len(valid_lines)
+    polygons = []
+    for region_idx in range(2 ** n_lines):
+        current_polygon = initial_square[:]
+        for line_idx in range(n_lines):
+            if current_polygon:
+                line = valid_lines[line_idx]
+                if region_idx & 1 << line_idx:
+                    current_polygon = clip_polygon_by_line(current_polygon, line[0], line[1])
+                else:
+                    current_polygon = clip_polygon_by_line(current_polygon, line[1], line[0])
+        if len(current_polygon) >= 3:
+            cleaned_polygon = []
+            for vertex in current_polygon:
+                is_duplicate = False
+                for existing in cleaned_polygon:
+                    if abs(vertex[0] - existing[0]) < 1e-08 and abs(vertex[1] - existing[1]) < 1e-08:
+                        is_duplicate = True
+                        break
+                if not is_duplicate:
+                    cleaned_polygon.append(vertex)
+            if len(cleaned_polygon) >= 3:
+                polygons.append(cleaned_polygon)
+    return polygons
+
+def create_3d_polygon_regions_multi_wth_relu(polygons, w1, b1, w2, b2, neuron_idx=0, viz_scale=0.3):
+
+    def evaluate_second_layer_at_point(x, y):
+        n_hidden = w1.shape[0]
+        relu_outputs = []
+        for i in range(n_hidden):
+            linear_output = w1[i, 0] * x + w1[i, 1] * y + b1[i]
+            relu_output = max(0, linear_output)
+            relu_outputs.append(relu_output)
+        second_layer_output = b2[neuron_idx]
+        for i in range(n_hidden):
+            second_layer_output += w2[neuron_idx, i] * relu_outputs[i]
+        second_layer_output = max(0, second_layer_output)
+        return second_layer_output * viz_scale
+    polygon_objects = []
+    colors = [RED, BLUE, GREEN, YELLOW, PURPLE, ORANGE, PINK, TEAL]
+    for i, polygon in enumerate(polygons):
+        if len(polygon) < 3:
+            continue
+        points_3d = []
+        for point_2d in polygon:
+            x, y = point_2d
+            z = evaluate_second_layer_at_point(x, y)
+            points_3d.append([x, y, z])
+        color = colors[i % len(colors)]
+        poly_3d = Polygon(*points_3d, fill_color=color, fill_opacity=0.7, stroke_color=color, stroke_width=2)
+        polygon_objects.append(poly_3d)
+    return polygon_objects
+
+def create_3d_polygon_regions_multi(polygons, w1, b1, w2, b2, neuron_idx=0, viz_scale=0.3):
+
+    def evaluate_second_layer_at_point(x, y):
+        n_hidden = w1.shape[0]
+        relu_outputs = []
+        for i in range(n_hidden):
+            linear_output = w1[i, 0] * x + w1[i, 1] * y + b1[i]
+            relu_output = max(0, linear_output)
+            relu_outputs.append(relu_output)
+        second_layer_output = b2[neuron_idx]
+        for i in range(n_hidden):
+            second_layer_output += w2[neuron_idx, i] * relu_outputs[i]
+        return second_layer_output * viz_scale
+    polygon_objects = []
+    colors = [RED, BLUE, GREEN, YELLOW, PURPLE, ORANGE, PINK, TEAL]
+    for i, polygon in enumerate(polygons):
+        if len(polygon) < 3:
+            continue
+        points_3d = []
+        for point_2d in polygon:
+            x, y = point_2d
+            z = evaluate_second_layer_at_point(x, y)
+            points_3d.append([x, y, z])
+        color = colors[i % len(colors)]
+        poly_3d = Polygon(*points_3d, fill_color=color, fill_opacity=0.7, stroke_color=color, stroke_width=2)
+        polygon_objects.append(poly_3d)
+    return polygon_objects
+
+def create_3d_polygon_regions(polygons, w1, b1, w2, b2, neuron_idx=0, viz_scale=0.3):
+
+    def evaluate_second_layer_at_point(x, y):
+        linear_1 = w1[0, 0] * x + w1[0, 1] * y + b1[0]
+        relu_1 = max(0, linear_1)
+        linear_2 = w1[1, 0] * x + w1[1, 1] * y + b1[1]
+        relu_2 = max(0, linear_2)
+        second_layer_output = w2[neuron_idx, 0] * relu_1 + w2[neuron_idx, 1] * relu_2 + b2[neuron_idx]
+        return second_layer_output * viz_scale
+    polygon_objects = []
+    colors = [RED, BLUE, GREEN, YELLOW, PURPLE, ORANGE]
+    for i, polygon in enumerate(polygons):
+        if len(polygon) < 3:
+            continue
+        points_3d = []
+        for point_2d in polygon:
+            x, y = point_2d
+            z = evaluate_second_layer_at_point(x, y)
+            points_3d.append([x, y, z])
+        color = colors[i % len(colors)]
+        poly_3d = Polygon(*points_3d, fill_color=color, fill_opacity=0.7, stroke_color=color, stroke_width=2)
+        polygon_objects.append(poly_3d)
+    return polygon_objects
+
+def create_3d_polygon_regions_with_relu(polygons, w1, b1, w2, b2, neuron_idx=0, viz_scale=0.3):
+
+    def evaluate_second_layer_linear(x, y):
+        linear_1 = w1[0, 0] * x + w1[0, 1] * y + b1[0]
+        relu_1 = max(0, linear_1)
+        linear_2 = w1[1, 0] * x + w1[1, 1] * y + b1[1]
+        relu_2 = max(0, linear_2)
+        second_layer_linear = w2[neuron_idx, 0] * relu_1 + w2[neuron_idx, 1] * relu_2 + b2[neuron_idx]
+        return second_layer_linear * viz_scale
+
+    def find_zero_crossing_point(p1, p2, z1, z2):
+        if abs(z2 - z1) < 1e-10:
+            return None
+        t = -z1 / (z2 - z1)
+        if 0 <= t <= 1:
+            x = p1[0] + t * (p2[0] - p1[0])
+            y = p1[1] + t * (p2[1] - p1[1])
+            return [x, y, 0]
+        return None
+
+    def split_polygon_at_zero(polygon_2d):
+        corners_3d = []
+        z_values = []
+        for point_2d in polygon_2d:
+            x, y = point_2d
+            z_linear = evaluate_second_layer_linear(x, y)
+            corners_3d.append([x, y, z_linear])
+            z_values.append(z_linear)
+        has_positive = any((z > 1e-10 for z in z_values))
+        has_negative = any((z < -1e-10 for z in z_values))
+        if not has_negative:
+            points_3d_relu = [[p[0], p[1], max(0, p[2])] for p in corners_3d]
+            return ([points_3d_relu], [])
+        elif not has_positive:
+            points_2d_on_plane = [[p[0], p[1], 0] for p in corners_3d]
+            return ([], [points_2d_on_plane])
+        else:
+            above_points = []
+            on_plane_points = []
+            n = len(corners_3d)
+            for i in range(n):
+                current = corners_3d[i]
+                next_point = corners_3d[(i + 1) % n]
+                current_z = current[2]
+                next_z = next_point[2]
+                if current_z > 1e-10:
+                    above_points.append([current[0], current[1], current_z])
+                elif abs(current_z) <= 1e-10:
+                    above_points.append([current[0], current[1], 0])
+                    on_plane_points.append([current[0], current[1], 0])
+                else:
+                    on_plane_points.append([current[0], current[1], 0])
+                if current_z > 1e-10 and next_z < -1e-10 or (current_z < -1e-10 and next_z > 1e-10):
+                    crossing_point = find_zero_crossing_point(current, next_point, current_z, next_z)
+                    if crossing_point:
+                        above_points.append(crossing_point)
+                        on_plane_points.append(crossing_point)
+            result_above = [above_points] if len(above_points) >= 3 else []
+            result_on_plane = [on_plane_points] if len(on_plane_points) >= 3 else []
+            return (result_above, result_on_plane)
+    polygon_objects = []
+    colors = [RED, BLUE, GREEN, YELLOW, PURPLE, ORANGE]
+    color_count = 0
+    for i, polygon in enumerate(polygons):
+        if len(polygon) < 3:
+            continue
+        above_polygons, on_plane_polygons = split_polygon_at_zero(polygon)
+        for poly_points in above_polygons:
+            if len(poly_points) >= 3:
+                color = colors[color_count % len(colors)]
+                poly_3d = Polygon(*poly_points, fill_color=color, fill_opacity=0.7, stroke_color=color, stroke_width=2)
+                polygon_objects.append(poly_3d)
+                color_count += 1
+        for poly_points in on_plane_polygons:
+            if len(poly_points) >= 3:
+                color = colors[color_count % len(colors)]
+                poly_flat = Polygon(*poly_points, fill_color=color, fill_opacity=0.4, stroke_color=color, stroke_width=2)
+                polygon_objects.append(poly_flat)
+                color_count += 1
+    return polygon_objects
+
+def get_polygon_corners(joint_points_1, joint_points_2, extent=1):
+    if not joint_points_1 or not joint_points_2:
+        return []
+    if len(joint_points_1) < 2 or len(joint_points_2) < 2:
+        return []
+    line1 = joint_points_1[:2]
+    line2 = joint_points_2[:2]
+
+    def line_intersection(p1, p2, p3, p4):
+        x1, y1 = p1
+        x2, y2 = p2
+        x3, y3 = p3
+        x4, y4 = p4
+        denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+        if abs(denom) < 1e-10:
+            return None
+        t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom
+        x = x1 + t * (x2 - x1)
+        y = y1 + t * (y2 - y1)
+        return [x, y]
+
+    def get_line_boundary_intersections(line, extent):
+        p1, p2 = line
+        intersections = []
+        boundaries = [[[-extent, -extent], [extent, -extent]], [[extent, -extent], [extent, extent]], [[extent, extent], [-extent, extent]], [[-extent, extent], [-extent, -extent]]]
+        for boundary in boundaries:
+            intersection = line_intersection(p1, p2, boundary[0], boundary[1])
+            if intersection is not None:
+                x, y = intersection
+                if -extent - 1e-08 <= x <= extent + 1e-08 and -extent - 1e-08 <= y <= extent + 1e-08:
+                    if abs(x - extent) < 1e-06:
+                        x = extent
+                    elif abs(x + extent) < 1e-06:
+                        x = -extent
+                    if abs(y - extent) < 1e-06:
+                        y = extent
+                    elif abs(y + extent) < 1e-06:
+                        y = -extent
+                    intersections.append([x, y])
+        unique_intersections = []
+        for pt in intersections:
+            is_duplicate = False
+            for existing in unique_intersections:
+                if abs(pt[0] - existing[0]) < 1e-08 and abs(pt[1] - existing[1]) < 1e-08:
+                    is_duplicate = True
+                    break
+            if not is_duplicate:
+                unique_intersections.append(pt)
+        return unique_intersections
+    intersection = line_intersection(line1[0], line1[1], line2[0], line2[1])
+    if intersection is None:
+        return []
+    line1_boundary = get_line_boundary_intersections(line1, extent)
+    line2_boundary = get_line_boundary_intersections(line2, extent)
+    if len(line1_boundary) != 2 or len(line2_boundary) != 2:
+        return []
+    line1_pt1, line1_pt2 = (line1_boundary[0], line1_boundary[1])
+    line2_pt1, line2_pt2 = (line2_boundary[0], line2_boundary[1])
+    corners = {'bl': [-extent, -extent], 'br': [extent, -extent], 'tr': [extent, extent], 'tl': [-extent, extent]}
+
+    def point_on_boundary_between(start_corner, end_corner, boundary_points):
+        result = []
+        start_x, start_y = corners[start_corner]
+        end_x, end_y = corners[end_corner]
+        for pt in boundary_points:
+            x, y = pt
+            if start_corner == 'bl' and end_corner == 'br':
+                if abs(y + extent) < 1e-06 and start_x <= x <= end_x:
+                    result.append(pt)
+            elif start_corner == 'br' and end_corner == 'tr':
+                if abs(x - extent) < 1e-06 and start_y <= y <= end_y:
+                    result.append(pt)
+            elif start_corner == 'tr' and end_corner == 'tl':
+                if abs(y - extent) < 1e-06 and end_x <= x <= start_x:
+                    result.append(pt)
+            elif start_corner == 'tl' and end_corner == 'bl':
+                if abs(x + extent) < 1e-06 and end_y <= y <= start_y:
+                    result.append(pt)
+        return result
+
+    def side_of_line(point, line_start, line_end):
+        px, py = point
+        x1, y1 = line_start
+        x2, y2 = line_end
+        return (x2 - x1) * (py - y1) - (y2 - y1) * (px - x1)
+    corner_classifications = {}
+    for corner_name, corner_pos in corners.items():
+        side1 = side_of_line(corner_pos, line1[0], line1[1])
+        side2 = side_of_line(corner_pos, line2[0], line2[1])
+        region = ('+' if side1 > 0 else '-') + ('+' if side2 > 0 else '-')
+        corner_classifications[corner_name] = region
+    regions = {'++': [], '+-': [], '--': [], '-+': []}
+    for corner_name, region in corner_classifications.items():
+        regions[region].append(corners[corner_name])
+    for region in regions.values():
+        region.append(intersection)
+    all_boundary_points = line1_boundary + line2_boundary
+    for boundary_pt in all_boundary_points:
+        side1 = side_of_line(boundary_pt, line1[0], line1[1])
+        side2 = side_of_line(boundary_pt, line2[0], line2[1])
+        if abs(side1) < 1e-08:
+            if side2 >= 0:
+                regions['++'].append(boundary_pt)
+                regions['-+'].append(boundary_pt)
+            else:
+                regions['+-'].append(boundary_pt)
+                regions['--'].append(boundary_pt)
+        elif abs(side2) < 1e-08:
+            if side1 >= 0:
+                regions['++'].append(boundary_pt)
+                regions['+-'].append(boundary_pt)
+            else:
+                regions['-+'].append(boundary_pt)
+                regions['--'].append(boundary_pt)
+    polygons = []
+    for region_key, points in regions.items():
+        if len(points) < 3:
+            continue
+        unique_points = []
+        for point in points:
+            is_duplicate = False
+            for existing in unique_points:
+                if abs(point[0] - existing[0]) < 1e-08 and abs(point[1] - existing[1]) < 1e-08:
+                    is_duplicate = True
+                    break
+            if not is_duplicate:
+                unique_points.append(point)
+        if len(unique_points) >= 3:
+            cx = sum((p[0] for p in unique_points)) / len(unique_points)
+            cy = sum((p[1] for p in unique_points)) / len(unique_points)
+            import math
+
+            def angle_from_centroid(point):
+                return math.atan2(point[1] - cy, point[0] - cx)
+            ordered_points = sorted(unique_points, key=angle_from_centroid)
+            polygons.append(ordered_points)
+    return polygons
+
+def simple_polygon_finder(joint_points_1, joint_points_2, extent=1):
+    if not joint_points_1 or not joint_points_2:
+        return []
+    line1 = joint_points_1[:2]
+    line2 = joint_points_2[:2]
+
+    def line_intersection(p1, p2, p3, p4):
+        x1, y1 = p1
+        x2, y2 = p2
+        x3, y3 = p3
+        x4, y4 = p4
+        denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+        if abs(denom) < 1e-10:
+            return None
+        t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom
+        x = x1 + t * (x2 - x1)
+        y = y1 + t * (y2 - y1)
+        return [x, y]
+    intersection = line_intersection(line1[0], line1[1], line2[0], line2[1])
+    polygons = []
+    if intersection:
+        poly1 = [intersection, [0.41, -1], [1, -1], [1, 0.31]]
+        polygons.append(poly1)
+        poly2 = [intersection, [1, 0.31], [1, 0.64]]
+        polygons.append(poly2)
+        poly3 = [intersection, [-1, 0.27], [-1, -1], [0.41, -1]]
+        polygons.append(poly3)
+        poly4 = [intersection, [1, 0.64], [1, 1], [-1, 1], [-1, 0.27]]
+        polygons.append(poly4)
+    return polygons
+
+def get_relu_joint(weight_1, weight_2, bias, extent=1):
+    if np.abs(weight_2) < 1e-08:
+        x_intercept = -bias / weight_1
+        return [[x_intercept, -extent], [x_intercept, extent]] if -extent <= x_intercept <= extent else []
+    elif np.abs(weight_1) < 1e-08:
+        y_intercept = -bias / weight_2
+        return [[-extent, y_intercept], [extent, y_intercept]] if -extent <= y_intercept <= extent else []
+    else:
+        points = []
+        for x in [-extent, extent]:
+            y = (-x * weight_1 - bias) / weight_2
+            if -extent <= y <= extent:
+                points.append([x, y])
+        for y in [-extent, extent]:
+            x = (-y * weight_2 - bias) / weight_1
+            if -extent <= x <= extent:
+                points.append([x, y])
+        unique_points = []
+        for p in points:
+            is_duplicate = False
+            for existing in unique_points:
+                if abs(p[0] - existing[0]) < 1e-08 and abs(p[1] - existing[1]) < 1e-08:
+                    is_duplicate = True
+                    break
+            if not is_duplicate:
+                unique_points.append(p)
+        return unique_points
+
+def line_from_joint_points_1(joint_points, stroke_width=3, color=WHITE):
+    if joint_points:
+        joint_3d_points = []
+        for point in joint_points:
+            x, y = point
+            z = 0
+            joint_3d_points.append([x, y, z])
+        if len(joint_3d_points) >= 2:
+            joint_line = DashedLine(start=[joint_points[0][0], joint_points[0][1], 0], end=[joint_points[1][0], joint_points[1][1], 0], color=color, stroke_width=stroke_width, dash_length=0.08)
+            return joint_line
+
+def surface_func_general(u, v, w1, w2, b, viz_scale=0.5):
+    linear_output = w1 * u + w2 * v + b
+    relu_output = max(0, linear_output)
+    z = relu_output * viz_scale
+    return np.array([u, v, z])
+
+def surface_func_second_layer(u, v, w1, b1, w2, b2, neuron_idx=0, viz_scale=0.5):
+    linear_output_1 = w1[0, 0] * u + w1[0, 1] * v + b1[0]
+    relu_output_1 = max(0, linear_output_1)
+    linear_output_2 = w1[1, 0] * u + w1[1, 1] * v + b1[1]
+    relu_output_2 = max(0, linear_output_2)
+    second_layer_input = w2[neuron_idx, 0] * relu_output_1 + w2[neuron_idx, 1] * relu_output_2 + b2[neuron_idx]
+    second_layer_output = max(0, second_layer_input)
+    z = second_layer_output * viz_scale
+    return np.array([u, v, z])
+
+def surface_func_second_layer_multi(u, v, w1, b1, w2, b2, neuron_idx=0, viz_scale=0.5):
+    n_hidden = w1.shape[0]
+    relu_outputs = []
+    for i in range(n_hidden):
+        linear_output = w1[i, 0] * u + w1[i, 1] * v + b1[i]
+        relu_output = max(0, linear_output)
+        relu_outputs.append(relu_output)
+    second_layer_output = b2[neuron_idx]
+    for i in range(n_hidden):
+        second_layer_output += w2[neuron_idx, i] * relu_outputs[i]
+    second_layer_output = max(0, second_layer_output)
+    z = second_layer_output * viz_scale
+    return np.array([u, v, z])
+
+def surface_func_second_layer_no_relu_multi(u, v, w1, b1, w2, b2, neuron_idx=0, viz_scale=0.5):
+    n_hidden = w1.shape[0]
+    relu_outputs = []
+    for i in range(n_hidden):
+        linear_output = w1[i, 0] * u + w1[i, 1] * v + b1[i]
+        relu_output = max(0, linear_output)
+        relu_outputs.append(relu_output)
+    second_layer_output = b2[neuron_idx]
+    for i in range(n_hidden):
+        second_layer_output += w2[neuron_idx, i] * relu_outputs[i]
+    z = second_layer_output * viz_scale
+    return np.array([u, v, z])
+
+def surface_func_third_layer_no_relu_multi(u, v, w1, b1, w2, b2, w3, b3, neuron_idx=0, viz_scale=0.5):
+    relu_outputs = []
+    for i in range(w1.shape[0]):
+        linear_output = w1[i, 0] * u + w1[i, 1] * v + b1[i]
+        relu_output = max(0, linear_output)
+        relu_outputs.append(relu_output)
+    second_layer_output = b2[neuron_idx]
+    for i in range(w2.shape[0]):
+        second_layer_output += w2[neuron_idx, i] * relu_outputs[i]
+    second_layer_output = max(0, second_layer_output)
+    third_layer_output = b3[neuron_idx]
+    for i in range(w3.shape[0]):
+        third_layer_output += w3[neuron_idx, i] * second_layer_output[i]
+    z = third_layer_output * viz_scale
+    return np.array([u, v, z])
+
+def surface_func_second_layer_no_relu(u, v, w1, b1, w2, b2, neuron_idx=0, viz_scale=0.5):
+    linear_output_1 = w1[0, 0] * u + w1[0, 1] * v + b1[0]
+    relu_output_1 = max(0, linear_output_1)
+    linear_output_2 = w1[1, 0] * u + w1[1, 1] * v + b1[1]
+    relu_output_2 = max(0, linear_output_2)
+    second_layer_output = w2[neuron_idx, 0] * relu_output_1 + w2[neuron_idx, 1] * relu_output_2 + b2[neuron_idx]
+    z = second_layer_output * viz_scale
+    return np.array([u, v, z])
+
+def get_second_layer_joints(w1, b1, w2, b2, neuron_idx=0, extent=1):
+    joint_lines = []
+    joint_points_1 = get_relu_joint(w1[0, 0], w1[0, 1], b1[0], extent)
+    joint_points_2 = get_relu_joint(w1[1, 0], w1[1, 1], b1[1], extent)
+    if joint_points_1:
+        joint_lines.append(joint_points_1)
+    if joint_points_2:
+        joint_lines.append(joint_points_2)
+    regions = [(False, False), (True, False), (False, True), (True, True)]
+    for relu1_active, relu2_active in regions:
+        w2_eff = w2[neuron_idx, :]
+        b2_eff = b2[neuron_idx]
+        if relu1_active and relu2_active:
+            eff_w1 = w2_eff[0] * w1[0, 0] + w2_eff[1] * w1[1, 0]
+            eff_w2 = w2_eff[0] * w1[0, 1] + w2_eff[1] * w1[1, 1]
+            eff_b = w2_eff[0] * b1[0] + w2_eff[1] * b1[1] + b2_eff
+        elif relu1_active and (not relu2_active):
+            eff_w1 = w2_eff[0] * w1[0, 0]
+            eff_w2 = w2_eff[0] * w1[0, 1]
+            eff_b = w2_eff[0] * b1[0] + b2_eff
+        elif not relu1_active and relu2_active:
+            eff_w1 = w2_eff[1] * w1[1, 0]
+            eff_w2 = w2_eff[1] * w1[1, 1]
+            eff_b = w2_eff[1] * b1[1] + b2_eff
+        elif abs(b2_eff) < 1e-08:
+            continue
+        else:
+            continue
+        region_joints = get_relu_joint(eff_w1, eff_w2, eff_b, extent)
+        if region_joints:
+            clipped_joints = clip_joint_to_region(region_joints, relu1_active, relu2_active, w1, b1, extent)
+            if clipped_joints:
+                joint_lines.append(clipped_joints)
+    return joint_lines
+
+def clip_joint_to_region(joint_points, relu1_active, relu2_active, w1, b1, extent):
+    if not joint_points or len(joint_points) < 2:
+        return []
+    start, end = (joint_points[0], joint_points[1])
+    clipped_points = []
+    for t in np.linspace(0, 1, 100):
+        x = start[0] + t * (end[0] - start[0])
+        y = start[1] + t * (end[1] - start[1])
+        linear1 = w1[0, 0] * x + w1[0, 1] * y + b1[0]
+        linear2 = w1[1, 0] * x + w1[1, 1] * y + b1[1]
+        relu1_here = linear1 > 0
+        relu2_here = linear2 > 0
+        if relu1_here == relu1_active and relu2_here == relu2_active:
+            clipped_points.append([x, y])
+    if len(clipped_points) >= 2:
+        return [clipped_points[0], clipped_points[-1]]
+    else:
+        return []
+
+def create_second_layer_joint_lines(w1, b1, w2, b2, neuron_idx=0, extent=1):
+    joint_lines = get_second_layer_joints(w1, b1, w2, b2, neuron_idx, extent)
+    manim_lines = []
+    colors = [RED, BLUE, GREEN, YELLOW, PURPLE]
+    for i, joint_points in enumerate(joint_lines):
+        if len(joint_points) >= 2:
+            color = colors[i % len(colors)]
+            joint_line = DashedLine(start=[joint_points[0][0], joint_points[0][1], 0], end=[joint_points[1][0], joint_points[1][1], 0], color=color, stroke_width=3, dash_length=0.05)
+            manim_lines.append(joint_line)
+    return manim_lines
