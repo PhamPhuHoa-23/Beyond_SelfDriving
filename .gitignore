@@ -23,6 +23,7 @@ materials/slides/
 **/_phase0_font_test/
 _phase3_hero_check/
 videos/*.png
+videos/_frames/
 *.log
 
 # Render caches & junk binaries
