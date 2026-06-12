@@ -60,7 +60,7 @@ class P01S07ABEVDriver(StudioScene):
 
         # Hide all inner content until its beat
         sensors.set_opacity(0)
-        bev.set_opacity(0)
+        bev[1].set_opacity(0)
         llm_inner.set_opacity(0)
         wp_inner.set_opacity(0)
 
@@ -81,7 +81,7 @@ class P01S07ABEVDriver(StudioScene):
         self.play(sensors.animate.set_opacity(1), run_time=0.9)
 
         self.play(ShowCreation(pipeline_arrow(stages[0][0], stages[1][0])), *_show_shell(1))
-        self.play(bev.animate.set_opacity(1), run_time=0.15)
+        self.play(bev[1].animate.set_opacity(1), run_time=0.15)
         self.play(LaggedStart(*(GrowFromCenter(c) for c in bev[1]), lag_ratio=0.03, run_time=0.95))
 
         self.play(ShowCreation(pipeline_arrow(stages[1][0], stages[2][0])), *_show_shell(2))
@@ -94,7 +94,7 @@ class P01S07ABEVDriver(StudioScene):
                   LaggedStart(*(FadeIn(d) for d in traj[1]), lag_ratio=0.12))
 
         key = Text(
-            "3D sensors  ->  BEV  ->  language model  ->  trajectory",
+            "3D sensors  \u2192  BEV  \u2192  language model  \u2192  trajectory",
             font=FONT_PRIMARY, font_size=SIZE_LABEL, color=INK_DARK, weight=BOLD,
         )
         place_footer(key)

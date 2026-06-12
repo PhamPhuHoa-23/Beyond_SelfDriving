@@ -4,7 +4,7 @@ from studio.components import (
     StudioScene,
     PASTEL_BLUE, ACCENT_BLUE, PURPLE_MODEL, INK_DARK, INK_MID, GREEN_FIX, RED_ERROR,
     FONT_PRIMARY, SIZE_LABEL, SIZE_CAPS,
-    stage_panel, h_arrow, place_footer,
+    stage_panel, h_arrow,
 )
 
 
@@ -76,7 +76,7 @@ class P01S03BE2E(StudioScene):
             ]
         ])
         badges.arrange(DOWN, buff=0.18, aligned_edge=LEFT)
-        place_footer(badges)
+        badges.to_edge(DOWN, buff=0.3)
         self.play(LaggedStart(*(FadeIn(b) for b in badges), lag_ratio=0.15))
         self.wait(1.5)
         self._close()

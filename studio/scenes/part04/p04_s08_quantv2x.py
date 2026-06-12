@@ -4,7 +4,7 @@ from manimlib import *
 from studio.components import (
     StudioScene, BG_PAPER, PASTEL_BLUE, PASTEL_GREEN, PASTEL_AMBER,
     RED_ERROR, GREEN_FIX, ACCENT_BLUE, ACCENT_TEAL, ACCENT_AMBER,
-    GOLD_RICH, INK_DARK, INK_MID, LINE_GRID,
+    GOLD_RICH, INK_DARK, INK_MID,
     FONT_PRIMARY, SIZE_LABEL, SIZE_CAPS,
     vehicle_icon,
 )
@@ -151,15 +151,10 @@ class P04S08QuantV2X(StudioScene):
             run_time=0.75,
         )
 
-        separator = Line(LEFT * 6.25, RIGHT * 6.25)
-        separator.set_stroke(LINE_GRID, width=1.4, opacity=0.85)
-        separator.move_to(UP * 0.98)
-        self.play(ShowCreation(separator), run_time=0.3)
-
         # Layer 2: the actual cooperative message, following the source diagram.
         layer2_badge = number_badge(2, ACCENT_TEAL)
         layer2_title = label("MESSAGE QUANTIZATION", SIZE_LABEL, INK_DARK, BOLD)
-        layer2_sub = label("feature tensor  ->  code indices  ->  reconstruction", SIZE_CAPS, INK_MID)
+        layer2_sub = label("feature tensor  \u2192  code indices  \u2192  reconstruction", SIZE_CAPS, INK_MID)
         layer2_copy = VGroup(layer2_title, layer2_sub)
         layer2_copy.arrange(DOWN, aligned_edge=LEFT, buff=0.03)
         layer2_heading = VGroup(layer2_badge, layer2_copy)
@@ -242,7 +237,7 @@ class P04S08QuantV2X(StudioScene):
 
         payload_values = VGroup(
             label("100 MB", SIZE_CAPS, RED_ERROR, BOLD),
-            label("->", SIZE_CAPS - 1, INK_MID, BOLD),
+            label("\u2192", SIZE_CAPS - 1, INK_MID, BOLD),
             label("0.33 MB", SIZE_CAPS, GREEN_FIX, BOLD),
         )
         payload_values.arrange(RIGHT, buff=0.12)

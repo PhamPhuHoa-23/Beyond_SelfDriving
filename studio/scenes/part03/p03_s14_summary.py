@@ -17,7 +17,7 @@ class P03S14Summary(StudioScene):
         header = self._open(self.SCENE_TITLE)
         contribs = [
             ("UCLA Smart Intersection  ·  Real deployment", ACCENT_GREEN),
-            ("Time + Space Calibration  ·  83cm -> cm", "#0891B2"),
+            ("Time + Space Calibration  ·  83cm \u2192 cm", "#0891B2"),
             ("CooperFuse  ·  Gaussian fusion beats NMS", ACCENT_GREEN),
             ("OpenCDA Digital Twin  ·  100ms real-time", GOLD_KEY),
         ]

@@ -95,7 +95,7 @@ class P03S04BSpaceCalibration(StudioScene):
 
         # Ghost object bad calibration demo
         ghost = point_cloud_mob(RIGHT * 4.5 + UP * 1.2, n=10, color=RED_ERROR, spread=0.65, seed=13)
-        ghost_lbl = Text("[WARN] Bad calib -> ghost object", font=FONT_PRIMARY,
+        ghost_lbl = Text("[WARN] Bad calib \u2192 ghost object", font=FONT_PRIMARY,
                          font_size=SIZE_LABEL, color=RED_ERROR)
         ghost_lbl.next_to(ghost, UP, buff=0.1)
         self.play(FadeIn(ghost, scale=0.5), FadeIn(ghost_lbl))

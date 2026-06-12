@@ -83,7 +83,7 @@ class P01S07CDriveVLM(StudioScene):
             Text("Fast", font=FONT_PRIMARY, font_size=SIZE_LABEL, color=INK_DARK, weight=BOLD),
             Text(f"{FAST_HZ} Hz", font=FONT_PRIMARY, font_size=SIZE_CAPS, color=INK_MID),
         ).arrange(DOWN, buff=0.05, aligned_edge=LEFT)
-        fast_tag.next_to(fast_blocks[0], UP, buff=0.15)
+        fast_tag.next_to(fast_blocks[0], UP, buff=0.36)
         fast_tag.align_to(fast_blocks[0], LEFT)
         fast_group = VGroup(fast_tag, fast_pipe)
 
@@ -97,16 +97,16 @@ class P01S07CDriveVLM(StudioScene):
             Text("Slow", font=FONT_PRIMARY, font_size=SIZE_LABEL, color=GOLD_RICH, weight=BOLD),
             Text(f"{SLOW_HZ} Hz", font=FONT_PRIMARY, font_size=SIZE_CAPS, color=GOLD_RICH),
         ).arrange(DOWN, buff=0.05, aligned_edge=LEFT)
-        slow_tag.next_to(slow_blocks[0], DOWN, buff=0.15)
+        slow_tag.next_to(slow_blocks[0], DOWN, buff=0.36)
         slow_tag.align_to(slow_blocks[0], LEFT)
         slow_group = VGroup(slow_tag, slow_pipe)
 
         scene_in.move_to(LEFT * 5.45 + UP * 0.35)
         fast_pipe.move_to(LEFT * 0.8 + UP * 1.15)
         slow_pipe.move_to(LEFT * 0.8 + DOWN * 0.15)
-        fast_tag.next_to(fast_blocks[0], UP, buff=0.15)
+        fast_tag.next_to(fast_blocks[0], UP, buff=0.36)
         fast_tag.align_to(fast_blocks[0], LEFT)
-        slow_tag.next_to(slow_blocks[0], DOWN, buff=0.15)
+        slow_tag.next_to(slow_blocks[0], DOWN, buff=0.36)
         slow_tag.align_to(slow_blocks[0], LEFT)
 
         fast_container = _rail_container(fast_blocks)

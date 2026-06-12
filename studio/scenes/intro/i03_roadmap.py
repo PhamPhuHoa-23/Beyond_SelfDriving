@@ -44,7 +44,7 @@ class I03Roadmap(StudioScene):
     def construct(self):
         self.camera.background_color = BG_PAPER
 
-        star = RegularPolygon(n=6, radius=0.32, fill_color=GOLD_RICH,
+        star = RegularPolygon(n=5, radius=0.34, fill_color=GOLD_RICH,
                               fill_opacity=1.0, stroke_width=0)
         self.play(GrowFromCenter(star, run_time=0.8))
         self.play(
@@ -58,8 +58,6 @@ class I03Roadmap(StudioScene):
         nodes = VGroup()
         labels = VGroup()
         angles = [PI / 2 + i * TAU / 5 for i in range(5)]
-        start_nodes = []
-
         for i, (ang, color, pastel, lbl) in enumerate(
             zip(angles, PART_COLORS, PART_PASTELS, PART_LABELS)
         ):
@@ -67,7 +65,8 @@ class I03Roadmap(StudioScene):
             dot = Circle(radius=0.28, fill_color=pastel, fill_opacity=1.0,
                          stroke_color=color, stroke_width=2.2)
             num = Text(str(i + 1), font=FONT_PRIMARY, font_size=SIZE_LABEL,
-                       color=color, weight=BOLD)
+                       color=INK_DARK, weight=BOLD)
+            num.set_color(INK_DARK)
             dot.move_to(pos)
             num.move_to(pos)
             node = VGroup(dot, num)
@@ -76,8 +75,6 @@ class I03Roadmap(StudioScene):
             label.next_to(dot, normalize(pos), buff=0.22)
             nodes.add(node)
             labels.add(label)
-            start = node.copy().scale(0.001).move_to(ORIGIN)
-            start_nodes.append(start)
 
         orbit_ring = Circle(radius=orbit_r, stroke_color=INK_MID,
                             stroke_width=0.8, stroke_opacity=0.25)
@@ -97,23 +94,13 @@ class I03Roadmap(StudioScene):
         self.play(LaggedStart(*(FadeIn(lbl) for lbl in labels),
                               lag_ratio=0.15, run_time=1.0))
 
-        afterglow = VGroup()
-        trace_anims = []
-        for i in range(len(nodes)):
-            j = (i + 1) % len(nodes)
-            arc = ArcBetweenPoints(
-                nodes[i][0].get_center(), nodes[j][0].get_center(),
-                angle=-TAU / 12,
-            )
-            glow = arc.copy().set_stroke("#FEF3C7", width=4.0, opacity=0.3)
-            flash = arc.copy().set_stroke(GOLD_RICH, width=5.0, opacity=1.0)
-            afterglow.add(glow)
-            trace_anims.append(AnimationGroup(
-                FadeIn(glow, run_time=0.12),
-                ShowPassingFlash(flash, time_width=0.4, run_time=0.4),
-            ))
-        self.play(LaggedStart(*trace_anims, lag_ratio=0.28))
-        self.add(afterglow)
+        orbit_glow = orbit_ring.copy().set_stroke(GOLD_RICH, width=7.0, opacity=0.95)
+        orbit_afterglow = orbit_ring.copy().set_stroke(GOLD_RICH, width=2.5, opacity=0.22)
+        self.play(
+            ShowPassingFlash(orbit_glow, time_width=0.14, run_time=2.2),
+            FadeIn(orbit_afterglow, run_time=0.8),
+            rate_func=linear,
+        )
 
         self.play(
             Flash(nodes[0], color=ACCENT_BLUE, line_length=0.25, num_lines=10),

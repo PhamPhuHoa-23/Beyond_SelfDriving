@@ -91,8 +91,17 @@ class P03S09V2XReaLO(StudioScene):
         packed_sub = _label("0.5 MB\nV2X ready", size=SIZE_CAPS, color=GREEN_FIX, weight=BOLD)
         packed_sub.next_to(packed, RIGHT, buff=0.22)
 
-        arr1 = Arrow(bev.get_right() + RIGHT * 0.18, encoder.get_left() + LEFT * 0.18, buff=0, stroke_width=3.0, fill_color=GOLD_KEY)
-        arr2 = Arrow(encoder.get_right() + RIGHT * 0.18, packed.get_left() + LEFT * 0.18, buff=0, stroke_width=3.0, fill_color=GREEN_FIX)
+        flow_y = encoder.get_center()[1]
+        arr1 = Arrow(
+            [bev.get_right()[0] + 0.18, flow_y, 0],
+            [encoder.get_left()[0] - 0.18, flow_y, 0],
+            buff=0, stroke_width=3.0, fill_color=GOLD_KEY,
+        )
+        arr2 = Arrow(
+            [encoder.get_right()[0] + 0.18, flow_y, 0],
+            [packed.get_left()[0] - 0.18, flow_y, 0],
+            buff=0, stroke_width=3.0, fill_color=GREEN_FIX,
+        )
 
         self.play(FadeIn(bev_title), FadeIn(bev_sub), FadeIn(bev[0]), run_time=0.35)
         self.play(LaggedStart(*(GrowFromCenter(c) for c in source_cells), lag_ratio=0.012), run_time=1.0)
@@ -109,7 +118,7 @@ class P03S09V2XReaLO(StudioScene):
         )
         self.play(FadeIn(packed), FadeIn(packed_title), FadeIn(packed_sub), run_time=0.45)
 
-        kn = key_number("32x", "compression  16 MB -> 0.5 MB", color=GOLD_KEY)
+        kn = key_number("32x", "compression  16 MB \u2192 0.5 MB", color=GOLD_KEY)
         kn.to_edge(DOWN, buff=0.35)
         self.play(FadeIn(kn))
         self.wait(1.7)

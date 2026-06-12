@@ -5,6 +5,7 @@ from studio.components import (
     StudioScene,
     ACCENT_BLUE,
     ACCENT_GREEN,
+    ACCENT_TEAL,
     FONT_PRIMARY,
     GOLD_RICH,
     GREEN_FIX,
@@ -14,6 +15,7 @@ from studio.components import (
     INK_MID,
     LINE_GRID,
     ORANGE_INFRA,
+    PASTEL_BLUE,
     SIZE_H1,
     SIZE_LABEL,
     h_arrow,
@@ -39,7 +41,7 @@ class P02S14BridgeToP3(StudioScene):
         def bridge_panel(label, stroke):
             rect = RoundedRectangle(
                 width=3.55,
-                height=1.65,
+                height=1.9,
                 corner_radius=0.12,
                 fill_color=BG_CARD,
                 fill_opacity=1.0,
@@ -52,31 +54,32 @@ class P02S14BridgeToP3(StudioScene):
 
         sim = bridge_panel("Simulation", ACCENT_BLUE)
         real = bridge_panel("Reality", GREEN_FIX)
-        panels = VGroup(sim, real).arrange(RIGHT, buff=1.55).move_to(UP * 0.36)
+        panels = VGroup(sim, real).arrange(RIGHT, buff=1.55).move_to(UP * 0.42)
         bridge = h_arrow(sim, real, y=panels.get_center()[1], color=GOLD_RICH, thickness=3.2)
-        gap = Text("sim-to-real gap", font=FONT_PRIMARY, font_size=18, color=ORANGE_INFRA, weight=BOLD)
-        gap_bg = RoundedRectangle(
-            width=gap.get_width() + 0.32,
-            height=gap.get_height() + 0.16,
-            corner_radius=0.1,
-            fill_color=BG_PAPER,
-            fill_opacity=1.0,
-            stroke_color=ORANGE_INFRA,
-            stroke_width=1.4,
+        gap_group = Text(
+            "sim-to-real gap", font=FONT_PRIMARY, font_size=14,
+            color=ORANGE_INFRA, weight=BOLD,
         )
-        gap_group = VGroup(gap_bg, gap)
-        gap_group.move_to(panels.get_bottom() + DOWN * 0.36)
+        gap_group.move_to([0, panels.get_center()[1] + 0.38, 0])
 
-        sim_grid = road_grid_2d(width=2.65, height=1.7).scale(0.28).move_to(sim[0].get_center() + DOWN * 0.26)
+        sim_grid = road_grid_2d(width=2.0, height=0.58)
+        sim_grid[0].set_fill(PASTEL_BLUE, opacity=0.75)
+        sim_grid[1].set_stroke(ACCENT_BLUE, width=2.2, opacity=0.9)
+        sim_grid.move_to(sim[0].get_center() + DOWN * 0.03)
         sim_note = Text("many scenarios", font=FONT_PRIMARY, font_size=18, color=INK_MID)
-        sim_note.move_to(sim[0].get_bottom() + UP * 0.22)
-        real_car = vehicle_icon(color=GREEN_FIX, scale=0.36).move_to(real[0].get_center() + DOWN * 0.26)
+        sim_note.move_to(sim[0].get_bottom() + UP * 0.25)
+        real_car = vehicle_icon(color=GREEN_FIX, scale=0.48).move_to(real[0].get_center() + DOWN * 0.04)
         sensor = VGroup(*(
-            Line(real_car.get_center(), real_car.get_center() + RIGHT * (0.35 + i * 0.25) + UP * (i - 1) * 0.16, stroke_color=LINE_GRID, stroke_width=2)
-            for i in range(3)
+            Line(
+                real_car.get_center(),
+                real_car.get_center() + RIGHT * (0.4 + i * 0.18) + UP * (i - 1.5) * 0.16,
+                stroke_color=ACCENT_TEAL,
+                stroke_width=2.5,
+            )
+            for i in range(4)
         ))
         real_note = Text("real sensor data", font=FONT_PRIMARY, font_size=18, color=INK_MID)
-        real_note.move_to(real[0].get_bottom() + UP * 0.22)
+        real_note.move_to(real[0].get_bottom() + UP * 0.25)
 
         self.play(FadeIn(panels[0]), FadeIn(sim_grid))
         self.play(

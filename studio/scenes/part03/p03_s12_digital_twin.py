@@ -98,7 +98,7 @@ class P03S12DigitalTwin(StudioScene):
         scan_line = Line(UP * 2.6, DOWN * 2.45, stroke_color=CYAN_RADAR, stroke_width=2.4)
         scan_line.move_to(LEFT * 6)
 
-        cap = _txt("OpenCDA -> synchronized digital twin", size=SIZE_LABEL, color=GOLD_RICH, weight=BOLD)
+        cap = _txt("OpenCDA \u2192 synchronized digital twin", size=SIZE_LABEL, color=GOLD_RICH, weight=BOLD)
         cap.move_to(DOWN * 2.62)
 
         self.play(ShowCreation(div), FadeIn(real_lbl), FadeIn(twin_lbl), run_time=0.55)

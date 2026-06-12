@@ -47,7 +47,20 @@ class StudioScene(Scene):
     def _open(self, title: str | None = None) -> VGroup:
         """Create title bar + separator line; returns VGroup to FadeOut later."""
         t = title or self.SCENE_TITLE
-        title_mob = Text(t, font=FONT_PRIMARY, font_size=SIZE_TITLE, color=INK_DARK)
+        if "->" in t:
+            parts = [p.strip() for p in t.split("->")]
+            title_mob = VGroup()
+            for i, part in enumerate(parts):
+                if part:
+                    title_mob.add(Text(part, font=FONT_PRIMARY, font_size=SIZE_TITLE, color=INK_DARK))
+                if i < len(parts) - 1:
+                    arrow = Tex(r"\rightarrow", font_size=SIZE_TITLE)
+                    arrow.set_color(INK_DARK)
+                    title_mob.add(arrow)
+            title_mob.arrange(RIGHT, buff=0.16)
+            title_mob.set_max_width(12.5)
+        else:
+            title_mob = Text(t, font=FONT_PRIMARY, font_size=SIZE_TITLE, color=INK_DARK)
         title_mob.to_edge(UP, buff=0.35)
         sep_glow = Line(
             LEFT * 6.5, RIGHT * 6.5,

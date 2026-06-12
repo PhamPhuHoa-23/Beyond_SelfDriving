@@ -9,36 +9,35 @@ from studio.components import (
 
 # ── Slow-phase layout (4 elements centered in canvas) ──────────────────────
 #   complex(-4.4) → gauge(-1.5) → slow(1.4) → CoT(4.1)   all at same y
-CLF_X_FAST = 0.0     # gauge x in row_a (simple/gauge/fast)
-CLF_X_SLOW = -1.5    # gauge x in slow phase (shift left to make room)
-CMP_X      = -4.4    # complex scene
-SLW_X      =  1.4    # slow reasoning
-COT_X      =  4.1    # CoT panel
+CLF_X_SLOW = -1.55
+CMP_X = -4.85
+SLW_X = 1.55
+COT_X = 4.55
 
 
 def _reasoning_gauge(*, on_fast: bool = True) -> VGroup:
     """Semi-circle gauge — needle + FAST/SLOW labels inside arc."""
     box = RoundedRectangle(
-        width=2.85, height=1.95, corner_radius=0.16,
+        width=3.05, height=2.2, corner_radius=0.16,
         fill_color=PASTEL_AMBER, fill_opacity=1.0,
         stroke_color=GOLD_KEY, stroke_width=2.8,
     )
-    title = Text("Scene classifier", font=FONT_PRIMARY, font_size=SIZE_LABEL,
+    title = Text("Scene classifier", font=FONT_PRIMARY, font_size=SIZE_LABEL - 1,
                  color=INK_DARK, weight=BOLD)
-    title.next_to(box.get_top(), DOWN, buff=0.12)
-    center = box.get_center() + DOWN * 0.18
-    arc_bg   = Arc(radius=0.48, start_angle=5*PI/6, angle=-4*PI/6, stroke_color=INK_DARK,   stroke_width=5)
-    arc_fast = Arc(radius=0.48, start_angle=5*PI/6, angle=-2*PI/6, stroke_color=GREEN_FIX,  stroke_width=5)
-    arc_slow = Arc(radius=0.48, start_angle=PI/2,   angle=-2*PI/6, stroke_color=GOLD_RICH,  stroke_width=5)
+    title.move_to(box.get_center() + UP * 0.72)
+    center = box.get_center() + DOWN * 0.04
+    arc_bg   = Arc(radius=0.52, start_angle=5*PI/6, angle=-4*PI/6, stroke_color=INK_DARK,   stroke_width=5)
+    arc_fast = Arc(radius=0.52, start_angle=5*PI/6, angle=-2*PI/6, stroke_color=GREEN_FIX,  stroke_width=5)
+    arc_slow = Arc(radius=0.52, start_angle=PI/2,   angle=-2*PI/6, stroke_color=GOLD_RICH,  stroke_width=5)
     for arc in (arc_bg, arc_fast, arc_slow):
         arc.move_arc_center_to(center)
     fast_lbl = Text("FAST", font=FONT_PRIMARY, font_size=SIZE_CAPS, color=GREEN_FIX,  weight=BOLD)
     slow_lbl = Text("SLOW", font=FONT_PRIMARY, font_size=SIZE_CAPS, color=GOLD_RICH, weight=BOLD)
-    fast_lbl.move_to(center + LEFT  * 0.42 + DOWN * 0.22)
-    slow_lbl.move_to(center + RIGHT * 0.42 + DOWN * 0.22)
+    fast_lbl.move_to(center + LEFT * 0.46 + DOWN * 0.43)
+    slow_lbl.move_to(center + RIGHT * 0.46 + DOWN * 0.43)
     # PI/6 → needle upper-LEFT = FAST;  -PI/6 → upper-RIGHT = SLOW
     needle_angle = PI / 6 if on_fast else -PI / 6
-    tip = center + rotate_vector(UP * 0.4, needle_angle)
+    tip = center + rotate_vector(UP * 0.43, needle_angle)
     needle = Line(center, tip, stroke_color=INK_DARK, stroke_width=3.5)
     needle.add_tip()
     gauge = VGroup(arc_bg, arc_fast, arc_slow, fast_lbl, slow_lbl, needle)
@@ -56,14 +55,16 @@ class P01S08AAutoVLASwitch(StudioScene):
         clf = _reasoning_gauge(on_fast=True)
         box, needle = clf[0], clf[2][-1]
 
-        simple    = pipeline_block("Simple scene",  width=2.0, height=0.52, fill=PASTEL_BLUE,   stroke=ACCENT_BLUE)
-        fast      = pipeline_block("Fast action",   width=2.0, height=0.52, fill="#C8EDD0",     stroke=GREEN_FIX)
+        simple    = pipeline_block("Simple scene",  width=2.25, height=0.58, fill=PASTEL_BLUE,   stroke=ACCENT_BLUE)
+        fast      = pipeline_block("Fast action",   width=2.25, height=0.58, fill="#C8EDD0",     stroke=GREEN_FIX)
+        simple[1].scale(0.9)
+        fast[1].scale(0.9)
         fast_note = Text("Skip reasoning", font=FONT_PRIMARY, font_size=SIZE_CAPS, color=GREEN_FIX, weight=BOLD)
-        fast_grp  = VGroup(fast, fast_note).arrange(DOWN, buff=0.1, aligned_edge=LEFT)
+        fast_grp  = VGroup(fast, fast_note).arrange(DOWN, buff=0.18)
 
         row_a = VGroup(simple, clf, fast_grp)
-        row_a.arrange(RIGHT, buff=0.65, aligned_edge=ORIGIN)
-        row_a.move_to(UP * 0.08)
+        row_a.arrange(RIGHT, buff=0.85, aligned_edge=ORIGIN)
+        row_a.move_to(UP * 0.12)
         fast_grp.shift(UP * (box.get_center()[1] - fast[0].get_center()[1]))
 
         ROW_Y = box.get_center()[1]   # save y — all slow elements share this y
@@ -75,21 +76,23 @@ class P01S08AAutoVLASwitch(StudioScene):
         self.wait(0.6)
 
         # ── Phase 2: SLOW path ────────────────────────────────────────────────
-        complex_blk = pipeline_block("Complex scene\n(night / rain)", width=2.0, height=0.62,
+        complex_blk = pipeline_block("Complex scene\n(night / rain)", width=2.45, height=0.72,
                                      fill=PASTEL_BLUE, stroke=ACCENT_BLUE)
-        slow_blk    = pipeline_block("Slow reasoning", width=2.0, height=0.5,
+        slow_blk    = pipeline_block("Slow reasoning", width=2.25, height=0.58,
                                      fill=PASTEL_AMBER, stroke=GOLD_RICH)
+        complex_blk[1].scale(0.84)
+        slow_blk[1].scale(0.86)
 
         # CoT panel — plain RoundedRectangle, no stage_panel hidden bounding-box
         cot_lines = VGroup(
-            Text("Person waving — slow down,", font=FONT_PRIMARY, font_size=SIZE_CAPS - 1, color=INK_DARK, weight=BOLD),
-            Text("assess the situation...",     font=FONT_PRIMARY, font_size=SIZE_CAPS - 1, color=INK_DARK, weight=BOLD),
+            Text("Person waving:", font=FONT_PRIMARY, font_size=SIZE_CAPS - 2, color=INK_DARK, weight=BOLD),
+            Text("slow down and assess", font=FONT_PRIMARY, font_size=SIZE_CAPS - 2, color=INK_DARK, weight=BOLD),
         ).arrange(DOWN, buff=0.10, aligned_edge=LEFT)
-        if cot_lines.get_width() > 2.1:
-            cot_lines.scale(2.1 / cot_lines.get_width())
+        if cot_lines.get_width() > 2.3:
+            cot_lines.scale(2.3 / cot_lines.get_width())
         cot_bg = RoundedRectangle(
-            width  = cot_lines.get_width()  + 0.28,
-            height = cot_lines.get_height() + 0.28,
+            width=max(cot_lines.get_width() + 0.38, 2.65),
+            height=max(cot_lines.get_height() + 0.34, 0.92),
             corner_radius=0.12,
             fill_color=PASTEL_AMBER, fill_opacity=1.0,
             stroke_color=GOLD_RICH, stroke_width=2.5,
@@ -102,7 +105,7 @@ class P01S08AAutoVLASwitch(StudioScene):
         slow_blk.move_to([SLW_X, ROW_Y, 0])
         cot_bg.move_to([COT_X, ROW_Y, 0])
         cot_lines.move_to(cot_bg.get_center())
-        cot_title.next_to(cot_bg, UP, buff=0.08)   # above the plain rect — no offset surprise
+        cot_title.next_to(cot_bg, UP, buff=0.18)
 
         # Transition: fade old, slide gauge left, fade in new
         self.play(
@@ -115,7 +118,7 @@ class P01S08AAutoVLASwitch(StudioScene):
         )
         # Rotate needle FAST → SLOW (upper-left → upper-right = -PI/3 CW)
         self.play(
-            needle.animate.rotate(-PI / 3, about_point=box.get_center() + DOWN * 0.18),
+            needle.animate.rotate(-PI / 3, about_point=needle.get_start()),
             run_time=0.7,
         )
 

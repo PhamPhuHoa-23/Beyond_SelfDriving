@@ -15,7 +15,9 @@ from studio.components import (
 )
 
 SCRIPT = """
-Beyond Self-Driving. An ICCV 2025 tutorial from UCLA Mobility Lab.
+This video is a project for the Introduction to Machine Learning course at
+HCMUS. We are Continuer: Pham Phu Hoa, Nguyen Lam Phu Quy, and Bang My Linh.
+We summarize the ICCV 2025 Beyond Self-Driving tutorial from UCLA Mobility Lab.
 """
 
 
@@ -63,7 +65,7 @@ class I01TitleCard(StudioScene):
             color=INK_DARK,
             weight=BOLD,
         )
-        wordmark.move_to(ORIGIN + UP * 0.35)
+        wordmark.move_to(ORIGIN + UP * 0.55)
         self.play(Write(wordmark, run_time=3.0, lag_ratio=0.025))
         self.play(wordmark.animate.set_color(GOLD_RICH), run_time=0.8)
 
@@ -83,12 +85,20 @@ class I01TitleCard(StudioScene):
             color=INK_DARK,
         )
         speakers.next_to(rule, DOWN, buff=0.2)
-        title_group = VGroup(wordmark, subtitle, rule, speakers)
+        students = Text(
+            "Phạm Phú Hòa (23122030)  |  Nguyễn Lâm Phú Quý (23122048)  |  Bàng Mỹ Linh (23122009)",
+            font=FONT_PRIMARY,
+            font_size=SIZE_LABEL - 2,
+            color=INK_DARK,
+        )
+        students.next_to(speakers, DOWN, buff=0.18)
+        title_group = VGroup(wordmark, subtitle, rule, speakers, students)
 
         self.play(FadeIn(subtitle, shift=UP * 0.2, run_time=0.8))
         self.play(ShowCreation(rule, run_time=0.6))
         self.play(FadeIn(speakers, run_time=0.8))
-        self.wait(1.5)
+        self.play(FadeIn(students, run_time=0.6))
+        self.wait(1.8)
 
         self.play(
             title_group.animate.set_opacity(0),

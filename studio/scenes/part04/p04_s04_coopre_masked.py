@@ -161,7 +161,7 @@ class P04S04CooPReMasked(StudioScene):
             rng.choice(len(grid), int(len(grid) * 0.4), replace=False).tolist()
         )
         mask_caption = text_label(
-            "40% hidden  ->  reconstruct from cooperative context",
+            "40% hidden  \u2192  reconstruct from cooperative context",
             SIZE_LABEL,
             INK_DARK,
             BOLD,

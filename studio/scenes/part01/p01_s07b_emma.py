@@ -22,8 +22,8 @@ def _camera_icon() -> VGroup:
     )
     stripes = VGroup(*[
         Line(
-            frame.get_left() + 0.14 * RIGHT + (0.14 + i * 0.14) * UP,
-            frame.get_right() + 0.14 * LEFT + (0.14 + i * 0.14) * UP,
+            frame.get_left() + 0.14 * RIGHT + (i - 1) * 0.2 * UP,
+            frame.get_right() + 0.14 * LEFT + (i - 1) * 0.2 * UP,
             stroke_color=ACCENT_BLUE, stroke_width=2.2,
         )
         for i in range(3)
@@ -67,11 +67,12 @@ def _vlm_with_thinking() -> VGroup:
 
 def _output_chip(label: str, *, fill: str, stroke: str) -> VGroup:
     rect = RoundedRectangle(
-        width=1.62, height=0.46, corner_radius=0.14,
+        width=1.48, height=0.44, corner_radius=0.13,
         fill_color=fill, fill_opacity=1.0,
         stroke_color=stroke, stroke_width=2.2,
     )
-    text = Text(label, font=FONT_PRIMARY, font_size=SIZE_CAPS, color=INK_DARK, weight=BOLD)
+    text = Text(label, font=FONT_PRIMARY, font_size=SIZE_CAPS - 1, color=INK_DARK, weight=BOLD)
+    text.set_max_width(rect.get_width() - 0.18)
     text.move_to(rect.get_center())
     return VGroup(rect, text)
 
@@ -92,12 +93,12 @@ class P01S07BEMMA(StudioScene):
         spinner = vlm_body[3]
         vlm_icon = VGroup(vlm_body[0], vlm_body[1], vlm_body[2])
         vlm_lbl = Text("Gemini VLM", font=FONT_PRIMARY, font_size=SIZE_LABEL, color=PURPLE_MODEL, weight=BOLD)
-        vlm_lane = VGroup(vlm_lbl, vlm_body).arrange(DOWN, buff=0.32)
+        vlm_lane = VGroup(vlm_lbl, vlm_body).arrange(DOWN, buff=0.12)
         vlm_lbl.set_x(vlm_icon.get_center()[0])
 
         cot_lines = VGroup(*[
             Text(
-                t, font=FONT_PRIMARY, font_size=SIZE_CAPS,
+                t, font=FONT_PRIMARY, font_size=SIZE_CAPS - 1,
                 color=GOLD_RICH if i == 2 else INK_DARK,
                 **({"weight": BOLD} if i == 2 else {}),
             )
@@ -105,7 +106,7 @@ class P01S07BEMMA(StudioScene):
         ])
         cot_lines.arrange(DOWN, buff=0.16, aligned_edge=LEFT)
         cot_box = RoundedRectangle(
-            width=cot_lines.get_width() + 0.4,
+            width=max(cot_lines.get_width() + 0.45, 4.25),
             height=cot_lines.get_height() + 0.35,
             corner_radius=0.14,
             fill_color=PASTEL_AMBER, fill_opacity=1.0,
@@ -128,23 +129,25 @@ class P01S07BEMMA(StudioScene):
             _output_chip("Road graph", fill=PASTEL_AMBER, stroke=PURPLE_MODEL),
         ).arrange(RIGHT, buff=0.22)
         out_lbl = Text(
-            "Structured predictions", font=FONT_PRIMARY, font_size=SIZE_LABEL,
+            "Structured predictions", font=FONT_PRIMARY, font_size=SIZE_LABEL - 2,
             color=INK_MID, weight=BOLD,
         )
-        structured_group = VGroup(out_lbl, out_blocks).arrange(DOWN, buff=0.16)
+        structured_group = VGroup(out_lbl, out_blocks).arrange(DOWN, buff=0.12)
 
-        input_group = VGroup(cam_lane, vlm_lane).arrange(RIGHT, buff=0.88, aligned_edge=DOWN)
-        output_group = VGroup(cot_panel, structured_group).arrange(DOWN, buff=0.36)
-        output_brace = Brace(output_group, LEFT, buff=0.12)
+        input_group = VGroup(cam_lane, vlm_lane).arrange(RIGHT, buff=0.78, aligned_edge=DOWN)
+        output_group = VGroup(cot_panel, structured_group).arrange(DOWN, buff=0.28)
+        output_brace = Brace(output_group, LEFT, buff=0.08)
         output_brace.set_color(GOLD_RICH)
         output_bundle = VGroup(output_brace, output_group)
 
-        layout = VGroup(input_group, output_bundle).arrange(RIGHT, buff=0.82)
-        layout.move_to(UP * 0.18)
+        layout = VGroup(input_group, output_bundle).arrange(RIGHT, buff=0.74)
+        layout.move_to(UP * 0.12 + LEFT * 0.08)
         if layout.get_top()[1] > CONTENT_TOP - 0.1:
             layout.shift(DOWN * (layout.get_top()[1] - (CONTENT_TOP - 0.1)))
 
-        flow_y = vlm_icon.get_center()[1]
+        flow_y = output_brace.get_center()[1]
+        cam_lane.shift(UP * (flow_y - cam_icon.get_center()[1]))
+        vlm_lane.shift(UP * (flow_y - vlm_icon.get_center()[1]))
         a_cam_vlm = h_arrow(cam_icon, vlm_icon, y=flow_y, color=CYAN_RADAR, buff=0.12)
         a_vlm_outputs = h_arrow(vlm_icon, output_brace, y=flow_y, color=GOLD_RICH, buff=0.12)
 

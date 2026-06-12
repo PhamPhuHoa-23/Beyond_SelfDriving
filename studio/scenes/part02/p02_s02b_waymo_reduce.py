@@ -38,7 +38,7 @@ class P02S02BWaymoReduce(StudioScene):
         green_icons = grid[90:]
         self.play(LaggedStart(*(i.animate.set_color(RED_ERROR) for i in red_icons), lag_ratio=0.01, run_time=1.0))
         label_94 = Text("94%\nhuman error", font=FONT_PRIMARY, font_size=SIZE_H1, color=RED_ERROR, weight=BOLD)
-        label_94.move_to(LEFT * 0.8 + UP * 1.25)
+        label_94.move_to(LEFT * 0.8 + UP * 1.85)
         self.play(FadeIn(label_94, shift=LEFT * 0.1))
 
         axes, axes_anim = axes_deploy((0, 2, 1), (0, 100, 25), width=4.7, height=3.2, with_tick_labels=False)

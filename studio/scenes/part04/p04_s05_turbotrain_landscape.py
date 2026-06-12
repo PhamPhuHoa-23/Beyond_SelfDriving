@@ -117,7 +117,7 @@ class P04S05TurboTrainLandscape(Studio3DScene):
         self.play(FadeIn(stage2), GrowFromCenter(good_dot), run_time=0.35)
         self.play(ShowCreation(good_path), MoveAlongPath(good_dot, good_path), run_time=2.0)
 
-        counter = _screen_text("120 epochs  ->  45 epochs", size=SIZE_H1, color=INK_DARK, weight=BOLD)
+        counter = _screen_text("120 epochs  \u2192  45 epochs", size=SIZE_H1, color=INK_DARK, weight=BOLD)
         counter["120 epochs"].set_color(RED_ERROR)
         counter["45 epochs"].set_color(GREEN_FIX)
         counter.to_edge(DOWN, buff=0.92)

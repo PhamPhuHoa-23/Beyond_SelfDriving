@@ -21,6 +21,7 @@ from studio.components import (
     SIZE_BODY,
     SIZE_LABEL,
     SIZE_CAPS,
+    SIZE_MICRO,
     vehicle_icon,
 )
 
@@ -47,7 +48,6 @@ class P05S02ALLMVsRobot(StudioScene):
             font=FONT_PRIMARY,
             font_size=SIZE_CAPS,
             color=INK_DARK,
-            weight=BOLD,
         )
         content = VGroup(icon, text).arrange(RIGHT, buff=0.14)
         box = RoundedRectangle(
@@ -103,11 +103,10 @@ class P05S02ALLMVsRobot(StudioScene):
         label = Text(
             "LLM",
             font=FONT_PRIMARY,
-            font_size=SIZE_BODY,
+            font_size=SIZE_LABEL,
             color=INK_DARK,
-            weight=BOLD,
         )
-        label.next_to(shell, DOWN, buff=0.14)
+        label.next_to(shell, DOWN, buff=0.22)
         return VGroup(shell, links, nodes, label)
 
     def delivery_robot(self):
@@ -137,7 +136,7 @@ class P05S02ALLMVsRobot(StudioScene):
         web_kicker = Text(
             "LANGUAGE AI",
             font=FONT_PRIMARY,
-            font_size=SIZE_CAPS,
+            font_size=SIZE_MICRO,
             color=ACCENT_BLUE,
             weight=BOLD,
         )
@@ -145,17 +144,16 @@ class P05S02ALLMVsRobot(StudioScene):
         web_title = Text(
             "Data already exists",
             font=FONT_PRIMARY,
-            font_size=SIZE_H1,
+            font_size=32,
             color=INK_DARK,
-            weight=BOLD,
         )
-        web_heading = VGroup(web_kicker, web_title).arrange(DOWN, buff=0.06)
-        web_heading.move_to(LEFT * 3.48 + UP * 2.02)
+        web_heading = VGroup(web_kicker, web_title).arrange(DOWN, buff=0.1)
+        web_heading.move_to(LEFT * 3.48 + UP * 2.08)
 
         robot_kicker = Text(
             "PHYSICAL AI",
             font=FONT_PRIMARY,
-            font_size=SIZE_CAPS,
+            font_size=SIZE_MICRO,
             color=ACCENT_PINK,
             weight=BOLD,
         )
@@ -163,12 +161,11 @@ class P05S02ALLMVsRobot(StudioScene):
         robot_title = Text(
             "Experience must be created",
             font=FONT_PRIMARY,
-            font_size=SIZE_H1,
+            font_size=32,
             color=INK_DARK,
-            weight=BOLD,
         )
-        robot_heading = VGroup(robot_kicker, robot_title).arrange(DOWN, buff=0.06)
-        robot_heading.move_to(RIGHT * 3.5 + UP * 2.02)
+        robot_heading = VGroup(robot_kicker, robot_title).arrange(DOWN, buff=0.1)
+        robot_heading.move_to(RIGHT * 3.5 + UP * 2.08)
 
         source_specs = [
             ("Books", ACCENT_AMBER),
@@ -178,11 +175,11 @@ class P05S02ALLMVsRobot(StudioScene):
             ("Video", ACCENT_AMBER),
         ]
         sources = VGroup(*(self.source_chip(*spec) for spec in source_specs))
-        sources.arrange(DOWN, buff=0.13)
-        sources.move_to(LEFT * 5.35 + UP * 0.25)
+        sources.arrange(DOWN, buff=0.18)
+        sources.move_to(LEFT * 5.35 + DOWN * 0.02)
 
         llm = self.llm_core()
-        llm.move_to(LEFT * 1.55 + UP * 0.2)
+        llm.move_to(LEFT * 1.55 + DOWN * 0.1)
 
         streams = VGroup()
         for i, source in enumerate(sources):
@@ -196,11 +193,10 @@ class P05S02ALLMVsRobot(StudioScene):
             streams.add(stream)
 
         web_stat = Text(
-            "TRILLIONS OF TOKENS",
+            "Trillions of tokens",
             font=FONT_PRIMARY,
-            font_size=SIZE_BODY,
+            font_size=24,
             color=ACCENT_BLUE,
-            weight=BOLD,
         )
         web_stat.set_color(ACCENT_BLUE)
         web_note = Text(
@@ -209,8 +205,8 @@ class P05S02ALLMVsRobot(StudioScene):
             font_size=SIZE_CAPS,
             color=INK_MID,
         )
-        web_caption = VGroup(web_stat, web_note).arrange(DOWN, buff=0.08)
-        web_caption.move_to(LEFT * 3.45 + DOWN * 1.62)
+        web_caption = VGroup(web_stat, web_note).arrange(DOWN, buff=0.14)
+        web_caption.move_to(LEFT * 3.45 + DOWN * 2.02)
 
         road = RoundedRectangle(
             width=4.85,
@@ -221,7 +217,7 @@ class P05S02ALLMVsRobot(StudioScene):
             stroke_color=LINE_GRID,
             stroke_width=1.4,
         )
-        road.move_to(RIGHT * 3.48 + UP * 0.38)
+        road.move_to(RIGHT * 3.48 + UP * 0.05)
         lane_marks = VGroup()
         for x in np.linspace(1.45, 5.55, 7):
             mark = Line(
@@ -231,7 +227,7 @@ class P05S02ALLMVsRobot(StudioScene):
                 stroke_width=2.2,
                 stroke_opacity=0.95,
             )
-            mark.move_to(np.array([x, 0.38, 0]))
+            mark.move_to(np.array([x, 0.05, 0]))
             lane_marks.add(mark)
 
         start_label = Text(
@@ -240,10 +236,10 @@ class P05S02ALLMVsRobot(StudioScene):
             font_size=SIZE_CAPS,
             color=INK_LIGHT,
         )
-        start_label.next_to(road, UP, buff=0.12).align_to(road, LEFT).shift(RIGHT * 0.15)
+        start_label.next_to(road, UP, buff=0.22).align_to(road, LEFT).shift(RIGHT * 0.15)
 
         robot = self.delivery_robot()
-        robot.move_to(RIGHT * 1.45 + UP * 0.38)
+        robot.move_to(RIGHT * 1.45 + UP * 0.05)
 
         log_stack = VGroup()
         for i, opacity in enumerate([0.45, 0.68, 0.95]):
@@ -262,7 +258,7 @@ class P05S02ALLMVsRobot(StudioScene):
             ).arrange(DOWN, buff=0.08)
             tile_lines.move_to(tile_box)
             tile = VGroup(tile_box, tile_lines)
-            tile.move_to(RIGHT * (5.28 + i * 0.18) + UP * (0.3 + i * 0.08))
+            tile.move_to(RIGHT * (5.28 + i * 0.18) + UP * (-0.03 + i * 0.08))
             log_stack.add(tile)
         log_label = Text(
             "3 experience logs",
@@ -270,7 +266,7 @@ class P05S02ALLMVsRobot(StudioScene):
             font_size=SIZE_CAPS,
             color=INK_MID,
         )
-        log_label.next_to(log_stack, DOWN, buff=0.14)
+        log_label.next_to(log_stack, DOWN, buff=0.24)
 
         factor_labels = VGroup()
         for label, color in [
@@ -283,7 +279,6 @@ class P05S02ALLMVsRobot(StudioScene):
                 font=FONT_PRIMARY,
                 font_size=SIZE_CAPS,
                 color=color,
-                weight=BOLD,
             )
             text.set_color(color)
             factor_labels.add(text)
@@ -293,7 +288,6 @@ class P05S02ALLMVsRobot(StudioScene):
                 font=FONT_PRIMARY,
                 font_size=SIZE_LABEL,
                 color=INK_LIGHT,
-                weight=BOLD,
             )
             for _ in range(2)
         ))
@@ -304,14 +298,13 @@ class P05S02ALLMVsRobot(StudioScene):
             times[1],
             factor_labels[2],
         ).arrange(RIGHT, buff=0.2)
-        factors.move_to(RIGHT * 3.48 + DOWN * 0.77)
+        factors.move_to(RIGHT * 3.48 + DOWN * 1.12)
 
         robot_stat = Text(
-            "~10 HOURS / ROBOT",
+            "~10 hours / robot",
             font=FONT_PRIMARY,
-            font_size=SIZE_BODY,
+            font_size=24,
             color=RED_ERROR,
-            weight=BOLD,
         )
         robot_stat.set_color(RED_ERROR)
         robot_note = Text(
@@ -320,8 +313,8 @@ class P05S02ALLMVsRobot(StudioScene):
             font_size=SIZE_CAPS,
             color=INK_MID,
         )
-        robot_caption = VGroup(robot_stat, robot_note).arrange(DOWN, buff=0.08)
-        robot_caption.move_to(RIGHT * 3.48 + DOWN * 1.62)
+        robot_caption = VGroup(robot_stat, robot_note).arrange(DOWN, buff=0.14)
+        robot_caption.move_to(RIGHT * 3.48 + DOWN * 2.02)
 
         insight_rule = Line(
             LEFT * 5.7,
@@ -329,24 +322,22 @@ class P05S02ALLMVsRobot(StudioScene):
             stroke_color=LINE_SEP,
             stroke_width=1.2,
         )
-        insight_rule.move_to(DOWN * 2.25)
+        insight_rule.move_to(DOWN * 2.48)
         insight_left = Text(
             "The web stores text.",
             font=FONT_PRIMARY,
             font_size=SIZE_LABEL,
             color=INK_DARK,
-            weight=BOLD,
         )
         insight_right = Text(
             "Robot behavior must be made.",
             font=FONT_PRIMARY,
             font_size=SIZE_LABEL,
             color=ACCENT_PINK,
-            weight=BOLD,
         )
         insight_right.set_color(ACCENT_PINK)
-        insight = VGroup(insight_left, insight_right).arrange(RIGHT, buff=0.22)
-        insight.next_to(insight_rule, DOWN, buff=0.2)
+        insight = VGroup(insight_left, insight_right).arrange(RIGHT, buff=0.3)
+        insight.next_to(insight_rule, DOWN, buff=0.24)
 
         self.play(
             FadeIn(divider),
@@ -407,14 +398,14 @@ class P05S02ALLMVsRobot(StudioScene):
         checkpoints = [2.45, 3.35, 4.15]
         for x, tile in zip(checkpoints, log_stack):
             self.play(
-                robot.animate.move_to(np.array([x, 0.38, 0])),
+                robot.animate.move_to(np.array([x, 0.05, 0])),
                 run_time=0.55,
                 rate_func=smooth,
             )
             self.play(FadeIn(tile, shift=UP * 0.08), run_time=0.18)
 
         self.play(
-            robot.animate.move_to(RIGHT * 4.7 + UP * 0.38),
+            robot.animate.move_to(RIGHT * 4.7 + UP * 0.05),
             FadeIn(log_label),
             FadeIn(robot_caption, shift=UP * 0.12),
             run_time=0.55,

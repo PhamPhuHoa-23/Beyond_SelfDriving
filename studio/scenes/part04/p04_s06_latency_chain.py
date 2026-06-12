@@ -172,7 +172,7 @@ class P04S06LatencyChain(StudioScene):
         fusion.move_to(RIGHT * 4.15 + UP * 0.65)
 
         headings = VGroup(
-            stage_heading(1, "LOCAL PERCEPTION", "sensor  ->  BEV", ACCENT_BLUE),
+            stage_heading(1, "LOCAL PERCEPTION", "sensor  \u2192  BEV", ACCENT_BLUE),
             stage_heading(2, "V2X UPLINK", "share features", ACCENT_TEAL),
             stage_heading(3, "FUSION", "multi-agent BEV", ACCENT_AMBER),
         )

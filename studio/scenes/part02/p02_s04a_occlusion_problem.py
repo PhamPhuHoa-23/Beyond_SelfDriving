@@ -61,7 +61,7 @@ class P02S04AOcclusionProblem(StudioScene):
         self.play(FadeIn(road), FadeIn(car, shift=RIGHT * 0.4))
         self.play(FadeIn(cone), FadeIn(truck, shift=DOWN * 0.35))
         self.play(FadeIn(blind))
-        label = Text("single agent -> blind to occlusion", font=FONT_PRIMARY, font_size=SIZE_LABEL, color=RED_ERROR, weight=BOLD)
+        label = Text("single agent \u2192 blind to occlusion", font=FONT_PRIMARY, font_size=SIZE_LABEL, color=RED_ERROR, weight=BOLD)
         label.move_to(RIGHT * 3.6 + UP * 2.25)
         label_bg = SurroundingRectangle(label, buff=0.12, fill_color=BG_CARD, fill_opacity=1.0, stroke_color=RED_ERROR, stroke_width=1.8)
         self.play(FadeIn(label_bg), FadeIn(label))

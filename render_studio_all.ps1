@@ -1,11 +1,22 @@
 #!/usr/bin/env pwsh
-# Render all studio/ scenes at low quality (-w -l) in scene order.
+# Render all studio/ scenes in scene order.
 # Output: videos/<ClassName>.mp4
+
+param(
+    [ValidateSet("low", "medium", "high", "uhd")]
+    [string]$Quality = "low"
+)
 
 $env:PATH = "C:\Users\admin\miniconda3\Scripts;C:\Users\admin\miniconda3\Library\bin;" + $env:PATH
 $env:PYTHONPATH = "C:\Users\admin\Downloads\ML\Lab01_3B1B"
 $MANIM = "C:\Users\admin\miniconda3\Scripts\manimgl.exe"
 $LOG   = "C:\Users\admin\Downloads\ML\Lab01_3B1B\render_studio_all.log"
+$QUALITY_ARGS = @{
+    low = @("-l")
+    medium = @("-m")
+    high = @("-r", "1920x1080", "--fps", "30")
+    uhd = @("-r", "3840x2160", "--fps", "30")
+}[$Quality]
 
 Set-Location "C:\Users\admin\Downloads\ML\Lab01_3B1B"
 "" | Out-File $LOG -Encoding utf8
@@ -105,7 +116,7 @@ $fail  = 0
 foreach ($s in $scenes) {
     $ts = Get-Date -Format "HH:mm:ss"
     Write-Host "[$ts] Rendering $($s.cls) ..." -ForegroundColor Cyan
-    $out = & $MANIM -w -l $s.file $s.cls 2>&1
+    $out = & $MANIM -w @QUALITY_ARGS $s.file $s.cls 2>&1
     if ($LASTEXITCODE -eq 0) {
         $ok++
         Write-Host "  OK" -ForegroundColor Green

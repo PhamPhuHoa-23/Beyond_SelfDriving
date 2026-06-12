@@ -59,7 +59,7 @@ def bev_token_grid(
                 0,
             ]))
             cells.add(cell)
-    frame = SurroundingRectangle(cells, buff=0.06, color=base_color, stroke_width=2.5)
+    frame = SurroundingRectangle(cells, buff=0.06, color=base_color, stroke_width=2.5, fill_opacity=0.0)
     return VGroup(frame, cells)
 
 

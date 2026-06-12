@@ -55,7 +55,7 @@ class P02S03E2EEvolution(StudioScene):
             ).move_to(point)
             title = Text(name, font=FONT_PRIMARY, font_size=SIZE_LABEL, color=INK_DARK, weight=BOLD)
             subtitle = Text(sub, font=FONT_PRIMARY, font_size=SIZE_CAPS, color=INK_MID, weight=BOLD)
-            label = VGroup(title, subtitle).arrange(DOWN, buff=0.02)
+            label = VGroup(title, subtitle).arrange(DOWN, buff=0.1)
             label.next_to(dot, UP, buff=0.22)
             note_mob = Text(note, font=FONT_PRIMARY, font_size=SIZE_CAPS, color=INK_DARK, weight=BOLD)
             note_mob.next_to(dot, DOWN, buff=0.34)

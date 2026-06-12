@@ -1,0 +1,834 @@
+% ============================================================
+%  Beyond Self-Driving — ICCV 2025 Tutorial
+%  Annotated Scripts with Scene Captures
+%  pdflatex  |  A4  |  9pt
+% ============================================================
+\documentclass[9pt,a4paper]{article}
+
+% --- Layout -----------------------------------------------
+\usepackage[
+  a4paper,
+  top=18mm, bottom=22mm,
+  left=22mm, right=22mm,
+  headheight=13pt
+]{geometry}
+
+% --- Encoding & Fonts -------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1,T5]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% --- Graphics & Floats ------------------------------------
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\setlength{\fboxrule}{0.35pt}
+\setlength{\fboxsep}{0pt}
+
+% --- Colors & Boxes ---------------------------------------
+\usepackage{xcolor}
+\definecolor{navyblue}{RGB}{10,50,110}
+\definecolor{scenetag}{RGB}{30,30,30}
+\definecolor{rulegray}{RGB}{160,160,160}
+\definecolor{speakergray}{RGB}{90,90,90}
+\definecolor{quoteblue}{RGB}{0,60,130}
+
+% --- Spacing & Paragraphs ---------------------------------
+\usepackage{parskip}
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+
+% --- Section Styling --------------------------------------
+\usepackage{titlesec}
+\titleformat{\section}
+  {\Large\bfseries\color{navyblue}}
+  {}
+  {0em}
+  {}
+  [\vspace{1pt}\textcolor{navyblue}{\rule{\textwidth}{1.0pt}}]
+\titlespacing{\section}{0pt}{14pt}{6pt}
+
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{navyblue!70!black}}
+  {}
+  {0em}
+  {}
+\titlespacing{\subsection}{0pt}{10pt}{3pt}
+
+% --- Header & Footer --------------------------------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{Beyond Self-Driving --- ICCV 2025}}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\fancyfoot[C]{\footnotesize\textcolor{speakergray}{Continuer | HCMUS}}
+\renewcommand{\footrulewidth}{0.2pt}
+
+% --- Hyperlinks -------------------------------------------
+\usepackage[hidelinks,
+  pdftitle={Beyond Self-Driving --- Annotated Scripts},
+  pdfauthor={Continuer, HCMUS}]{hyperref}
+
+% --- Custom Macros ----------------------------------------
+
+% \scene{ClassName}{Scene Title}{FigureFilename}
+% Places a thin rule, the scene id header, then the screenshot.
+% Narration text follows immediately after the call.
+\newcommand{\scene}[3]{%
+  \vspace{8pt}%
+  \noindent\textcolor{rulegray}{\rule{\textwidth}{0.4pt}}\par\nobreak%
+  \vspace{2pt}\noindent%
+  {\footnotesize\textbf{\texttt{\textcolor{scenetag}{#1}}}}%
+  \enspace\textcolor{rulegray}{|}%
+  \enspace{\small\textit{``#2''}}\par\nobreak%
+  \vspace{3pt}%
+  \noindent\fbox{\includegraphics[width=\textwidth,keepaspectratio]{figures/#3}}%
+  \par\vspace{5pt}%
+}
+
+% Italic note for title cards / no-narration scenes
+\newcommand{\titlecard}[1][~]{%
+  \textit{(Title card --- no narration. #1)}\par\vspace{4pt}%
+}
+
+% Speaker line at start of each part
+\newcommand{\speaker}[1]{%
+  \noindent\textcolor{speakergray}{\small\textit{Speaker: #1}}\par\vspace{2pt}%
+}
+
+% Blockquote style
+\usepackage{mdframed}
+\newmdenv[
+  topline=false, bottomline=false, rightline=false,
+  linecolor=quoteblue, linewidth=2.5pt,
+  innerleftmargin=8pt, innerrightmargin=4pt,
+  innertopmargin=2pt, innerbottommargin=2pt,
+  backgroundcolor=blue!3!white
+]{myquote}
+
+% ============================================================
+\begin{document}
+
+% --- Title Page -------------------------------------------
+\begin{titlepage}
+  \thispagestyle{empty}
+  \vspace*{2.5cm}
+  \begin{center}
+    {\fontsize{28}{34}\selectfont\bfseries\color{navyblue} Beyond Self-Driving}\par
+    \vspace{0.5cm}
+    {\large Introduction to Machine Learning Project}\par
+    \vspace{0.2cm}
+    {\normalsize University of Science, VNU-HCM (HCMUS)}\par
+    \vspace{0.8cm}
+    {\large\bfseries Team Continuer}\par
+    \vspace{0.25cm}
+    {\normalsize
+      Phạm Phú Hòa (23122030)\\
+      Nguyễn Lâm Phú Quý (23122048)\\
+      Bàng Mỹ Linh (23122009)
+    }\par
+    \vspace{1.2cm}
+    {\Large\bfseries Annotated Scripts with Scene Captures}\par
+    \vspace{0.6cm}
+    {\normalsize
+      Five-part tutorial on foundation models, cooperative perception,\\
+      sim-to-real engineering, efficiency, and physical AI.\\[6pt]
+      Based on the ICCV 2025 tutorial by UCLA Mobility Lab.\\[4pt]
+      Scene screenshots captured from representative UHD frames.%
+    }\par
+    \vspace{2.5cm}
+    \begin{tabular}{ll}
+      \textbf{Part 1} & Foundation Models for Autonomous Driving\\
+      \textbf{Part 2} & Towards End-to-End Cooperative Automation\\
+      \textbf{Part 3} & Bridging Simulation and Reality\\
+      \textbf{Part 4} & From Pre-Training to Post-Training\\
+      \textbf{Part 5} & Scalable, Human-Centric Physical AI\\
+    \end{tabular}
+
+    \vspace{1.2cm}
+    {\normalsize\textbf{Work Distribution}}\par
+    \vspace{0.4cm}
+    \begin{tabular}{@{}lllr@{}}
+      \toprule
+      \textbf{Member} & \textbf{Student ID} & \textbf{Parts} & \textbf{Scenes}\\
+      \midrule
+      Phạm Phú Hòa    & 23122030 & 1,\ 5 & 21\\
+      Nguyễn Lâm Phú Quý & 23122048 & 2,\ 4 & 24\\
+      Bàng Mỹ Linh    & 23122009 & 3     & 15\\
+      \bottomrule
+    \end{tabular}
+    \vfill
+    {\small\textcolor{speakergray}{\today}}
+  \end{center}
+\end{titlepage}
+
+% --- Table of Contents ------------------------------------
+\tableofcontents
+\clearpage
+
+% =============================================================
+%  PART 1  (includes Intro preamble)
+% =============================================================
+\section{Part 1: Foundation Models for Autonomous Driving}
+\speaker{Dr.~Zhiyu Huang, Postdoctoral Researcher, UCLA Mobility Lab}
+
+\subsection*{Intro Preamble}
+
+% -- I-01 --------------------------------------------------
+\scene{I01TitleCard}{Beyond Self-Driving}{I01TitleCard}
+This video was created as a project for the Introduction to Machine Learning course at the University of Science, VNU-HCM. We are \textbf{Continuer}: Phạm Phú Hòa (23122030), Nguyễn Lâm Phú Quý (23122048), and Bàng Mỹ Linh (23122009).
+
+Together, we will summarize \textit{Beyond Self-Driving}, an ICCV 2025 tutorial from the UCLA Mobility Lab, and connect its five parts into one story.
+
+% -- I-02 --------------------------------------------------
+\scene{I02TheHook}{The Hook}{I02TheHook}
+Imagine a smart car equipped with the latest AI\@. It perceives its surroundings in real time, reasons about what it sees, and makes split-second decisions. But here is the fundamental problem: even the most intelligent single agent is blind to what it cannot physically see. A truck parked at the corner, a pedestrian hidden behind a wall --- no model, no matter how powerful, can see through obstacles.
+
+Now add a second vehicle with a different vantage point. Suddenly the hidden pedestrian is visible. What one agent misses, another agent catches. This is the core insight behind cooperative perception: not making one agent smarter in isolation, but enabling multiple agents to collaborate.
+
+That is the thesis of this tutorial. So we taught them to cooperate.
+
+% -- I-03 --------------------------------------------------
+\scene{I03Roadmap}{Five Parts}{I03Roadmap}
+The tutorial unfolds in five parts. Part~1 asks why foundation models matter for autonomous driving and how they address its hardest problems. Part~2 explores how multiple agents fuse information across space and time. Part~3 grounds everything in real hardware and real-world deployment. Part~4 addresses efficiency --- data, training, and inference. Part~5 zooms out to the broader frontier: Physical AI that operates safely in a world shared with humans.
+
+% -- I-04 --------------------------------------------------
+\scene{I04BridgeToP1}{Foundation Models Await}{I04BridgeToP1}
+We begin with the models that bring broad world knowledge and general-purpose reasoning into autonomous driving.
+
+\subsection*{Part 1 Scenes}
+
+% -- P01-S01 -----------------------------------------------
+\scene{P01S01Title}{Foundation Models for Autonomous Driving}{P01S01Title}
+Part~1 asks a simple question: can foundation models help autonomous vehicles reason beyond the situations explicitly covered by their training data?
+
+% -- P01-S02a ----------------------------------------------
+\scene{P01S02AGenAITimeline}{The GenAI Boom}{P01S02AGenAITimeline}
+Here is the tension that motivates this entire part. Since 2020, generative AI has made extraordinary progress. GPT-3 appeared in 2020; CLIP and DALL-E followed. ChatGPT arrived in late 2022 and changed the public perception of what AI could do. GPT-4 in 2023, Gemini, LLaMA~3, and models that see, reason, and converse simultaneously --- the timeline is relentless.
+
+So why, in 2025, with all of this capability, have self-driving cars still not spread everywhere? That question is exactly what we need to answer.
+
+To answer it, we first need to understand what a foundation model actually is --- and what makes it fundamentally different from the task-specific models that autonomous driving has used until now.
+
+% -- P01-S02b ----------------------------------------------
+\scene{P01S02BFMDefinition}{What Is a Foundation Model?}{P01S02BFMDefinition}
+A foundation model is trained once on broad, large-scale data and then adapted to many downstream tasks. The data can span text, images, speech, and 3D signals. Pre-training compresses these modalities into a shared representation rather than building an isolated model for every task.
+
+That shared model can then be adapted for information extraction, object recognition, instruction following, question answering, and many other applications. The key idea is visible in the diagram: broad data in, one reusable representation in the middle, and many specialized tasks out.
+
+Before we can understand how foundation models change autonomous driving, we need to understand what autonomous driving systems look like today --- and why they have stalled. Three system architectures have emerged over the past decade, each representing a different set of trade-offs. The \textit{modular pipeline} breaks the problem into discrete, verifiable components. The \textit{end-to-end} approach collapses everything into a single learned system. The \textit{hybrid} design sits in between. Together, they define the design space that the field currently occupies --- and together, they share a weakness that none of them can fix alone. Understanding that weakness is the key to understanding why foundation models matter.
+
+% -- P01-S03a ----------------------------------------------
+\scene{P01S03AModular}{Modular Architecture}{P01S03AModular}
+The dominant deployed architecture for autonomous driving is the modular pipeline. Perception identifies objects and classifies the environment. Localization places the vehicle on the map. Prediction forecasts the future trajectories of other agents. Planning decides what the ego vehicle should do. Control executes that decision.
+
+This pipeline is interpretable and easy to debug --- each module can be tested independently --- which is why it dominates commercial systems. But it has three fundamental weaknesses: errors accumulate from module to module; no joint optimization means each module pursues a local objective that may conflict with others; and the system cannot learn continuously from new experiences because each module is trained and frozen separately.
+
+% -- P01-S03b ----------------------------------------------
+\scene{P01S03BE2E}{End-to-End Architecture}{P01S03BE2E}
+End-to-end systems replace the entire pipeline with a single neural network. Sensors go in, actions come out. There is no handoff between modules, no error accumulation, and the system can be optimized jointly for the final goal.
+
+The cost is interpretability. When an end-to-end car makes a mistake, it is very difficult to diagnose where reasoning went wrong. Safety verification in a black box is a fundamental research challenge the field has not yet solved.
+
+Neither approach is fully satisfactory. That gap has pushed much of the industry toward a third path.
+
+% -- P01-S03c ----------------------------------------------
+\scene{P01S03CHybrid}{Hybrid Architecture}{P01S03CHybrid}
+Hybrid architectures occupy the middle ground. Machine learning handles perception and high-level planning where it excels. Classical, verifiable control modules handle the actuators where reliability matters most. Many leading companies are converging on this design because it balances learning-based adaptability with engineering-grade hardware guarantees.
+
+But all three architectures share a common weakness. Foundation models will make that weakness visible.
+
+% -- P01-S04a ----------------------------------------------
+\scene{P01S04ALongtailProblem}{The Long-Tail Problem}{P01S04ALongtailProblem}
+Look at three real images from public roads.
+
+First: a person standing in the middle of an active lane, phone in hand. Is the car still moving? Are they even aware of approaching vehicles? Second: a truck on the highway carrying three traffic lights --- upside down, unlit, bouncing with the truck's movement. Will any detection module classify them as irrelevant? Third: a road buried under deep snow, lane markings completely invisible. Lane detection fails entirely.
+
+These aren't constructed hypotheticals. They are the \textit{long tail} of the distribution --- rare events outside the training data of any system trained on standard conditions. 99\,\% of driving is uneventful. But accidents happen in the 1\,\% that looks like these three images.
+
+% -- P01-S04b ----------------------------------------------
+\scene{P01S04BLongtailInsight}{The Common-Sense Gap}{P01S04BLongtailInsight}
+Why can human drivers handle these situations? Because we have contextual reasoning built up over a lifetime of experience. We understand intent, physical causality, and social norms. We know that traffic lights strapped to a truck are irrelevant signals. We read behavioral cues from the person on their phone and adjust our expectations accordingly.
+
+This is what autonomous systems lack: not more labeled examples of known scenarios, but genuine world knowledge that generalizes to situations never seen before. The thesis of this part: to handle long-tail scenarios, autonomous systems need the kind of generalizable common sense that only comes from broad, diverse world experience. Foundation models are the first technology that might actually supply it.
+
+% -- P01-S05 -----------------------------------------------
+\scene{P01S05FMEmpower}{Foundation Models Empower AV}{P01S05FMEmpower}
+Here is the connection between the foundation model ecosystem and autonomous driving.
+
+On the left is the foundation-model ecosystem: vision models such as SAM, DINO, and CLIP; video generation models such as Cosmos and Wan; large language models; and multimodal language models such as Gemma and Qwen-VL.
+
+Their shared world knowledge empowers the capabilities on the right: auto-labeling, scenario generation, sensor simulation, vehicle interfaces, language reasoning, and end-to-end driving.
+
+Foundation models do not replace the autonomous-driving stack. They strengthen it with reusable knowledge, with the goal of long-tail generalization and more generalist driving experience.
+
+The most active front for this integration is \textit{Vision-Language-Action} models --- systems that perceive the visual scene, reason about it in language, and produce driving actions directly. Since 2023, four distinct strategies have emerged for how language enters the loop.
+
+% -- P01-S06 -----------------------------------------------
+\scene{P01S06VLARoadmap}{VLA Roadmap}{P01S06VLARoadmap}
+Since 2023, researchers have explored four ways to integrate language models into driving: generating textual actions, producing numerical waypoints directly, providing high-level guidance to a separate trajectory planner, and transferring representations learned through language to downstream driving tasks.
+
+The key insight: language is not just a channel for human-issued commands. It serves as an interface for contextual understanding and reasoning --- a way for the model to articulate \textit{why} it is making a decision, not just what the decision is. That articulation creates a strong inductive bias toward generalization.
+
+To train these systems, dedicated datasets were needed. DriveLM chains language through perception, prediction, planning, and trajectory. CoVLA and Impromptu VLA annotate real driving video clips with both trajectory data and language commentary. The result is a training signal that captures not just what happened, but why.
+
+Three concrete architectures show how these strategies work in practice --- each making a different trade-off between integration depth, reasoning capacity, and deployment practicality.
+
+% -- P01-S07a ----------------------------------------------
+\scene{P01S07ABEVDriver}{BEVDriver}{P01S07ABEVDriver}
+\textbf{BEVDriver} encodes LiDAR and camera data into a Bird's Eye View map --- a unified top-down spatial representation of the environment --- then feeds that representation into a large language model for waypoint prediction. The approach combines principled 3D geometric reasoning with the world knowledge and language capabilities of the language model. The BEV encoding bridges the two domains: spatial structure in, language reasoning through, trajectory out.
+
+A more ambitious approach, from Waymo, eliminates even the BEV encoding step --- running the entire pipeline through language from raw sensor input to final trajectory.
+
+% -- P01-S07b ----------------------------------------------
+\scene{P01S07BEMMA}{EMMA}{P01S07BEMMA}
+\textbf{EMMA} --- End-to-End Multimodal Model for Autonomous Driving --- from Waymo takes the most ambitious approach yet. Built on Gemini, the entire pipeline runs through language tokens. Raw camera frames arrive as input. The model produces a chain of thought: it first describes what it observes in the scene, then reasons about what other agents are likely to do, and only then commits to a trajectory --- alongside structured outputs for object detection and road graph prediction.
+
+There is no separate perception module, no rule-based planner. The model reasons out loud before it acts --- like a student driver learning to narrate their thinking: the car ahead is braking, I need to reduce speed and increase following distance.
+
+The challenge with a fully unified model is latency: chain-of-thought reasoning takes time that the real-time control loop cannot always afford. A dual-system design offers a practical middle ground.
+
+% -- P01-S07c ----------------------------------------------
+\scene{P01S07CDriveVLM}{DriveVLM}{P01S07CDriveVLM}
+\textbf{DriveVLM} from Tsinghua takes a dual-system approach. A Vision-Language Model operates at low frequency --- perhaps a few times per second --- handling scene understanding and high-level planning where language reasoning adds the most value. In parallel, a traditional 3D perception and trajectory planning module runs at full real-time frequency, handling the fast, safety-critical control loop.
+
+The design combines the reasoning power of language models with the speed guarantees of classical modules. The trade-off is significant engineering complexity, but it is currently one of the most practical paths to a deployable VLA system.
+
+Yet even across BEVDriver, EMMA, and DriveVLM, two systematic problems remain. \textbf{AutoVLA}, from UCLA, was designed specifically to address both.
+
+% -- P01-S08a ----------------------------------------------
+\scene{P01S08AAutoVLASwitch}{AutoVLA: Dual Thinking}{P01S08AAutoVLASwitch}
+Previous VLA models had two related problems. First, generated action sequences were often physically infeasible. Second, reasoning was always ``slow'' --- the same chain-of-thought computation happened regardless of whether the scene required it, creating unnecessary latency.
+
+\textbf{AutoVLA}, from UCLA, addresses both with a dual thinking mode design. In \textbf{fast mode}, the model outputs an action directly when the situation is routine. In \textbf{slow mode}, it activates a full chain-of-thought when the scene is ambiguous or complex. This mirrors what cognitive science tells us about human decision-making: routine routes run on near-automatic processing; unfamiliar or high-stakes situations trigger deliberate, effortful reasoning.
+
+% -- P01-S08b ----------------------------------------------
+\scene{P01S08BAutoVLAResults}{AutoVLA Results}{P01S08BAutoVLAResults}
+Results on the nuPlan and nuScenes benchmarks show a consistent finding across all four evaluation metrics: reasoning-augmented training outperforms action-only training. Teaching the model to think well makes it act well. This is not circular --- the reasoning is evaluated separately from the action, so the improvement is genuine.
+
+Reinforcement Fine-Tuning adds a 10.6\,\% improvement in planning score and a 66.8\,\% reduction in runtime. The slow-thinking mode is selective enough --- only activated when needed --- that it reduces the average computational burden rather than increasing it.
+
+% -- P01-S09 -----------------------------------------------
+\scene{P01S09Takeaways}{Part 1 Takeaways}{P01S09Takeaways}
+Four takeaways from this part.
+
+\textbf{Foundation models open the long tail.} Systems that understand the world rather than memorizing rules can reason about situations never seen in training. \textbf{Multimodal LLMs are the leading architecture.} They bring out-of-domain reasoning, internet-scale world knowledge, and interpretable reasoning chains to a domain that has historically resisted all three. \textbf{There is no dominant paradigm yet.} Dual-system, unified end-to-end, BEV encoding, RL fine-tuning --- the field is in active exploration. \textbf{Foundation models are not a complete solution.} Safety verification, interpretability, and formal guarantees remain open problems. Compute cost and latency are still real barriers to deployment at scale.
+
+% -- P01-S10 -----------------------------------------------
+\scene{P01S10BridgeToP2}{Bridge to Part 2}{P01S10BridgeToP2}
+Foundation models may address the long-tail problem --- but there is a physical limit that no model, however capable, can overcome alone.
+
+A single agent is bounded by what it can see from its own position. If a vehicle is parked across the line of sight, if a pedestrian is hidden around a corner, no foundation model helps. The information simply doesn't exist at that sensor location.
+
+The solution isn't a smarter model. It's a different paradigm entirely: enabling multiple agents to share what they see, so that collectively they perceive more than any one of them could alone. That is the subject of Part~2.
+
+% =============================================================
+%  PART 2
+% =============================================================
+\clearpage
+\section{Part 2: Towards End-to-End Cooperative Automation}
+\speaker{Zewei Zhou, PhD Candidate, UCLA Mobility Lab}
+
+% -- P02-S01 -----------------------------------------------
+\scene{P02S01Title}{Cooperative Perception}{P02S01Title}
+Part~2 moves from one intelligent vehicle to many connected agents. The focus is cooperative perception: sharing complementary viewpoints across vehicles and infrastructure.
+
+% -- P02-S02a ----------------------------------------------
+\scene{P02S02A119M}{1.19 Million Deaths}{P02S02A119M}
+Every year, 1.19 million people die in road traffic crashes worldwide. That is the equivalent of a large aircraft crashing every single hour. 94\,\% of these accidents involve human error --- driver distraction, impaired judgment, failure to see a hazard in time.
+
+This is not an abstract statistic for a paper introduction. It is the actual scale of the problem that motivates this entire research area. Automated mobility, done correctly, could eliminate most of these deaths.
+
+% -- P02-S02b ----------------------------------------------
+\scene{P02S02BWaymoReduce}{Waymo: 80\,\% Reduction}{P02S02BWaymoReduce}
+Waymo recently released a large-scale safety study comparing its autonomous vehicles to human drivers in equivalent traffic conditions. The result: an 80\,\% reduction in injury-causing crashes.
+
+This is a meaningful number because it comes from real-world deployment, not simulation. It demonstrates that the technology works at some level --- and raises the question of how to make it work everywhere, for all agents, not just well-funded robotaxis in select geofenced areas.
+
+Answering that question requires first understanding the ceiling of what single-agent systems could achieve on their own --- and precisely where that ceiling is.
+
+% -- P02-S03 -----------------------------------------------
+\scene{P02S03E2EEvolution}{Single-Agent Evolution}{P02S03E2EEvolution}
+Before multi-agent systems, let's examine where single-agent autonomous driving had arrived by 2024.
+
+The trajectory is clear. \textbf{PnPNet} introduced joint perception and prediction using convolutional networks and recurrent modules. \textbf{GameFormer} brought interactive prediction into planning, modeling other agents as game-theoretic players. \textbf{UniAD} unified the entire pipeline into a single query-based end-to-end model optimized jointly. \textbf{DiffusionDrive} uses a diffusion model to generate trajectory distributions with principled uncertainty representation.
+
+Each step reduced the handoff cost between modules and improved joint optimization. But performance on benchmarks is not the same as safety in the full physical world.
+
+% -- P02-S04a ----------------------------------------------
+\scene{P02S04AOcclusionProblem}{The Occlusion Problem}{P02S04AOcclusionProblem}
+Here is the fundamental limitation that end-to-end improvements cannot fix.
+
+These two rows of LiDAR scans show the same intersection. The top row is a single-agent scan: one point of origin, one field of view, large dark regions where no point cloud data exists. The bottom row adds a second agent at a different position: the dark regions shrink dramatically. Information that was simply absent in the single-agent view is now present.
+
+This is not an algorithm problem. It is a geometry problem. A single LiDAR cannot see around occlusions. If a truck is blocking the view, there is no signal to process. The only solution is complementary information from a different vantage point.
+
+% -- P02-S05 -----------------------------------------------
+\scene{P02S05RadarWaves}{Cooperative Coverage}{P02S05RadarWaves}
+When two vehicles share their perception data, the combined field of view fills in the precise occlusions that each individual agent experiences. The cooperation is geometrically additive: what one cannot see, the other can. The coverage is not just the union of two circles --- it resolves the specific blind spots created by the geometry of the scene.
+
+The research community recognized this potential early. Over the past several years, a series of progressively more capable cooperative systems were built --- and along the way, two critical gaps became apparent.
+
+% -- P02-S06 -----------------------------------------------
+\scene{P02S06RelatedWorks}{Related Works}{P02S06RelatedWorks}
+The cooperative perception community has been working on this problem for several years, and the methods have become progressively more sophisticated.
+
+\textbf{V2VNet} used graph neural networks to aggregate features from multiple agents. \textbf{V2X-ViT} extended this with Transformer-based attention across vehicle-to-infrastructure pairs. \textbf{Where2comm} introduced sparse communication, learning which spatial locations are worth transmitting rather than sending the entire feature map. \textbf{CodeFilling} brought codebook-based feature compression.
+
+Datasets have similarly matured: from the purely simulated OPV2V, to DAIR-V2X with real infrastructure data, to V2X-Real --- the first large-scale real-world dataset covering both V2V and V2I scenarios.
+
+But across all of these contributions, two critical gaps remained open.
+
+% -- P02-S07 -----------------------------------------------
+\scene{P02S07ResearchGaps}{Research Gaps}{P02S07ResearchGaps}
+\textbf{Gap one: task scope.} Every prior method addressed cooperative perception as a detection problem --- classify objects, output bounding boxes, stop there. How cooperation benefits the full automation chain --- prediction and motion planning --- was unexplored. Without temporal context, prediction is severely limited.
+
+\textbf{Gap two: data.} Existing datasets lacked the sequential, time-series structure that temporal fusion requires. And no dataset covered all V2X collaboration modes simultaneously: vehicle-to-vehicle, vehicle-to-infrastructure, and infrastructure-to-infrastructure in one place, at scale.
+
+% -- P02-S08 -----------------------------------------------
+\scene{P02S08ThreeQuestions}{Three Core Questions}{P02S08ThreeQuestions}
+The gaps point to three concrete research questions that any serious V2X system must answer.
+
+\textbf{What to transmit?} Raw sensor data, detected objects, or intermediate feature maps --- each trade-off has implications for bandwidth, accuracy, and latency. \textbf{When to transmit?} A single frame? A history? And how do you decide when agents are too far apart to communicate efficiently? \textbf{How to fuse?} Once data from multiple agents arrives at the ego vehicle, how do you integrate information from different viewpoints, timestamps, and sensor modalities into a single coherent scene representation?
+
+% -- P02-S09 -----------------------------------------------
+\scene{P02S09V2XPnPArch}{V2XPnP Framework}{P02S09V2XPnPArch}
+\textbf{V2XPnP} --- Vehicle-to-Everything Spatio-Temporal Fusion for Perception and Prediction --- addresses all three questions in a unified end-to-end framework presented at ICCV 2025.
+
+\textit{What to transmit?} V2XPnP evaluates all three fusion strategies --- early, late, and intermediate --- each with a temporal dimension. \textit{When to transmit?} Using a one-step communication strategy: when agents are within range, they transmit their full history in a single exchange. Temporal attention then compresses this multi-frame history into a single-frame representation before transmission. \textit{How to fuse?} Two complementary modules: temporal attention aggregates the motion history of each individual agent; spatial attention integrates information across different agents at the same timestep.
+
+% -- P02-S10 -----------------------------------------------
+\scene{P02S10V2XPnPDataset}{V2XPnP-Seq Dataset}{P02S10V2XPnPDataset}
+To support the framework, the team built \textbf{V2XPnP-Seq} --- the first real-world sequential dataset covering all V2X collaboration modes simultaneously.
+
+The setup includes two connected automated vehicles and two infrastructure nodes at a real urban intersection. The dataset contains 40{,}000 LiDAR frames, 208{,}000 camera frames, full HD map annotations, and trajectory labels for downstream prediction and planning tasks. V2V, V2I, V2X, and I2I scenarios are all represented.
+
+Benchmark results confirm the framework's design choices: intermediate feature fusion combined with one-step communication and temporal-spatial-map fusion outperforms all prior state-of-the-art methods.
+
+% -- P02-S11a ----------------------------------------------
+\scene{P02S11ATurboTrainProblem}{Training Challenge}{P02S11ATurboTrainProblem}
+Building the framework is one thing. Training it is another.
+
+This chart shows the core difficulty. Orange dots are one-time training attempts on the full multi-agent, multi-frame, multi-task system --- they fail outright. Blue dots are the result of carefully sequenced manual training: four separate stages over 120 epochs, requiring expert judgment about when to transition between stages.
+
+Two root causes. \textbf{Initialization sensitivity}: a complex architecture with temporal, multi-agent, and multi-task dimensions converges to a bad local minimum when trained from random initialization. \textbf{Gradient conflict}: detection, prediction, and planning objectives pull the model's weights in contradictory directions. Standard SGD has no mechanism to resolve this.
+
+% -- P02-S11b ----------------------------------------------
+\scene{P02S11BTurboTrainSolution}{TurboTrain Solution}{P02S11BTurboTrainSolution}
+\textbf{TurboTrain} solves both problems with a two-stage pipeline.
+
+\textbf{Stage~1 --- Masked Pretraining}: the model learns a task-agnostic 4D spatio-temporal representation by reconstructing masked LiDAR point clouds from multi-agent, multi-frame data. No annotations are needed. The model simply learns the structure of cooperative scenes --- establishing a stable initialization that resolves the sensitivity problem.
+
+\textbf{Stage~2 --- Gradient Balancing}: fine-tuning alternates between free gradient steps --- where each task learns without interference --- and conflict-suppressing steps that detect and resolve gradient conflicts. This prevents any one task from dominating the optimization.
+
+The result: 45 epochs instead of 120, higher final performance than the manual four-stage process, and no requirement for human expertise to manage the training schedule.
+
+The system can now perceive and predict reliably. The remaining question is: what do we do with that understanding? Perception and prediction are inputs to planning --- and planning must be safe enough to stake a life on.
+
+% -- P02-S12 -----------------------------------------------
+\scene{P02S12RiskMap}{RiskMap}{P02S12RiskMap}
+Perception and prediction enable the vehicle to understand the scene. Planning requires using that understanding to make safe decisions. And this is where interpretability becomes critical.
+
+\textbf{RiskMap} introduces an explicit Risk Map as middleware between the learned representation and the planner. The Risk Map is a probabilistic spatial-temporal representation of danger --- a map in which each cell encodes the likelihood of a hazardous event at that location and time. A learning-based Model Predictive Controller then uses this Risk Map to compute a safe trajectory.
+
+This separates two questions the black-box approach conflates: \textit{``Where is the environment dangerous?''} (which AI handles well) and \textit{``Given that danger map, what is the safest trajectory?''} (which can be formally verified). RiskMap outperforms all prior fusion methods on detection, prediction, and planning metrics simultaneously.
+
+% -- P02-S13 -----------------------------------------------
+\scene{P02S13Summary}{Part 2 Summary}{P02S13Summary}
+Three problems, three solutions forming a complete stack.
+
+\textbf{V2XPnP} establishes the foundation: a real-world dataset covering all V2X modes, and a framework that answers the what-when-how of spatio-temporal cooperative fusion.
+
+\textbf{TurboTrain} solves the practical training bottleneck: pretrain-then-balance cuts training from 120 to 45 epochs without human stage management.
+
+\textbf{RiskMap} extends the stack toward safe planning: interpretable middleware that turns learned scene understanding into a verifiable planning interface.
+
+% -- P02-S14 -----------------------------------------------
+\scene{P02S14BridgeToP3}{Bridge to Part 3}{P02S14BridgeToP3}
+All three systems have now been built. They work in simulation and on benchmark datasets. But deploying them in the real world requires something we have not discussed: the hardware, the sensors, the calibration, the localization infrastructure, and the data collection pipelines that make real-world training and operation possible.
+
+The gap between a simulated cooperative perception system and one that runs on a real intersection is significant --- and it is exactly the gap that Part~3 addresses.
+
+% =============================================================
+%  PART 3
+% =============================================================
+\clearpage
+\section{Part 3: Bridging Simulation and Reality}
+\speaker{Zhaoliang Zheng, PhD Candidate, UCLA Mobility Lab}
+
+% -- P03-S01 -----------------------------------------------
+\scene{P03S01Title}{Bridging Simulation and Reality}{P03S01Title}
+Part~3 leaves the benchmark and enters the physical world. We now examine the hardware, calibration, localization, and deployment work needed to bridge simulation and reality.
+
+% -- P03-S02 -----------------------------------------------
+\scene{P03S02SimRealGap}{The Sim-to-Real Gap}{P03S02SimRealGap}
+Parts~1 and~2 built a theoretically solid stack --- foundation models for reasoning, cooperative spatio-temporal fusion for perception, RiskMap for interpretable planning. But every one of those systems was trained and evaluated on datasets. And datasets come from somewhere.
+
+There is a well-known problem in robotics called the \textit{sim-to-real gap}: systems that work in simulation, or on carefully collected datasets, often fail when deployed on real hardware in real conditions. The reasons are concrete --- sensors have noise characteristics that simulation doesn't perfectly model, weather changes in ways that training data doesn't cover, and the physical world has edge cases that no dataset designer anticipated.
+
+This part is the engineering part. It covers how to build, calibrate, and deploy a real V2X system --- from the hardware bolted to a pole at an intersection, to the algorithms running real-time on a moving vehicle.
+
+% -- P03-S03 -----------------------------------------------
+\scene{P03S03SmartIntersection}{UCLA Smart Intersection}{P03S03SmartIntersection}
+The testbed for this work is a real intersection: Charles E. Young Drive and Westwood Plaza, on the UCLA campus. This is not a closed test track. It is an active public intersection with real vehicles and pedestrians, operating every day.
+
+The hardware deployment includes two infrastructure nodes. The northwest corner node carries a 128-line LiDAR, two cameras, and a radar unit. The southeast corner node carries a 64-line LiDAR, two cameras, and a C-V2X communication unit. Two connected automated vehicles complete the system, each equipped with a 128-line RoboSense Ruby Plus LiDAR, four stereo cameras, and tightly integrated GNSS and IMU.
+
+Why so many sensors? Because each sensor type has its own failure modes. Cameras fail in direct sunlight and at night. LiDAR degrades in heavy rain. GNSS loses accuracy near tall buildings. Redundancy is the minimum viable design for a reliable system.
+
+% -- P03-S04a ----------------------------------------------
+\scene{P03S04ATimeCalibration}{Time Calibration}{P03S04ATimeCalibration}
+Running multiple agents with multiple sensor types introduces an immediate synchronization problem: how do you know that the LiDAR scan from the infrastructure node and the LiDAR scan from the vehicle were captured at the same physical moment?
+
+The math is unforgiving. A vehicle traveling at 60\,km/h moves 0.83\,m per second. A 50-millisecond timing offset displaces the reported object position by more than 40\,cm. In lane-level driving, that is the difference between a correct and an incorrect obstacle classification.
+
+The solution is hardware-level synchronization. GPS provides a shared global time reference visible to all agents simultaneously. Hardware triggers on each sensor ensure that capture happens at a precisely defined moment --- not via software scheduling, which has unpredictable latency jitter.
+
+% -- P03-S04b ----------------------------------------------
+\scene{P03S04BSpaceCalibration}{Space Calibration}{P03S04BSpaceCalibration}
+Every sensor lives in its own coordinate frame. The camera has an intrinsic model that maps 3D world points to 2D image pixels, including lens distortion. The LiDAR has its own origin and orientation. The vehicle has a reference frame. The global map has a reference frame.
+
+Extrinsic calibration establishes the rigid body transforms between all of these: from camera to LiDAR, from vehicle LiDAR to world frame, from infrastructure LiDAR to world frame. If any of these transforms are wrong, point clouds from different sources fuse incorrectly --- producing ghost objects that appear to exist but don't, or missing real objects entirely.
+
+Calibration tools for this system have been released open-source as PJLab SensorsCalibration.
+
+% -- P03-S05 -----------------------------------------------
+\scene{P03S05DataCollection}{Data Collection}{P03S05DataCollection}
+Calibration gives you a system that records correctly. The next challenge is ensuring the data you collect is diverse and representative enough for training.
+
+Data collection at the UCLA Smart Intersection follows a structured protocol. Basic routes include consistent left turns, right turns, and straight-through passes. Combined routes chain multiple maneuvers, capturing the full range of spatial overlap patterns between infrastructure and vehicle sensors. Data was collected at multiple times of day to cover varying lighting, traffic density, and shadow patterns.
+
+This structured approach produced the V2X-Real dataset (ECCV 2024) and V2XPnP-Seq described in Part~2 --- both grounded in this specific hardware deployment.
+
+Data collection is only the beginning. For agents to fuse their observations correctly, they must first agree on where they are. Even centimeter-level errors in position will corrupt the fused result.
+
+% -- P03-S06 -----------------------------------------------
+\scene{P03S06LocalizationRole}{Why Localization Matters}{P03S06LocalizationRole}
+Cooperative perception requires that all agents share a common world model. And that means every agent needs to know precisely where it is in the world.
+
+Consider the scenario: an infrastructure node observes an object in its field of view, and a vehicle observes the same object from a different angle. To fuse these two observations, both agents must know their position and orientation in the same world coordinate frame. If their localization is off, the fused result is a corrupt representation --- worse than either individual observation alone.
+
+With incorrect localization, a fused LiDAR result can be \textit{worse} than a single-agent result, because you are confidently combining two wrong frames of reference. Precise localization is not optional for cooperative systems --- it is load-bearing.
+
+% -- P03-S07 -----------------------------------------------
+\scene{P03S07KalmanFilter}{Kalman Filter: Three Rivers}{P03S07KalmanFilter}
+The solution is a multi-rate error-state Kalman filter that fuses three sensor modalities with very different characteristics.
+
+\textbf{GNSS} provides absolute position --- it grounds the vehicle in the global coordinate frame --- but operates at only 5\,Hz and degrades significantly near tall buildings. The \textbf{IMU} and wheel speed sensors provide high-frequency velocity and attitude updates at 100\,Hz, enabling rapid dead-reckoning corrections, but they accumulate drift over time. \textbf{LiDAR map-matching} compares the current point cloud scan against a pre-built HD map to correct pose --- highly accurate when the match succeeds, but computationally expensive and running at just 1\,Hz.
+
+The Kalman filter integrates all three streams, accounts for measurement delays and asynchronous sensor updates, and produces a continuous, smooth pose estimate at 100\,Hz. The output is lane-level accuracy --- sufficient for precise cooperative fusion --- delivered in real time.
+
+With precise localization established for every agent, the core algorithmic question can be addressed: how do we actually fuse observations from different agents in real time, on a live intersection?
+
+% -- P03-S08 -----------------------------------------------
+\scene{P03S08CooperFuse}{CooperFuse: Late Fusion}{P03S08CooperFuse}
+\textbf{CooperFuse} is the first real-time cooperative late fusion system for V2X, published at IV~2024. Late fusion means each agent runs detection locally, transmits its detected bounding boxes, and the receiver fuses the results. It is lightweight --- no raw sensor data is shared.
+
+The challenge in late fusion is deciding which bounding box to keep when two agents detect the same object. Traditional NMS simply keeps the box with the highest detection confidence score. But confidence only answers ``am I sure I detected something?'' --- it says nothing about the physical properties of the detection.
+
+CooperFuse instead fuses using the \textit{temporal features} of each bounding box --- position, heading, and size tracked over multiple frames. An infrastructure node with a favorable overhead viewing angle may have lower detection confidence but more accurate orientation. Temporal feature fusion captures that geometric quality; confidence-based NMS cannot.
+
+Late fusion is bandwidth-efficient, but it discards the richness of intermediate feature representations. When bandwidth is available, sharing features before the final detection step can unlock significantly higher accuracy.
+
+% -- P03-S09 -----------------------------------------------
+\scene{P03S09V2XReaLO}{V2X-ReaLO: Online Intermediate Fusion}{P03S09V2XReaLO}
+\textbf{V2X-ReaLO} is the first online intermediate fusion system for real-world V2X deployment, submitted to T-PAMI. It transmits compressed BEV feature maps rather than bounding boxes, achieving higher accuracy at the cost of higher bandwidth --- and must solve a hard accuracy-latency trade-off.
+
+The system operates at \textbf{0.5\,MB per message} --- a 32$\times$ compression of the uncompressed BEV feature representation. This size fits within practical V2X network bandwidth budgets while retaining sufficient spatial detail for downstream detection. BEV features encode both static environment structure and dynamic object features in a single spatial representation, making them an efficient intermediate for multi-agent fusion.
+
+Having both late and intermediate fusion algorithms, the next engineering challenge is deployment: how do you develop and validate these algorithms without requiring a full hardware cycle for every change? The answer is a principled bridge between simulation and the real vehicle stack.
+
+% -- P03-S10 -----------------------------------------------
+\scene{P03S10OpenCDAROS}{OpenCDA-ROS: Sim-to-Real Bridge}{P03S10OpenCDAROS}
+Developing and testing these systems requires the ability to run the same code in simulation as on real hardware --- otherwise, every algorithm change requires a full hardware deployment cycle.
+
+\textbf{OpenCDA-ROS} bridges simulation and reality using the Robot Operating System (ROS) as middleware. ROS is the standard communication framework in robotics; it provides a message-passing architecture that decouples sensor drivers, processing modules, and actuator commands through a shared topic system. OpenCDA-ROS implements the full V2X communication stack, multi-agent time synchronization, and data streaming in ROS, so that code written for the CARLA simulator can run directly on real vehicles with driver-level substitutions but no algorithmic changes.
+
+% -- P03-S11 -----------------------------------------------
+\scene{P03S11SimBoost}{CDA-SimBoost: Digital Twin}{P03S11SimBoost}
+\textbf{CDA-SimBoost} closes the loop between real-world data and simulation-based training.
+
+The pipeline: import real-world sensor data via the OpenCDA-ROS bridge; reconstruct the physical environment as a digital twin in CARLA; use the digital twin to generate challenging scenario variants --- different weather, different traffic densities, different agent failure modes; train and benchmark cooperative perception and planning systems on this augmented data.
+
+Why generate scenarios rather than just replaying real data? Because real data is overwhelmingly nominal. Sensor failures, rare pedestrian behaviors, occluded intersections in heavy rain --- these events are statistically rare but disproportionately important for safety. The digital twin is the mechanism for controlled exposure to edge cases at the scale needed for robust training.
+
+% -- P03-S12 -----------------------------------------------
+\scene{P03S12DigitalTwin}{Digital Twin Details}{P03S12DigitalTwin}
+The digital twin is not just a visual replica. It is a physically consistent simulation environment built from real sensor measurements, preserving the spatial geometry, sensor placement, and traffic patterns of the actual intersection.
+
+Agent behavior models are fit from the real trajectory data collected at the UCLA Smart Intersection. The environment supports swapping sensor configurations, adding virtual agents with programmable behaviors, and injecting sensor degradation models. This makes it possible to evaluate how a cooperative perception system responds to partial sensor failure before that failure happens in the real world.
+
+A digital twin this expressive needs a systematic data generation interface --- one that can systematically vary configurations and produce training-ready annotations at scale.
+
+% -- P03-S13 -----------------------------------------------
+\scene{P03S13InfraX}{OpenCDA-InfraX}{P03S13InfraX}
+\textbf{OpenCDA-InfraX} is the data generation platform built on top of the digital twin infrastructure. It provides a unified interface for generating multi-modal sensor data across flexible configurations --- varying numbers of infrastructure nodes, different sensor loadouts, multiple weather conditions, and full vector map output.
+
+The platform is designed to feed downstream model training directly: structured annotations, calibrated sensor data, and ground-truth labels are produced in a format compatible with standard detection and prediction training pipelines. This reduces the friction between data collection and model development.
+
+% -- P03-S14 -----------------------------------------------
+\scene{P03S14Summary}{Part 3 Summary}{P03S14Summary}
+This part built the entire infrastructure layer for real-world V2X deployment.
+
+\textbf{Hardware:} a multi-modal, redundant sensor suite at a real urban intersection, with two infrastructure nodes and two connected vehicles. \textbf{Calibration:} hardware-level time synchronization and precise multi-sensor extrinsic alignment. \textbf{Localization:} a multi-rate Kalman filter fusing GNSS, IMU, and LiDAR map-matching into a continuous 100\,Hz lane-level pose stream. \textbf{Fusion:} CooperFuse for real-time late fusion; V2X-ReaLO for online intermediate fusion at a practical bandwidth working point. \textbf{Digital twin:} OpenCDA-ROS for simulation-reality bridging, CDA-SimBoost for scenario generation, OpenCDA-InfraX for structured data generation.
+
+% -- P03-S15 -----------------------------------------------
+\scene{P03S15BridgeToP4}{Bridge to Part 4}{P03S15BridgeToP4}
+The infrastructure is in place. The fusion algorithms work. The digital twin closes the loop between simulation and reality.
+
+But three practical bottlenecks remain. Annotating real-world LiDAR data is extremely expensive --- and annotation costs scale with dataset size. Training the complex multi-agent, multi-task framework is slow and difficult to converge. And running inference on edge hardware inside a vehicle, with constrained compute and power budgets, is a hard real-time requirement that research-grade systems often don't meet.
+
+These three bottlenecks --- data, training, and inference efficiency --- are exactly what Part~4 addresses.
+
+% =============================================================
+%  PART 4
+% =============================================================
+\clearpage
+\section{Part 4: From Pre-Training to Post-Training}
+\speaker{Seth Z.~Zhao, PhD Candidate, UCLA Mobility Lab}
+
+% -- P04-S01 -----------------------------------------------
+\scene{P04S01Title}{From Pre-Training to Post-Training}{P04S01Title}
+Part~4 asks how the full V2X system can scale. We follow the efficiency problem from data and pre-training through optimization, compression, and real-time inference.
+
+% -- P04-S02 -----------------------------------------------
+\scene{P04S02V2XOverview}{V2X: The Full Picture}{P04S02V2XOverview}
+Vehicle-to-Everything --- V2X --- is the paradigm in which vehicles and infrastructure share sensor data to overcome the physical limitations of any single agent's viewpoint. Parts~2 and~3 built the theoretical foundation and the real-world deployment infrastructure. The result is a system that works.
+
+But ``works'' in a research context is different from ``scales in deployment.'' V2X at scale means thousands of intersections, millions of vehicles, edge devices with fixed compute budgets, and training pipelines that researchers can actually run. The U.S.\ Department of Transportation is actively funding smart intersection programs --- which means the efficiency questions in this part have near-term practical consequences.
+
+Three bottlenecks stand between the systems built in Parts~2 and~3 and real-world scalability: limited labeled data, slow training convergence, and real-time inference on edge hardware.
+
+% -- P04-S03 -----------------------------------------------
+\scene{P04S03AnnotationCost}{The Annotation Bottleneck}{P04S03AnnotationCost}
+The V2X dataset ecosystem has grown rapidly. V2V4Real contains 240{,}000 annotated frames. DAIR-V2X has 460{,}000. V2X-Real has 1.2 million. The scale of data is impressive --- but annotation cost scales linearly with it.
+
+Annotating 3D LiDAR point clouds is labor-intensive. It requires specialized software, trained annotators who understand 3D spatial relationships, and multi-layer quality control processes. Scaling to millions of frames through human annotation alone is not economically viable.
+
+The question becomes: how do we get good model performance without requiring every frame to be labeled?
+
+% -- P04-S04 -----------------------------------------------
+\scene{P04S04CooPReMasked}{CooPre: Masked Voxel Pretraining}{P04S04CooPReMasked}
+\textbf{CooPre} --- Cooperative Pretraining for V2X --- is the first self-supervised pretraining method designed for multi-agent cooperative perception, published at IROS~2025.
+
+The mechanism is masked voxel reconstruction. During pretraining, the model receives multi-agent LiDAR point clouds projected onto BEV voxel grids. 40\,\% of the voxels are randomly masked. The model is asked to reconstruct the masked regions using information from all agents. No detection labels are needed.
+
+This pretraining task has a strong inductive bias for cooperative perception: to reconstruct masked voxels, the model must learn to use the other agent's viewpoint to fill in what is missing from its own. That is precisely the cooperative skill that downstream detection will require.
+
+Results: at 50\,\% of labeled training data, CooPre matches the performance of a model trained from scratch on 100\,\% of the data. With all 100\,\% labels, it improves by an additional 4.5 mAP points. Cross-domain pretraining also outperforms single-domain baselines, showing the representations are genuinely general.
+
+The data bottleneck is resolved. The second bottleneck is training itself: even with sufficient data, the complex multi-agent, multi-task architecture fails to converge reliably from a naive training setup.
+
+% -- P04-S05 -----------------------------------------------
+\scene{P04S05TurboTrainLandscape}{TurboTrain: Training Landscape}{P04S05TurboTrainLandscape}
+Part~2 introduced TurboTrain as a solution to training instability. Here we look more carefully at why the problem is as hard as it is.
+
+The training outcome landscape for multi-agent, multi-frame, multi-task systems: orange points are one-time training attempts --- they cluster near zero on both detection and prediction accuracy. They don't degrade gracefully; they fail. Blue points are the result of a carefully sequenced four-stage manual training process requiring 120 epochs.
+
+Two root causes: \textbf{initialization sensitivity} and \textbf{gradient conflict}. A system with temporal, multi-agent, and multi-task dimensions has a loss landscape with many sharp local minima. And when detection loss, prediction loss, and planning loss are optimized simultaneously, their gradients frequently point in opposing directions. Standard SGD has no mechanism for resolving this.
+
+TurboTrain, introduced in Part~2, resolves both root causes --- cutting training from 120 to 45 epochs with no manual stage management. With the training bottleneck handled, the third and final bottleneck comes into focus: running the system fast enough, on small enough hardware, to actually deploy at the edge.
+
+% -- P04-S06 -----------------------------------------------
+\scene{P04S06LatencyChain}{Latency Chain}{P04S06LatencyChain}
+To understand inference efficiency, we need to understand the full latency budget of a V2X system.
+
+Each agent runs local inference on its sensor data --- this takes time. The compressed features are transmitted over the V2X communication channel --- transmission adds latency. The receiving agent runs fusion inference to integrate the received features with its own --- this adds more time. The total round-trip must fit within the real-time decision cycle, typically 100--200 milliseconds, or the system is already operating on stale information.
+
+Every component of this chain matters. Improving model-level inference speed without addressing communication bandwidth misses half the problem.
+
+% -- P04-S07 -----------------------------------------------
+\scene{P04S07ArithmeticCost}{Arithmetic Cost}{P04S07ArithmeticCost}
+Why is neural network inference expensive on edge hardware?
+
+Neural networks are dominated by two operations: multiply-accumulate operations in fully connected and convolutional layers, and memory reads to load weights from off-chip memory. The energy costs are revealing. A 32-bit floating-point multiplication costs roughly 3.7 picojoules. A 32-bit memory access from DRAM costs approximately 640 picojoules --- more than 170$\times$ more expensive than the computation itself.
+
+This means inference on edge hardware is \textit{memory-bound}, not compute-bound. Reducing the bit-width of weights from 32-bit float to 8-bit integer cuts the memory footprint by 4$\times$, replaces multiplications with cheaper integer additions, and enables hardware accelerators designed specifically for INT8 operations.
+
+% -- P04-S08 -----------------------------------------------
+\scene{P04S08QuantV2X}{QuantV2X: Fully Quantized Pipeline}{P04S08QuantV2X}
+\textbf{QuantV2X} is the first fully quantized cooperative perception pipeline, addressing both the model and the communication channel simultaneously.
+
+At the \textbf{model level}, all weights and activations are quantized from FP32 to INT8 --- giving the 4$\times$ memory reduction and enabling INT8-optimized hardware paths. At the \textbf{communication level}, instead of transmitting FP32 BEV features, QuantV2X compresses features into a learned low-bit codebook representation that is 300$\times$ smaller than uncompressed BEV features in raw bytes.
+
+The key contribution is not demonstrating that quantization works for a single model. It is demonstrating that a \textit{fully quantized end-to-end cooperative perception pipeline} --- both model and communication --- achieves acceptable accuracy on real benchmarks, making it viable for deployment.
+
+% -- P04-S09 -----------------------------------------------
+\scene{P04S09EfficiencySummary}{Efficiency Summary}{P04S09EfficiencySummary}
+Three bottlenecks, three solutions.
+
+\textbf{CooPre} addresses the data bottleneck: self-supervised pretraining that learns cooperative representations without annotation, cutting the labeled data requirement by half.
+
+\textbf{TurboTrain} addresses the training bottleneck: masked pretraining establishes a stable initialization; conflict-suppressing gradient balancing enables multi-task convergence; total epochs reduced from 120 to 45 with no manual stage management.
+
+\textbf{QuantV2X} addresses the inference bottleneck: full INT8 quantization of both the model and the communication channel, cutting memory footprint and transmission cost while preserving operational accuracy.
+
+% -- P04-S10 -----------------------------------------------
+\scene{P04S10BridgeToP5}{Bridge to Part 5}{P04S10BridgeToP5}
+The efficiency problems are solved. The V2X stack is now deployable.
+
+But Parts~2, 3, and~4 have been focused entirely on one category of agent: wheeled vehicles on roads, coordinating with fixed infrastructure. The physical world is much wider. Delivery robots on sidewalks, electric wheelchairs at crosswalks, quadruped robots in parks, humanoid robots in offices --- and all of them operating in the same spaces as human pedestrians, cyclists, and children.
+
+Safe operation in environments shared with humans requires something that V2X systems for vehicles have not needed to model: human behavior. And building AI that operates safely in those environments requires simulation tools, training pipelines, and behavior datasets that simply didn't exist until recently.
+
+That is the subject of Part~5.
+
+% =============================================================
+%  PART 5
+% =============================================================
+\clearpage
+\section{Part 5: Scalable, Human-Centric Physical AI}
+\speaker{Wayne Wu, Research Associate, UCLA Mobility Lab}
+
+% -- P05-S01 -----------------------------------------------
+\scene{P05S01Title}{Scalable, Human-Centric Physical AI}{P05S01Title}
+Part~5 broadens the discussion from self-driving cars to physical AI. The goal is scalable embodied intelligence that can operate safely in complex spaces shared with people.
+
+% -- P05-S02a ----------------------------------------------
+\scene{P05S02ALLMVsRobot}{Why Robots Are Different from LLMs}{P05S02ALLMVsRobot}
+Large language models succeeded because of one thing: the internet. Trillions of tokens of human-generated text, freely available, covering virtually every domain of human knowledge and behavior. Training on that corpus gave LLMs world knowledge, common sense, and generalizable reasoning --- capabilities that emerged from scale, not from hand-engineered rules.
+
+Robots do not have an internet.
+
+Robotic behavior data must be collected physically --- each robot, in each environment, performing each task, observed by sensors and annotated either by humans or by auxiliary systems. You cannot crawl the web for robot navigation trajectories. The data problem for physical AI is categorically different from the data problem for language AI.
+
+% -- P05-S02b ----------------------------------------------
+\scene{P05S02BTwoBarriers}{Two Barriers}{P05S02BTwoBarriers}
+The path from current robotics to general-purpose Physical AI is blocked by two distinct barriers.
+
+\textbf{Barrier~1: No web-scale robot behavior data.} Behavior cloning requires large quantities of demonstration data in the target environment. Collecting it at the scale needed for general policies requires either an enormous fleet of physical robots or a simulation environment realistic enough that sim-to-real transfer works reliably.
+
+\textbf{Barrier~2: No human modeling in context.} Robots operating in shared human spaces must predict and respond to human behavior to be safe. A robot that cannot model pedestrian intent cannot safely navigate a crosswalk. And pedestrian behavior is highly variable, context-dependent, and affected by subtle social cues that are very difficult to capture in existing motion datasets.
+
+The recipe for overcoming both: \textbf{scalable scene simulation} to generate robot behavior data, and \textbf{human behavior modeling} to populate those environments with realistic people.
+
+The UCLA Mobility Lab pursues this recipe in a specific real-world context: not highways, but the much more complex micro-mobility environments where most urban trips actually happen.
+
+% -- P05-S03 -----------------------------------------------
+\scene{P05S03Micromobility}{Micro-Mobility Testbed}{P05S03Micromobility}
+The testbed for this work is not highways or freeways. It is the environment where most urban movement actually happens.
+
+In the United States, approximately 60\,\% of all trips are shorter than 5 miles --- distances ideally served by micro-mobility: delivery robots, AI-powered wheelchairs, electric scooters, compact unmanned ground vehicles. These agents navigate sidewalks, crosswalks, and mixed pedestrian-vehicle spaces --- an operating environment far more complex than a highway.
+
+UCLA partners with COCO Robotics, deploying autonomous delivery robots in real campus and urban environments, as the real-world validation testbed for the methods in this part.
+
+To train robots for these environments, we need simulation. And building simulation at the necessary scale requires a fundamental insight about how environments are structured.
+
+% -- P05-S04a ----------------------------------------------
+\scene{P05S04ACompositionalQuote}{A Fundamental Insight}{P05S04ACompositionalQuote}
+\begin{myquote}
+  \textit{``The world is compositional, or there is a god.''} \hfill --- Stuart Geman
+\end{myquote}
+
+\medskip
+This observation points at something fundamental about how environments work. The world is not a fixed list of named places. It is built from components --- roads, intersections, sidewalks, buildings, trees, furniture --- combined in an essentially infinite number of configurations. If a robot can understand the components and their relationships, it can generalize to any combination it has never seen before.
+
+This insight is the foundation of the simulation approach in this part.
+
+% -- P05-S04b ----------------------------------------------
+\scene{P05S04BMetaUrban}{MetaUrban}{P05S04BMetaUrban}
+\textbf{MetaUrban}, published as an ICLR 2025 Spotlight, is a compositional simulation platform for urban environments.
+
+Instead of designing specific scenes, MetaUrban uses \textbf{description scripts} to procedurally generate environments: the number of city blocks, intersection types, lane widths, sidewalk configurations, vegetation density, and the placement and density of objects. Varying these parameters across different distributions generates an effectively infinite variety of unique training environments --- no two training scenes need to be identical.
+
+UrbanVerse, built on top of MetaUrban, adds realism by reconstructing real urban environments from city-tour video footage into simulation scenes, capturing the actual spatial distribution of urban assets without the manual effort of 3D modeling.
+
+% -- P05-S04c ----------------------------------------------
+\scene{P05S04CMetaUrbanScaling}{Power-Law Scaling}{P05S04CMetaUrbanScaling}
+The most important empirical finding from MetaUrban is about \textbf{scene diversity}, not quantity.
+
+When you vary the number of unique training environment layouts and measure performance on unseen test environments, the relationship follows a \textit{power law}: doubling the number of unique layouts improves generalization by a consistent multiplicative factor. This is not linear, and it is not subject to diminishing returns in the dataset size range studied.
+
+The practical implication: a training set of 100 diverse, procedurally varied scenes generalizes better than 1{,}000 repetitions of the same scene layout with minor agent placement variations. Diversity in the environment distribution matters more than raw volume of experience in any specific environment.
+
+% -- P05-S05a ----------------------------------------------
+\scene{P05S05AUrbanSimBottleneck}{UrbanSim: The Training Bottleneck}{P05S05AUrbanSimBottleneck}
+Scene diversity creates another problem: if training an agent to navigate diverse environments requires 180 GPU-days on a state-of-the-art platform, the computational cost of experimentation becomes a fundamental barrier.
+
+Traditional simulation platforms like iGibson and CARLA have a CPU-GPU architecture: the physics simulation runs on CPU, observations are computed on CPU, the data is transferred to GPU for neural network inference, and actions are transferred back to CPU for execution. Each CPU-GPU data transfer in this loop adds latency. With hundreds of parallel environments, these transfers dominate the wall-clock time.
+
+This is the bottleneck that UrbanSim was built to eliminate.
+
+% -- P05-S05b ----------------------------------------------
+\scene{P05S05BUrbanSimResults}{UrbanSim: 180 Days $\to$ 3 Hours}{P05S05BUrbanSimResults}
+\textbf{UrbanSim}, published as a CVPR 2025 Highlight, moves the entire hot training loop onto the GPU --- physics simulation, observation computation, and neural network inference all running on-device, with no CPU-GPU transfers in the critical path.
+
+The additional design decision is \textbf{asynchronous scene sampling}: instead of all parallel environments sharing a synchronized global clock and identical object configurations, each environment has an independent, heterogeneous configuration that is resampled asynchronously.
+
+Measured results: \textbf{2{,}620 simulation frames per second} running 256 parallel environments simultaneously, using only \textbf{11.2\,GB of GPU memory} --- 24.3\,\% of the available 46\,GB on a single GPU.
+
+After 3~hours of wall-clock training with 256 environments, the agent reaches \textbf{41\,\% task success rate}. A single-environment baseline reaches only 6\,\% in the same wall-clock time. 180 GPU-days $\to$ 3 hours.
+
+% -- P05-S06a ----------------------------------------------
+\scene{P05S06ACityWalker}{CityWalker Dataset}{P05S06ACityWalker}
+The simulation bottleneck is resolved. Now for the human modeling problem.
+
+Existing human motion datasets --- AMASS, HumanAct12 --- record human movement in isolation. A person performs actions in a studio, without environmental context, without a destination, without other people around. Motion generated from these datasets walks through walls, ignores obstacles, and produces spatially incoherent trajectories.
+
+\textbf{CityWalker} is the first dataset designed to capture pedestrian behavior in the context of real urban environments: 30.8 hours of high-quality egocentric video, 120{,}914 individual pedestrians tracked, 16{,}215 distinct scene segments from 227 cities worldwide. The diversity captures people pushing strollers, looking at their phones while walking, stopping to take photos, gesturing to companions --- the full spectrum of real urban pedestrian behavior.
+
+CityWalker is the training signal. The model that learns from it --- and produces controllable, scene-aware pedestrian motion --- is PedGen.
+
+% -- P05-S06b ----------------------------------------------
+\scene{P05S06BPedGen}{PedGen: Pedestrian Motion Generation}{P05S06BPedGen}
+\textbf{PedGen} is a diffusion model for pedestrian motion generation conditioned on three input streams.
+
+\textbf{Scene Context}: a 3D voxel representation of the immediate environment, encoding what is a wall, what is a road, where obstacles are. \textbf{Body Context}: SMPL body shape parameters representing the physical characteristics of the specific individual, so motion is appropriate for their body size and proportions. \textbf{Goal}: the spatial destination the pedestrian is moving toward.
+
+The loss function combines three terms: reconstruction loss to keep body poses anatomically plausible, trajectory loss to ensure the integrated path goes in the right direction, and geometry loss through forward kinematics to keep all joints in physically valid positions.
+
+The result: without context conditioning, generated pedestrians walk through obstacles and follow incoherent paths. With context, they navigate naturally, avoid barriers, and move toward their goals in ways that a robot interacting with them can reasonably predict.
+
+% -- P05-S07 -----------------------------------------------
+\scene{P05S07ZombieToAlive}{From Zombie City to Living City}{P05S07ZombieToAlive}
+Simulation environments without realistic pedestrian models are often described as ``zombie cities'' --- populated with agents that move mechanically, without behavioral intent or social awareness. These agents don't react to robots, don't avoid each other naturally, and don't produce the social dynamics that real urban environments contain.
+
+PedGen begins the transition from zombie city to living city. When pedestrians are generated with scene-aware, goal-conditioned motion, the simulation environment starts to exhibit the emergent social dynamics --- crowd dispersion, path negotiation, stopping-and-starting --- that any robot deployed in a real city will need to navigate.
+
+% -- P05-S08 -----------------------------------------------
+\scene{P05S08Vid2Sim}{Vid2Sim}{P05S08Vid2Sim}
+\textbf{Vid2Sim}, published at CVPR~2025, offers a different approach to the simulation realism problem: instead of building environments from scratch, convert video footage of real environments directly into interactive simulation.
+
+The pipeline combines two reconstruction techniques. \textbf{3D Gaussian Splatting} reconstructs the visual appearance of a scene from multi-view images, producing photo-realistic rendering from arbitrary viewpoints --- giving the robot observations that look like the real world. \textbf{Mesh reconstruction} provides the physical geometry: surfaces the robot can stand on, walls it cannot walk through, objects it can interact with physically.
+
+The combination gives a simulation environment where observations are photorealistic (from 3DGS) and physics are accurate (from mesh). A robot trained in a Vid2Sim environment sees and feels something very close to the real environment --- reducing the sim-to-real gap significantly.
+
+% -- P05-S09 -----------------------------------------------
+\scene{P05S09LivingCity}{The Living City}{P05S09LivingCity}
+This is what the full stack produces: a simulated city with realistic geometry, photorealistic rendering, physically correct surfaces, and populated by pedestrians that navigate, react, and move in ways that reflect real human behavior.
+
+A robot trained in this environment inherits all of that: spatial awareness, reactive navigation, and the ability to anticipate the kind of behavior it will encounter when deployed in the real world.
+
+% -- P05-S10 -----------------------------------------------
+\scene{P05S10ChainOfSolutions}{Chain of Solutions}{P05S10ChainOfSolutions}
+The five parts of this tutorial form a causal chain of problems and solutions.
+
+\textbf{Part~1} identified the fundamental limitation of single-agent autonomous driving --- long-tail edge cases beyond the generalization capacity of any fixed training distribution --- and proposed foundation models as the mechanism for acquiring the generalizable world knowledge needed to address them.
+
+\textbf{Part~2} identified the physical limitation of any single agent regardless of its intelligence --- occlusion --- and proposed V2X cooperative perception with spatio-temporal fusion, trained efficiently through TurboTrain, planned through the interpretable RiskMap.
+
+\textbf{Part~3} grounded the cooperative system in reality: hardware, calibration, localization, real-world datasets, and the digital twin infrastructure needed to close the loop between simulation and deployment.
+
+\textbf{Part~4} made the system efficient: CooPre for data efficiency, TurboTrain for training efficiency, QuantV2X for inference efficiency --- so that it can scale from research prototypes to real deployments.
+
+\textbf{Part~5} extended the entire paradigm beyond cars: MetaUrban and UrbanSim for scalable training environments, CityWalker and PedGen for realistic human modeling, Vid2Sim for photorealistic sim-to-real transfer.
+
+% -- P05-S11 -----------------------------------------------
+\scene{P05S11FinalFrame}{Beyond Self-Driving}{P05S11FinalFrame}
+The title of this tutorial is \textit{Beyond Self-Driving}. The ``beyond'' has two meanings.
+
+It means beyond the capability of today's autonomous vehicles: beyond the occlusions, the long-tail edge cases, the deployment barriers, the efficiency constraints. Every part of this tutorial addressed a piece of that gap.
+
+And it means beyond self-driving cars entirely: toward Physical AI that operates safely in any physical environment, alongside any agent --- human or robotic --- in the shared spaces of our cities.
+
+That is the research program of the UCLA Mobility Lab. And this tutorial is an invitation to contribute to it.
+
+\vspace{12pt}
+\noindent\textcolor{navyblue}{\rule{\textwidth}{1.0pt}}
+\begin{center}
+  \small\textit{End of Beyond Self-Driving --- ICCV 2025 Tutorial}
+\end{center}
+
+\end{document}

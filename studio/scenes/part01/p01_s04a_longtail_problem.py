@@ -1,15 +1,40 @@
 """P01-S04a — Long-Tail Problem: axes first, footer without hero overlap."""
+from pathlib import Path
+
 from manimlib import *
 from studio.components import (
-    StudioScene, RED_ERROR, GOLD_RICH, ACCENT_BLUE, INK_DARK, INK_MID,
+    StudioScene, RED_ERROR, GOLD_RICH, ACCENT_BLUE, BG_CARD, INK_DARK,
     FONT_PRIMARY, SIZE_LABEL,
-    axes_deploy, chart_mount, curve_trace, failure_icon, place_footer, CONTENT_TOP,
+    axes_deploy, chart_mount, curve_trace, img_or_placeholder, place_footer,
 )
 
 SCRIPT = """
 Self-driving fails most where it's seen least.
 Just one percent of scenarios cause virtually all fatal accidents.
 """
+
+ASSET_DIR = Path(__file__).resolve().parents[3] / "materials" / "images" / "part1"
+
+
+def _photo_card(filename: str, label: str) -> VGroup:
+    frame = RoundedRectangle(
+        width=3.05, height=2.18, corner_radius=0.12,
+        fill_color=BG_CARD, fill_opacity=0.75,
+        stroke_color=ACCENT_BLUE, stroke_width=2.0,
+    )
+    image = img_or_placeholder(
+        ASSET_DIR / filename,
+        label,
+        width=2.72,
+        height=1.55,
+    )
+    image.move_to(frame.get_center() + UP * 0.18)
+    caption = Text(
+        label, font=FONT_PRIMARY, font_size=SIZE_LABEL,
+        color=INK_DARK, weight=BOLD,
+    )
+    caption.next_to(frame.get_bottom(), UP, buff=0.18)
+    return Group(frame, image, caption)
 
 
 class P01S04ALongtailProblem(StudioScene):
@@ -19,24 +44,14 @@ class P01S04ALongtailProblem(StudioScene):
     def construct(self):
         self._open(self.SCENE_TITLE)
 
-        icons = VGroup(
-            failure_icon(kind="phone_pedestrian"),
-            failure_icon(kind="inverted_lights"),
-            failure_icon(kind="snow_lane"),
-        )
-        labels = ["Phone in road", "Inverted lights", "Snow-covered lane"]
-        icon_group = VGroup()
-        for icon, lbl in zip(icons, labels):
-            icon.scale(1.15)
-            lbl_mob = Text(lbl, font=FONT_PRIMARY, font_size=SIZE_LABEL, color=INK_DARK)
-            lbl_mob.next_to(icon, DOWN, buff=0.12)
-            icon_group.add(VGroup(icon, lbl_mob))
-        icon_group.arrange(RIGHT, buff=1.0)
-        icon_group.move_to(UP * 1.85)
-        if icon_group.get_top()[1] > CONTENT_TOP - 0.25:
-            icon_group.shift(DOWN * (icon_group.get_top()[1] - (CONTENT_TOP - 0.25)))
-        self.play(LaggedStart(*(FadeIn(ig, scale=0.8) for ig in icon_group), lag_ratio=0.2))
-        self.wait(0.4)
+        photo_row = Group(
+            _photo_card("p1_s06_corner_cases.png", "Person in active lane"),
+            _photo_card("p1_s06_long_tail_problem_010.jpg", "Traffic lights on truck"),
+            _photo_card("p1_s06_long_tail_problem_011.png", "Snow-covered road"),
+        ).arrange(RIGHT, buff=0.38)
+        photo_row.move_to(UP * 0.85)
+        self.play(LaggedStart(*(FadeIn(card, scale=0.94) for card in photo_row), lag_ratio=0.2))
+        self.wait(1.0)
 
         axes, axes_anim = axes_deploy(
             (0, 5, 1), (0, 1.0, 0.2),
@@ -46,7 +61,7 @@ class P01S04ALongtailProblem(StudioScene):
             axes, UP * 0.1 + LEFT * 0.35, scale=0.86,
             x_label="Rarity", y_label="Accident rate",
         )
-        self.play(axes_anim, FadeOut(icon_group), FadeIn(tick_labels))
+        self.play(axes_anim, FadeOut(photo_row), FadeIn(tick_labels))
 
         self.play(curve_trace(axes, lambda x: 0.9 * np.exp(-x), color=ACCENT_BLUE, run_time=1.5))
 
