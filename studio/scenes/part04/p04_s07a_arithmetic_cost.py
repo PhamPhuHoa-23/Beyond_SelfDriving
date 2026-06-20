@@ -9,9 +9,13 @@ from studio.components import (
 )
 
 SCRIPT = (
-    "Quantization attacks two different costs. FP32 multiplication consumes "
-    "3.7 picojoules versus 0.2 for INT8 multiplication. Moving a 32-bit value "
-    "from DRAM costs around 640 picojoules, compared with 5 from SRAM."
+    "Why is neural network inference expensive on edge hardware? "
+    "Neural networks are dominated by two operations: multiply-accumulate in "
+    "fully connected and convolutional layers, and memory reads to load weights "
+    "from off-chip memory. The energy costs are revealing. A 32-bit floating-point "
+    "multiplication costs roughly 3.7 picojoules. A 32-bit memory access from DRAM "
+    "costs approximately 640 picojoules — more than 170 times more expensive than "
+    "the computation itself."
 )
 
 
@@ -76,7 +80,7 @@ def chip_icon(title, subtitle, color, *, width=1.72):
     return VGroup(pins, body, copy)
 
 
-class P04S07ArithmeticCost(StudioScene):
+class P04S07AArithmeticCost(StudioScene):
     PART_NUM = 4
     SCENE_TITLE = "Arithmetic Energy Cost"
 

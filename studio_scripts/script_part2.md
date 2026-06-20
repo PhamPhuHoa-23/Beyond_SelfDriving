@@ -64,6 +64,10 @@ The cooperative perception community has been working on this problem for severa
 
 V2VNet was one of the early systems, using graph neural networks to aggregate features from multiple agents. V2X-ViT extended this with Transformer-based attention across vehicle-to-infrastructure pairs. Where2comm introduced sparse communication, learning which spatial locations are worth transmitting rather than sending the entire feature map. CodeFilling brought codebook-based feature compression, reducing the communication cost further.
 
+---
+
+### [P02S06BDatasetEvolution — "Dataset Evolution"]
+
 Datasets have similarly matured: from the purely simulated OPV2V, to DAIR-V2X with real infrastructure data, to V2X-Real — the first large-scale real-world dataset covering both vehicle-to-vehicle and vehicle-to-infrastructure scenarios.
 
 But across all of these contributions, two critical gaps remained open.
@@ -132,9 +136,15 @@ The result: 45 epochs instead of 120, higher final performance than the manual f
 
 ---
 
+### [P02S11CPlanningPivot — "From Understanding to Planning"]
+
+The system can now perceive and predict reliably. The remaining question is: what do we do with that understanding? Perception and prediction are inputs to planning — and planning must be safe enough to stake a life on.
+
+---
+
 ### [P02S12RiskMap — "RiskMap"]
 
-Perception and prediction enable the vehicle to understand the scene. Planning requires using that understanding to make safe decisions. And this is where interpretability becomes critical.
+And this is where interpretability becomes critical.
 
 Consider the three architectures for this transition. Modular: perception feeds prediction feeds planning through separate modules — error accumulation, limited range, but interpretable. Conventional end-to-end: the network decides everything — compact and jointly optimized, but a black box. No engineer can verify why a specific planning decision was made.
 

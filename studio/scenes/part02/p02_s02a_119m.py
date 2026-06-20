@@ -61,7 +61,7 @@ class P02S02A119M(StudioScene):
 
         self.play(FadeIn(grid_panel), LaggedStart(*(FadeIn(i) for i in grid), lag_ratio=0.008), run_time=0.9)
         self.play(ShowCreation(connector), FadeIn(number, shift=UP * 0.12), run_time=0.7)
-        self.play(Flash(number, color=RED_ERROR, line_length=0.26, num_lines=12), run_time=0.45)
+        self.play(Flash(number, color=RED_ERROR, line_length=0.22, num_lines=12, flash_radius=0.9), run_time=0.45)
         self.play(FadeIn(label), run_time=0.45)
 
         sub = Text("Safety at scale needs systems, not isolated agents.", font=FONT_PRIMARY, font_size=SIZE_LABEL, color=GOLD_RICH, weight=BOLD)

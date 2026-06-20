@@ -20,7 +20,8 @@ class P02S13Summary(StudioScene):
             p2_card("RiskMap", "extend fusion toward interpretable planning", width=5.6, stroke=GOLD_RICH),
         ).arrange(DOWN, buff=0.35)
         cards.move_to(DOWN * 0.1)
-        self.play(LaggedStart(*(FadeIn(c, shift=RIGHT * 0.2) for c in cards), lag_ratio=0.22))
+        for card in cards:
+            self.play(FadeIn(card, shift=DOWN * 0.18), run_time=0.55)
+            self.wait(0.55)
         self.wait(1.2)
         self._close()
-

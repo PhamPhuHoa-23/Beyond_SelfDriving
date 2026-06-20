@@ -5,8 +5,11 @@ from studio.components import (
     StudioScene,
     ACCENT_BLUE,
     ACCENT_TEAL,
+    BG_CARD,
     GOLD_RICH,
+    INK_DARK,
     INK_MID,
+    LINE_ARROW,
     PURPLE_MODEL,
     RED_ERROR,
     FONT_PRIMARY,
@@ -51,10 +54,24 @@ class P02S06RelatedWorks(StudioScene):
             self.play(ShowCreation(arrows[i - 1]), FadeIn(cards[i], shift=UP * 0.15), run_time=0.45)
         self.play(LaggedStart(*(FadeIn(g) for g in gaps), lag_ratio=0.12))
 
-        bubble_anchor = Dot().move_to(RIGHT * 4.0 + UP * 1.9).set_opacity(0)
-        bubble = thought_bubble("The missing piece:\nsequence + tasks.", bubble_anchor)
-        bubble.scale(0.82)
-        self.play(FadeIn(bubble))
+        # 1. Academic Brace grouping the research gaps
+        brace = Brace(gaps, DOWN, buff=0.15)
+        brace.set_fill(LINE_ARROW, opacity=1.0)
+        brace.set_stroke(width=0)
+        
+        brace_label = Text(
+            "THE MISSING DIMENSIONS: SEQUENCE + MULTI-TASK",
+            font=FONT_PRIMARY,
+            font_size=SIZE_CAPS,
+            color=GOLD_RICH,
+            weight=BOLD
+        )
+        brace_label.next_to(brace, DOWN, buff=0.18)
+
+        self.play(
+            GrowFromCenter(brace),
+            FadeIn(brace_label, shift=DOWN * 0.12)
+        )
 
         v2xpnp = p2_card(
             "V2XPnP",
@@ -64,7 +81,7 @@ class P02S06RelatedWorks(StudioScene):
             stroke=GOLD_RICH,
             body_size=SIZE_CAPS,
         )
-        v2xpnp.move_to(DOWN * 2.1)
-        self.play(FadeIn(v2xpnp, shift=UP * 0.2), Flash(v2xpnp[0], color=GOLD_RICH))
+        v2xpnp.move_to(DOWN * 2.3)
+        self.play(FadeIn(v2xpnp, shift=DOWN * 0.15), Flash(v2xpnp[0], color=GOLD_RICH))
         self.wait(0.9)
         self._close()

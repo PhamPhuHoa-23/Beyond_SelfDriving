@@ -143,12 +143,12 @@ class P04S08QuantV2X(StudioScene):
         memory_note = label("4x smaller model memory", SIZE_CAPS, GREEN_FIX, BOLD)
         memory_note.next_to(int_model, DOWN, buff=0.1)
 
-        self.play(FadeIn(layer1_heading), FadeIn(fp_model), run_time=0.55)
-        self.play(ShowCreation(quant_arrow), FadeIn(quant_text), run_time=0.4)
+        self.play(FadeIn(layer1_heading), FadeIn(fp_model), run_time=0.95)
+        self.play(ShowCreation(quant_arrow), FadeIn(quant_text), run_time=0.7)
         self.play(
             TransformFromCopy(fp_model, int_model),
             FadeIn(memory_note, shift=0.08 * UP),
-            run_time=0.75,
+            run_time=1.2,
         )
 
         # Layer 2: the actual cooperative message, following the source diagram.
@@ -202,19 +202,19 @@ class P04S08QuantV2X(StudioScene):
             LaggedStart(
                 *(FadeIn(layer, shift=0.08 * RIGHT) for layer in source_feature),
                 lag_ratio=0.12,
-                run_time=0.6,
+                run_time=1.0,
             ),
             FadeIn(source_label),
         )
         self.play(
             ShowCreation(encode_arrow),
             FadeIn(book_group, shift=0.1 * RIGHT),
-            run_time=0.55,
+            run_time=0.85,
         )
         self.play(
             TransformFromCopy(source_feature, packet),
             FadeIn(packet_label),
-            run_time=0.75,
+            run_time=1.25,
         )
 
         # One link only: the packet itself demonstrates that it fits.
@@ -254,9 +254,9 @@ class P04S08QuantV2X(StudioScene):
             FadeIn(receiver_label),
             ShowCreation(link),
             FadeIn(compression, shift=0.08 * UP),
-            run_time=0.55,
+            run_time=0.95,
         )
-
+ 
         # Keep the encoded packet at its source. Only a wrapped copy travels.
         traveling_packet = packet.copy()
         packet_wrap = RoundedRectangle(
@@ -270,18 +270,18 @@ class P04S08QuantV2X(StudioScene):
         traveling_message = VGroup(packet_wrap, traveling_packet)
         self.add(traveling_message)
         self.play(
-            traveling_message.animate.move_to(RIGHT * 3.18 + DOWN * 1.3),
-            run_time=0.9,
+            traveling_message.animate.move_to(RIGHT * 4.25 + DOWN * 1.3),
+            run_time=2.2,
             rate_func=linear,
         )
         self.play(
-            LaggedStart(
-                *(FadeIn(layer, shift=0.08 * RIGHT) for layer in reconstructed),
-                lag_ratio=0.12,
-                run_time=0.65,
-            ),
+            Flash(traveling_message, color=GREEN_FIX, line_length=0.18, num_lines=8),
+            run_time=0.4,
+        )
+        self.play(
+            Transform(traveling_message, reconstructed),
             FadeIn(reconstructed_label),
-            FadeOut(traveling_message),
+            run_time=1.25,
         )
 
         deploy_note = label(
@@ -291,6 +291,6 @@ class P04S08QuantV2X(StudioScene):
             BOLD,
         )
         deploy_note.to_edge(DOWN, buff=0.22)
-        self.play(FadeIn(deploy_note, shift=0.08 * UP), run_time=0.45)
+        self.play(FadeIn(deploy_note, shift=0.08 * UP), run_time=0.8)
         self.wait(1.5)
         self._close()

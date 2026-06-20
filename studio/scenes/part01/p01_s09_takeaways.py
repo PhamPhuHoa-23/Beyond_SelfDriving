@@ -47,8 +47,12 @@ class P01S09Takeaways(StudioScene):
         cards.arrange(DOWN, buff=0.3, aligned_edge=LEFT)
         cards.move_to(ORIGIN + UP * 0.2)
 
-        self.play(LaggedStart(*(FadeIn(c, shift=RIGHT * 0.2) for c in cards), lag_ratio=0.25))
-        self.wait(2)
+        for i, c in enumerate(cards):
+            self.play(FadeIn(c, shift=RIGHT * 0.2), run_time=0.8)
+            if i < len(cards) - 1:
+                self.wait(1.2)
+            else:
+                self.wait(2.5)
         self._close()
 
 

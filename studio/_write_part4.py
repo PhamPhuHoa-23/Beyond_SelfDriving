@@ -398,87 +398,615 @@ class P04S06LatencyChain(StudioScene):
         self._close()
 ''')
 
-W("p04_s07_arithmetic_cost.py", '''"""P04-S07 Arithmetic Cost — 640 pJ DRAM vs 5 pJ SRAM."""
+W("p04_s07a_arithmetic_cost.py", '''"""P04-S07A: arithmetic and memory energy costs behind quantized inference."""
 from manimlib import *
+
 from studio.components import (
-    StudioScene, BG_PAPER, RED_ERROR, GREEN_FIX, GOLD_RICH, INK_DARK, INK_MID,
-    ACCENT_AMBER,
-    FONT_PRIMARY, SIZE_H1, SIZE_BODY, SIZE_LABEL, SIZE_CAPS,
-    key_number,
+    StudioScene, BG_PAPER, PASTEL_BLUE, PASTEL_GREEN,
+    RED_ERROR, GREEN_FIX, ACCENT_BLUE, ACCENT_TEAL, ACCENT_AMBER,
+    GOLD_RICH, INK_DARK, INK_MID, LINE_GRID,
+    FONT_PRIMARY, SIZE_LABEL, SIZE_CAPS,
 )
-SCRIPT = """FP32 multiplication is expensive. INT8 turns multiplies into adds — and shrinks the memory footprint."""
+
+SCRIPT = (
+    "Why is neural network inference expensive on edge hardware? "
+    "Neural networks are dominated by two operations: multiply-accumulate in "
+    "fully connected and convolutional layers, and memory reads to load weights "
+    "from off-chip memory. The energy costs are revealing. A 32-bit floating-point "
+    "multiplication costs roughly 3.7 picojoules. A 32-bit memory access from DRAM "
+    "costs approximately 640 picojoules — more than 170 times more expensive than "
+    "the computation itself."
+)
 
 
-def energy_droplets(center, n, color, upward=True):
-    drops = VGroup()
-    rng = __import__("numpy").random.RandomState(99)
-    for i in range(n):
-        d = Dot(radius=0.055, color=color)
-        angle = rng.uniform(0, 3.14) * (1 if upward else -1)
-        d.move_to(center + 0.2 * numpy.array([numpy.cos(angle), numpy.sin(angle), 0]))
-        drops.add(d)
-    return drops
-
-import numpy
+def label(text, size=SIZE_LABEL, color=INK_DARK, weight=NORMAL):
+    mob = Text(text, font=FONT_PRIMARY, font_size=size, weight=weight)
+    mob.set_color(color)
+    return mob
 
 
-class P04S07ArithmeticCost(StudioScene):
+def bit_strip(count, color, *, width=4.35, cell_height=0.27):
+    gap = 0.025
+    cell_width = (width - gap * (count - 1)) / count
+    cells = VGroup()
+    for _ in range(count):
+        cell = RoundedRectangle(
+            width=cell_width,
+            height=cell_height,
+            corner_radius=min(0.035, cell_width * 0.2),
+        )
+        cell.set_fill(color, opacity=0.92)
+        cell.set_stroke(color, width=0)
+        cells.add(cell)
+    cells.arrange(RIGHT, buff=gap)
+    return cells
+
+
+def energy_bar(value, max_value, color, *, width=2.8):
+    track = RoundedRectangle(width=width, height=0.26, corner_radius=0.08)
+    track.set_fill(LINE_GRID, opacity=0.58)
+    track.set_stroke(LINE_GRID, width=0)
+
+    fill_width = max(0.07, width * value / max_value)
+    fill = RoundedRectangle(width=fill_width, height=0.26, corner_radius=0.08)
+    fill.set_fill(color, opacity=0.95)
+    fill.set_stroke(color, width=0)
+    fill.align_to(track, LEFT)
+    return VGroup(track, fill)
+
+
+def chip_icon(title, subtitle, color, *, width=1.72):
+    body = RoundedRectangle(width=width, height=1.12, corner_radius=0.12)
+    body.set_fill(color, opacity=0.1)
+    body.set_stroke(color, width=2.0, opacity=0.9)
+
+    pins = VGroup()
+    for x in [-0.62, -0.2, 0.2, 0.62]:
+        for y in [-0.65, 0.65]:
+            pin = Line([x, y - 0.09, 0], [x, y + 0.09, 0])
+            pin.set_stroke(color, width=2.0, opacity=0.75)
+            pins.add(pin)
+    for y in [-0.34, 0, 0.34]:
+        for x in [-width / 2 - 0.1, width / 2 + 0.1]:
+            pin = Line([x - 0.09, y, 0], [x + 0.09, y, 0])
+            pin.set_stroke(color, width=2.0, opacity=0.75)
+            pins.add(pin)
+
+    title_mob = label(title, SIZE_LABEL, color, BOLD)
+    subtitle_mob = label(subtitle, SIZE_CAPS - 1, INK_MID)
+    copy = VGroup(title_mob, subtitle_mob)
+    copy.arrange(DOWN, buff=0.05)
+    copy.move_to(body)
+    return VGroup(pins, body, copy)
+
+
+class P04S07AArithmeticCost(StudioScene):
     PART_NUM = 4
     SCENE_TITLE = "Arithmetic Energy Cost"
 
     def construct(self):
         self.camera.background_color = BG_PAPER
+        self._open(self.SCENE_TITLE)
+
+        divider = Line(UP * 2.3, DOWN * 2.8)
+        divider.set_stroke(LINE_GRID, width=1.4, opacity=0.9)
+        self.play(ShowCreation(divider), run_time=0.35)
+
+        # Left: arithmetic cost from the original energy table.
+        compute_title = label("COMPUTE  |  one multiply", SIZE_LABEL, INK_DARK, BOLD)
+        compute_title.move_to(LEFT * 3.45 + UP * 2.12)
+        compute_note = label("narrower operands switch less circuitry", SIZE_CAPS, INK_MID)
+        compute_note.next_to(compute_title, DOWN, buff=0.07)
+        self.play(FadeIn(compute_title), FadeIn(compute_note), run_time=0.45)
+
+        fp32_name = label("FP32", SIZE_LABEL, RED_ERROR, BOLD)
+        fp32_bits = bit_strip(32, RED_ERROR, width=4.35)
+        fp32_bits.move_to(LEFT * 3.25 + UP * 0.88)
+        fp32_name.next_to(fp32_bits, UP, aligned_edge=LEFT, buff=0.1)
+        fp32_caption = label("32 bits", SIZE_CAPS, INK_MID)
+        fp32_caption.next_to(fp32_bits, DOWN, buff=0.08)
+
+        int8_name = label("INT8", SIZE_LABEL, GREEN_FIX, BOLD)
+        int8_bits = bit_strip(8, GREEN_FIX, width=1.35)
+        int8_bits.align_to(fp32_bits, LEFT)
+        int8_bits.move_to([
+            fp32_bits.get_left()[0] + int8_bits.get_width() / 2,
+            -0.15,
+            0,
+        ])
+        int8_name.next_to(int8_bits, UP, aligned_edge=LEFT, buff=0.1)
+        int8_caption = label("8 bits", SIZE_CAPS, INK_MID)
+        int8_caption.next_to(int8_bits, DOWN, buff=0.08)
+
+        self.play(
+            FadeIn(fp32_name),
+            LaggedStart(*(FadeIn(bit, scale=0.6) for bit in fp32_bits),
+                        lag_ratio=0.012, run_time=0.8),
+            FadeIn(fp32_caption),
+        )
+        self.play(
+            TransformFromCopy(fp32_name, int8_name),
+            LaggedStart(*(FadeIn(bit, scale=0.6) for bit in int8_bits),
+                        lag_ratio=0.04, run_time=0.55),
+            FadeIn(int8_caption),
+        )
+
+        fp32_bar = energy_bar(3.7, 3.7, RED_ERROR)
+        fp32_bar.move_to(LEFT * 3.25 + DOWN * 1.05)
+        fp32_value = label("3.7 pJ", SIZE_LABEL, RED_ERROR, BOLD)
+        fp32_value.next_to(fp32_bar, RIGHT, buff=0.15)
+        fp32_op = label("FP32 MUL", SIZE_CAPS, INK_MID)
+        fp32_op.next_to(fp32_bar, LEFT, buff=0.14)
+
+        int8_bar = energy_bar(0.2, 3.7, GREEN_FIX)
+        int8_bar.move_to(LEFT * 3.25 + DOWN * 1.68)
+        int8_value = label("0.2 pJ", SIZE_LABEL, GREEN_FIX, BOLD)
+        int8_value.next_to(int8_bar, RIGHT, buff=0.15)
+        int8_op = label("INT8 MUL", SIZE_CAPS, INK_MID)
+        int8_op.next_to(int8_bar, LEFT, buff=0.14)
+
+        self.play(
+            GrowFromEdge(fp32_bar[1], LEFT),
+            FadeIn(fp32_bar[0]),
+            FadeIn(fp32_op),
+            FadeIn(fp32_value),
+            run_time=0.65,
+        )
+        self.play(
+            GrowFromEdge(int8_bar[1], LEFT),
+            FadeIn(int8_bar[0]),
+            FadeIn(int8_op),
+            FadeIn(int8_value),
+            run_time=0.45,
+        )
+
+        compute_ratio = VGroup(
+            label("18.5x", SIZE_LABEL + 5, GREEN_FIX, BOLD),
+            label("less arithmetic energy", SIZE_CAPS, INK_MID),
+        )
+        compute_ratio.arrange(DOWN, buff=0.02)
+        compute_ratio.move_to(LEFT * 3.45 + DOWN * 2.48)
+        self.play(FadeIn(compute_ratio, shift=0.08 * UP), run_time=0.45)
+
+        # Right: memory hierarchy. This is a separate, much larger bottleneck.
+        memory_title = label("MEMORY  |  move one 32-bit value", SIZE_LABEL, INK_DARK, BOLD)
+        memory_title.move_to(RIGHT * 3.45 + UP * 2.12)
+        memory_note = label("distance dominates energy", SIZE_CAPS, INK_MID)
+        memory_note.next_to(memory_title, DOWN, buff=0.07)
+        self.play(FadeIn(memory_title), FadeIn(memory_note), run_time=0.45)
+
+        core = chip_icon("MAC", "compute core", ACCENT_BLUE, width=1.55)
+        core.move_to(RIGHT * 3.55 + DOWN * 0.05)
+        dram = chip_icon("DRAM", "off-chip", RED_ERROR)
+        dram.move_to(RIGHT * 1.2 + UP * 0.95)
+        sram = chip_icon("SRAM", "on-chip", GREEN_FIX)
+        sram.move_to(RIGHT * 5.55 + UP * 0.95)
+
+        dram_path = Arrow(
+            dram.get_bottom(),
+            core.get_left() + UP * 0.1,
+            path_arc=0.35,
+            buff=0.08,
+            max_tip_length_to_length_ratio=0.1,
+        )
+        dram_path.set_stroke(RED_ERROR, width=3.0, opacity=0.82)
+        dram_path.set_fill(RED_ERROR, opacity=0.82)
+
+        sram_path = Arrow(
+            sram.get_bottom(),
+            core.get_right() + UP * 0.1,
+            path_arc=-0.35,
+            buff=0.08,
+            max_tip_length_to_length_ratio=0.12,
+        )
+        sram_path.set_stroke(GREEN_FIX, width=3.0, opacity=0.82)
+        sram_path.set_fill(GREEN_FIX, opacity=0.82)
+
+        self.play(FadeIn(core), FadeIn(dram), FadeIn(sram), run_time=0.6)
+        self.play(ShowCreation(dram_path), run_time=0.65)
+
+        dram_packet = Square(side_length=0.18)
+        dram_packet.set_fill(RED_ERROR, opacity=1.0)
+        dram_packet.set_stroke(RED_ERROR, width=0)
+        dram_packet.move_to(dram_path.get_start())
+        self.add(dram_packet)
+        self.play(MoveAlongPath(dram_packet, dram_path), run_time=0.8, rate_func=linear)
+
+        dram_value = label("640 pJ", SIZE_LABEL + 3, RED_ERROR, BOLD)
+        dram_value.move_to(RIGHT * 1.28 + DOWN * 1.35)
+        dram_sub = label("DRAM access", SIZE_CAPS, INK_MID)
+        dram_sub.next_to(dram_value, DOWN, buff=0.05)
+        self.play(FadeIn(dram_value), FadeIn(dram_sub), run_time=0.35)
+
+        self.play(ShowCreation(sram_path), run_time=0.45)
+        sram_packet = Square(side_length=0.18)
+        sram_packet.set_fill(GREEN_FIX, opacity=1.0)
+        sram_packet.set_stroke(GREEN_FIX, width=0)
+        sram_packet.move_to(sram_path.get_start())
+        self.add(sram_packet)
+        self.play(MoveAlongPath(sram_packet, sram_path), run_time=0.38, rate_func=linear)
+
+        sram_value = label("5 pJ", SIZE_LABEL + 3, GREEN_FIX, BOLD)
+        sram_value.move_to(RIGHT * 5.55 + DOWN * 1.35)
+        sram_sub = label("SRAM access", SIZE_CAPS, INK_MID)
+        sram_sub.next_to(sram_value, DOWN, buff=0.05)
+        self.play(FadeIn(sram_value), FadeIn(sram_sub), run_time=0.35)
+
+        memory_ratio = VGroup(
+            label("128x", SIZE_LABEL + 5, GOLD_RICH, BOLD),
+            label("more energy to fetch from DRAM", SIZE_CAPS, INK_MID),
+        )
+        memory_ratio.arrange(DOWN, buff=0.02)
+        memory_ratio.move_to(RIGHT * 3.45 + DOWN * 2.48)
+        self.play(
+            FadeIn(memory_ratio, shift=0.08 * UP),
+            Flash(dram_value, color=RED_ERROR, line_length=0.16, num_lines=8),
+            run_time=0.55,
+        )
+
+        self.wait(1.5)
+        self._close()
+''')
+
+W("p04_s07b_memory_bound.py", '''"""P04-S07B: Memory-bound inference, 4x memory savings, and arithmetic transition to addition."""
+from manimlib import *
+import numpy as np
+
+from studio.components import (
+    StudioScene, BG_PAPER, PASTEL_BLUE, PASTEL_GREEN, PASTEL_AMBER,
+    RED_ERROR, GREEN_FIX, ACCENT_BLUE, ACCENT_TEAL, ACCENT_AMBER,
+    GOLD_RICH, INK_DARK, INK_MID, LINE_GRID, LINE_SEP,
+    FONT_PRIMARY, SIZE_LABEL, SIZE_CAPS, SIZE_BODY,
+)
+
+SCRIPT = (
+    "This means inference on edge hardware is memory-bound, not compute-bound. "
+    "The bottleneck is not running the arithmetic but loading the model parameters. "
+    "Reducing the bit-width of weights from 32-bit float to 8-bit integer cuts the "
+    "memory footprint by 4x, replaces multiplications with cheaper integer additions, "
+    "and enables hardware accelerators designed specifically for INT8 operations on modern edge chips."
+)
+
+
+def label(text, size=SIZE_LABEL, color=INK_DARK, weight=NORMAL):
+    mob = Text(text, font=FONT_PRIMARY, font_size=size, weight=weight)
+    mob.set_color(color)
+    return mob
+
+
+def bit_strip(count, color, *, width=3.6, cell_height=0.22):
+    gap = 0.02
+    cell_width = (width - gap * (count - 1)) / count
+    cells = VGroup()
+    for _ in range(count):
+        cell = RoundedRectangle(
+            width=cell_width,
+            height=cell_height,
+            corner_radius=min(0.025, cell_width * 0.2),
+        )
+        cell.set_fill(color, opacity=0.92)
+        cell.set_stroke(color, width=0)
+        cells.add(cell)
+    cells.arrange(RIGHT, buff=gap)
+    return cells
+
+
+def chip_icon(title, subtitle, color, *, width=1.55):
+    body = RoundedRectangle(width=width, height=1.12, corner_radius=0.12)
+    body.set_fill(color, opacity=0.1)
+    body.set_stroke(color, width=2.0, opacity=0.9)
+
+    pins = VGroup()
+    for x in [-0.52, -0.16, 0.16, 0.52]:
+        for y in [-0.65, 0.65]:
+            pin = Line([x, y - 0.09, 0], [x, y + 0.09, 0])
+            pin.set_stroke(color, width=2.0, opacity=0.75)
+            pins.add(pin)
+    for y in [-0.34, 0, 0.34]:
+        for x in [-width / 2 - 0.1, width / 2 + 0.1]:
+            pin = Line([x - 0.09, y, 0], [x + 0.09, y, 0])
+            pin.set_stroke(color, width=2.0, opacity=0.75)
+            pins.add(pin)
+
+    title_mob = label(title, SIZE_LABEL, color, BOLD)
+    subtitle_mob = label(subtitle, SIZE_CAPS - 1, INK_MID)
+    copy = VGroup(title_mob, subtitle_mob)
+    copy.arrange(DOWN, buff=0.05)
+    copy.move_to(body)
+    return VGroup(pins, body, copy)
+
+
+class P04S07BMemoryBound(StudioScene):
+    PART_NUM = 4
+    SCENE_TITLE = "Memory-Bound Inference"
+
+    def construct(self):
+        self.camera.background_color = BG_PAPER
         header = self._open(self.SCENE_TITLE)
 
-        # Left: FP32 multiply — big, expensive
-        fp32_box = RoundedRectangle(width=3.5, height=1.2, corner_radius=0.15,
-                                    fill_color="#FEE2E2", fill_opacity=0.9,
-                                    stroke_color=RED_ERROR, stroke_width=2.5)
-        fp32_box.move_to(LEFT * 3.0 + UP * 0.8)
-        fp32_lbl = Text("FP32  x  Multiply", font=FONT_PRIMARY, font_size=SIZE_LABEL,
-                        color=RED_ERROR, weight=BOLD)
-        fp32_lbl.move_to(fp32_box)
-        dram_lbl = Text("640 pJ  DRAM access", font=FONT_PRIMARY, font_size=SIZE_LABEL,
-                        color=RED_ERROR)
-        dram_lbl.next_to(fp32_box, DOWN, buff=0.12)
-        self.play(FadeIn(fp32_box), FadeIn(fp32_lbl))
-        self.play(FadeIn(dram_lbl))
-        # Energy droplets flying out
-        drops_bad = energy_droplets(fp32_box.get_center(), 12, RED_ERROR)
-        self.play(LaggedStart(*(d.animate(run_time=0.4, rate_func=rush_from)
-                                 .shift(numpy.array([0, 0.8, 0]))
-                                 .set_opacity(0)
-                                for d in drops_bad), lag_ratio=0.05))
 
-        # Right: INT8 add — small, cheap
-        int8_box = RoundedRectangle(width=3.5, height=1.2, corner_radius=0.15,
-                                    fill_color="#D1FAE5", fill_opacity=0.9,
-                                    stroke_color=GREEN_FIX, stroke_width=2.5)
-        int8_box.move_to(RIGHT * 3.0 + UP * 0.8)
-        int8_lbl = Text("INT8  +  Add", font=FONT_PRIMARY, font_size=SIZE_LABEL,
-                        color=GREEN_FIX, weight=BOLD)
-        int8_lbl.move_to(int8_box)
-        sram_lbl = Text("5 pJ  SRAM access", font=FONT_PRIMARY, font_size=SIZE_LABEL,
-                        color=GREEN_FIX)
-        sram_lbl.next_to(int8_box, DOWN, buff=0.12)
-        self.play(FadeIn(int8_box), FadeIn(int8_lbl))
-        self.play(FadeIn(sram_lbl))
-        # Small efficient dots
-        drops_good = energy_droplets(int8_box.get_center(), 3, GREEN_FIX)
-        self.play(LaggedStart(*(d.animate(run_time=0.25, rate_func=rush_from)
-                                 .shift(numpy.array([0, 0.5, 0]))
-                                 .set_opacity(0)
-                                for d in drops_good), lag_ratio=0.08))
 
-        # Key comparison
-        comp = Text("640 pJ DRAM  vs  5 pJ SRAM  =  128x energy savings",
-                    font=FONT_PRIMARY, font_size=SIZE_LABEL, color=GOLD_RICH)
-        comp.move_to(DOWN * 1.8)
-        self.play(FadeIn(comp, scale=1.05))
-        kn = key_number("128x", "energy saved: DRAM -> SRAM + FP32 -> INT8", color=GOLD_RICH)
-        kn.to_edge(DOWN, buff=0.35)
-        self.play(FadeIn(kn))
-        self.wait(2)
+        # =========================================================================
+        # LEFT COLUMN: Memory Funnel Bottleneck
+        # =========================================================================
+        left_center_x = -3.2
+
+        # 1. DRAM Storage (at the top)
+        dram_box = RoundedRectangle(width=2.0, height=0.6, corner_radius=0.08)
+        dram_box.set_fill(PASTEL_AMBER, opacity=0.3)
+        dram_box.set_stroke(ACCENT_AMBER, width=1.8, opacity=0.9)
+        dram_box.move_to([left_center_x, 2.3, 0])
+        dram_lbl = label("DRAM (off-chip)", SIZE_CAPS, ACCENT_AMBER, BOLD)
+        dram_lbl.move_to(dram_box)
+
+        # 2. Funnel geometry
+        left_wall = VMobject()
+        left_wall.set_points_as_corners([
+            [left_center_x - 1.2, 1.8, 0],
+            [left_center_x - 0.3, 0.4, 0],
+            [left_center_x - 0.3, -1.5, 0]
+        ])
+        right_wall = VMobject()
+        right_wall.set_points_as_corners([
+            [left_center_x + 1.2, 1.8, 0],
+            [left_center_x + 0.3, 0.4, 0],
+            [left_center_x + 0.3, -1.5, 0]
+        ])
+        funnel = VGroup(left_wall, right_wall)
+        funnel.set_stroke(INK_MID, width=3.0)
+
+        # Bottleneck Indicator Label (completely out of the flow path)
+        funnel_lbl = label("MEMORY BANDWIDTH", SIZE_CAPS - 2, INK_MID)
+        funnel_lbl.next_to(dram_box, LEFT, buff=0.18)
+
+        limit_lbl = label("BANDWIDTH LIMIT", SIZE_CAPS - 4, ACCENT_AMBER, BOLD)
+        limit_lbl.move_to([left_center_x - 1.48, -0.5, 0])
+        limit_arrow = Tex(r"\rightarrow", font_size=SIZE_CAPS)
+        limit_arrow.set_color(ACCENT_AMBER)
+        limit_arrow.next_to(limit_lbl, RIGHT, buff=0.08)
+        bandwidth_indicator = VGroup(limit_lbl, limit_arrow)
+
+        # 3. MAC Compute Core (at the bottom)
+        core = chip_icon("MAC", "compute core", ACCENT_BLUE, width=1.4)
+        core.move_to([left_center_x, -2.1, 0])
+        core_body = core[1]
+
+        core_status = label("IDLE (Starving)", SIZE_CAPS, RED_ERROR, BOLD)
+        core_status.move_to([left_center_x, -2.9, 0])
+
+        core_note = label("Compute is ready, but waiting for data", SIZE_CAPS - 4, INK_MID)
+        core_note.next_to(core, RIGHT, buff=0.2)
+        core_note.shift(DOWN * 0.1)
+
+        self.play(
+            FadeIn(dram_box), FadeIn(dram_lbl),
+            ShowCreation(funnel), FadeIn(funnel_lbl),
+            FadeIn(bandwidth_indicator),
+            FadeIn(core), FadeIn(core_status), FadeIn(core_note),
+            run_time=0.75
+        )
+
+        # =========================================================================
+        # BEAT 1: FP32 Mode — High Latency, Bottleneck Flow
+        # =========================================================================
+        spawn_y = dram_box.get_bottom()[1] - 0.22
+
+        fp32_blocks = VGroup()
+        for i in range(3):
+            blk = RoundedRectangle(width=0.5, height=0.4, corner_radius=0.06)
+            blk.set_fill(RED_ERROR, opacity=0.9)
+            blk.set_stroke(RED_ERROR, width=0)
+            blk.move_to([left_center_x, spawn_y, 0])
+            fp32_blocks.add(blk)
+
+        self.play(
+            fp32_blocks[0].animate.move_to([left_center_x, -0.1, 0]),
+            fp32_blocks[1].animate.move_to([left_center_x, 0.4, 0]),
+            fp32_blocks[2].animate.move_to([left_center_x, 0.9, 0]),
+            run_time=0.8
+        )
+        self.wait(0.1)
+
+        self.play(
+            fp32_blocks[0].animate.move_to([left_center_x, -2.1, 0]),
+            fp32_blocks[1].animate.move_to([left_center_x, -0.1, 0]),
+            fp32_blocks[2].animate.move_to([left_center_x, 0.4, 0]),
+            run_time=1.0,
+            rate_func=linear
+        )
+
+        ripple = core_body.copy()
+        ripple.set_stroke(RED_ERROR, width=2.0, opacity=0.9)
+        ripple.set_fill(opacity=0)
+        self.play(
+            FadeOut(fp32_blocks[0], scale=0.6),
+            ripple.animate(run_time=0.45, rate_func=smooth)
+                  .scale(1.35)
+                  .set_stroke(opacity=0),
+            core_status.animate.set_color(RED_ERROR)
+        )
+
+        self.play(
+            fp32_blocks[1].animate.move_to([left_center_x, -2.1, 0]),
+            fp32_blocks[2].animate.move_to([left_center_x, -0.1, 0]),
+            run_time=1.0,
+            rate_func=linear
+        )
+        self.play(
+            FadeOut(fp32_blocks[1], scale=0.6),
+            Flash(core_body, color=RED_ERROR, line_length=0.15, num_lines=8),
+            run_time=0.45
+        )
+
+        # =========================================================================
+        # RIGHT COLUMN: Footprint & Spacing Definition
+        # =========================================================================
+        right_center_x = 3.5
+
+        prec_title = label("WEIGHT PRECISION", SIZE_CAPS, INK_DARK, BOLD)
+        prec_title.move_to([right_center_x, 2.1, 0])
+
+        fp32_lbl_r = label("FP32 (32-bit float)", SIZE_CAPS - 1, RED_ERROR, BOLD)
+        fp32_lbl_r.next_to(prec_title, DOWN, aligned_edge=LEFT, buff=0.22)
+        fp32_lbl_r.shift(LEFT * 1.5)
+
+        fp32_strip = bit_strip(32, RED_ERROR, width=3.2)
+        fp32_strip.next_to(fp32_lbl_r, DOWN, aligned_edge=LEFT, buff=0.1)
+
+        self.play(
+            FadeIn(prec_title),
+            FadeIn(fp32_lbl_r),
+            LaggedStart(*(FadeIn(b, scale=0.6) for b in fp32_strip), lag_ratio=0.01, run_time=0.8)
+        )
+
+        # =========================================================================
+        # BEAT 2: Transition to INT8 (Synchronized Left & Right)
+        # =========================================================================
+        int8_lbl_r = label("INT8 (8-bit integer)", SIZE_CAPS - 1, GREEN_FIX, BOLD)
+        int8_lbl_r.next_to(fp32_strip, DOWN, aligned_edge=LEFT, buff=0.3)
+
+        int8_strip = bit_strip(8, GREEN_FIX, width=0.8)
+        int8_strip.next_to(int8_lbl_r, DOWN, aligned_edge=LEFT, buff=0.1)
+
+        savings_note = label("4x smaller memory footprint", SIZE_CAPS, GREEN_FIX, BOLD)
+        savings_note.next_to(int8_strip, RIGHT, buff=0.3)
+
+        green_blocks = VGroup()
+        for i in range(4):
+            g_blk = RoundedRectangle(width=0.22, height=0.16, corner_radius=0.03)
+            g_blk.set_fill(GREEN_FIX, opacity=0.9)
+            g_blk.set_stroke(GREEN_FIX, width=0)
+            g_blk.move_to([left_center_x, -0.1, 0])
+            green_blocks.add(g_blk)
+
+        active_status = label("ACTIVE (INT8 Path)", SIZE_CAPS, GREEN_FIX, BOLD)
+        active_status.move_to(core_status)
+        active_note = label("Fully utilized compute core", SIZE_CAPS - 4, GREEN_FIX, BOLD)
+        active_note.move_to(core_note)
+
+        self.play(
+            FadeOut(fp32_blocks[2], scale=0.6),
+            *(FadeIn(g, scale=0.6) for g in green_blocks),
+            FadeIn(int8_lbl_r),
+            LaggedStart(*(FadeIn(b, scale=0.6) for b in int8_strip), lag_ratio=0.03, run_time=0.4),
+            FadeIn(savings_note, shift=UP * 0.1),
+            Transform(core_status, active_status),
+            Transform(core_note, active_note),
+            run_time=0.85
+        )
+
+        self.play(
+            green_blocks[0].animate.move_to([left_center_x - 0.12, -0.4, 0]),
+            green_blocks[1].animate.move_to([left_center_x + 0.12, -0.4, 0]),
+            green_blocks[2].animate.move_to([left_center_x - 0.12, -0.1, 0]),
+            green_blocks[3].animate.move_to([left_center_x + 0.12, -0.1, 0]),
+            run_time=0.4
+        )
+
+        self.play(
+            green_blocks[0].animate.move_to([left_center_x - 0.12, -2.1, 0]),
+            green_blocks[1].animate.move_to([left_center_x + 0.12, -2.1, 0]),
+            green_blocks[2].animate.move_to([left_center_x - 0.12, -1.5, 0]),
+            green_blocks[3].animate.move_to([left_center_x + 0.12, -1.5, 0]),
+            core_body.animate.set_stroke(GREEN_FIX, width=2.4),
+            run_time=0.45,
+            rate_func=linear
+        )
+        self.play(
+            FadeOut(green_blocks[0], scale=0.6),
+            FadeOut(green_blocks[1], scale=0.6),
+            Flash(core_body, color=GREEN_FIX, line_length=0.18, num_lines=10),
+            run_time=0.3
+        )
+        self.play(
+            green_blocks[2].animate.move_to([left_center_x - 0.12, -2.1, 0]),
+            green_blocks[3].animate.move_to([left_center_x + 0.12, -2.1, 0]),
+            run_time=0.3,
+            rate_func=linear
+        )
+        self.play(
+            FadeOut(green_blocks[2], scale=0.6),
+            FadeOut(green_blocks[3], scale=0.6),
+            Flash(core_body, color=GREEN_FIX, line_length=0.18, num_lines=10),
+            run_time=0.3
+        )
+
+        # =========================================================================
+        # BEAT 3: Arithmetic Shift (Multiplication vs Addition)
+        # =========================================================================
+        arith_title = label("ARITHMETIC SIMPLIFICATION", SIZE_CAPS, INK_DARK, BOLD)
+        arith_title.move_to([right_center_x, -0.6, 0])
+
+        fp32_op = VGroup(
+            Circle(radius=0.24, stroke_color=RED_ERROR, stroke_width=2),
+            label("\u00d7", SIZE_BODY + 4, RED_ERROR, BOLD)
+        )
+        fp32_op[1].move_to(fp32_op[0])
+        fp32_op_lbl = label("FP32: 32-bit float operations (Expensive)", SIZE_CAPS - 1, INK_MID)
+        fp32_op_group = VGroup(fp32_op, fp32_op_lbl).arrange(RIGHT, buff=0.2)
+        fp32_op_group.next_to(arith_title, DOWN, aligned_edge=LEFT, buff=0.22)
+        fp32_op_group.shift(LEFT * 1.3)
+
+        int8_op = VGroup(
+            Circle(radius=0.24, stroke_color=GREEN_FIX, stroke_width=2),
+            label("+", SIZE_BODY, GREEN_FIX, BOLD)
+        )
+        int8_op[1].move_to(int8_op[0])
+        int8_op_lbl = label("INT8: Cheap 8-bit integer ops (Simple)", SIZE_CAPS - 1, INK_MID)
+        int8_op_group = VGroup(int8_op, int8_op_lbl).arrange(RIGHT, buff=0.2)
+        int8_op_group.next_to(fp32_op_group, DOWN, aligned_edge=LEFT, buff=0.22)
+
+        left_dots1 = VGroup()
+        for _ in range(5):
+            d = RoundedRectangle(width=0.16, height=0.11, corner_radius=0.03)
+            d.set_fill(GREEN_FIX, opacity=0.95)
+            d.set_stroke(GREEN_FIX, width=0)
+            left_dots1.add(d)
+
+        left_flow_anims1 = []
+        for j, d in enumerate(left_dots1):
+            d.move_to([left_center_x, spawn_y - j * 0.45, 0])
+            left_flow_anims1.append(d.animate(run_time=1.3, rate_func=linear).shift(DOWN * 4.2))
+
+        self.play(
+            FadeIn(arith_title),
+            FadeIn(fp32_op_group),
+            LaggedStart(*left_flow_anims1, lag_ratio=0.15, run_time=1.3),
+            run_time=1.3
+        )
+        self.remove(*left_dots1)
+        self.wait(0.3)
+
+        left_dots2 = VGroup()
+        for _ in range(5):
+            d = RoundedRectangle(width=0.16, height=0.11, corner_radius=0.03)
+            d.set_fill(GREEN_FIX, opacity=0.95)
+            d.set_stroke(GREEN_FIX, width=0)
+            left_dots2.add(d)
+
+        left_flow_anims2 = []
+        for j, d in enumerate(left_dots2):
+            d.move_to([left_center_x, spawn_y - j * 0.45, 0])
+            left_flow_anims2.append(d.animate(run_time=1.3, rate_func=linear).shift(DOWN * 4.2))
+
+        self.play(
+            FadeIn(int8_op_group),
+            Flash(int8_op[0], color=GREEN_FIX, line_length=0.12, num_lines=8),
+            LaggedStart(*left_flow_anims2, lag_ratio=0.15, run_time=1.3),
+            run_time=1.3
+        )
+        self.remove(*left_dots2)
+
+        summary_badge = label(
+            "Memory-bound bottleneck solved: 4x footprint reduction + cheaper INT8 additions",
+            SIZE_CAPS,
+            INK_DARK,
+            BOLD,
+        )
+        summary_badge.to_edge(DOWN, buff=0.26)
+        self.play(FadeIn(summary_badge, shift=UP * 0.08), run_time=0.75)
+
+        self.wait(2.0)
         self._close()
 ''')
 

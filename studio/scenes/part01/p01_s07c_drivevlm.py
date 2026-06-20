@@ -83,7 +83,7 @@ class P01S07CDriveVLM(StudioScene):
             Text("Fast", font=FONT_PRIMARY, font_size=SIZE_LABEL, color=INK_DARK, weight=BOLD),
             Text(f"{FAST_HZ} Hz", font=FONT_PRIMARY, font_size=SIZE_CAPS, color=INK_MID),
         ).arrange(DOWN, buff=0.05, aligned_edge=LEFT)
-        fast_tag.next_to(fast_blocks[0], UP, buff=0.36)
+        fast_tag.next_to(fast_blocks[0], DOWN, buff=0.36)
         fast_tag.align_to(fast_blocks[0], LEFT)
         fast_group = VGroup(fast_tag, fast_pipe)
 
@@ -97,17 +97,17 @@ class P01S07CDriveVLM(StudioScene):
             Text("Slow", font=FONT_PRIMARY, font_size=SIZE_LABEL, color=GOLD_RICH, weight=BOLD),
             Text(f"{SLOW_HZ} Hz", font=FONT_PRIMARY, font_size=SIZE_CAPS, color=GOLD_RICH),
         ).arrange(DOWN, buff=0.05, aligned_edge=LEFT)
-        slow_tag.next_to(slow_blocks[0], DOWN, buff=0.36)
+        slow_tag.next_to(slow_blocks[0], UP, buff=0.36)
         slow_tag.align_to(slow_blocks[0], LEFT)
         slow_group = VGroup(slow_tag, slow_pipe)
 
         scene_in.move_to(LEFT * 5.45 + UP * 0.35)
-        fast_pipe.move_to(LEFT * 0.8 + UP * 1.15)
-        slow_pipe.move_to(LEFT * 0.8 + DOWN * 0.15)
-        fast_tag.next_to(fast_blocks[0], UP, buff=0.36)
-        fast_tag.align_to(fast_blocks[0], LEFT)
-        slow_tag.next_to(slow_blocks[0], DOWN, buff=0.36)
+        slow_pipe.move_to(LEFT * 0.8 + UP * 1.15)
+        fast_pipe.move_to(LEFT * 0.8 + DOWN * 0.15)
+        slow_tag.next_to(slow_blocks[0], UP, buff=0.36)
         slow_tag.align_to(slow_blocks[0], LEFT)
+        fast_tag.next_to(fast_blocks[0], DOWN, buff=0.36)
+        fast_tag.align_to(fast_blocks[0], LEFT)
 
         fast_container = _rail_container(fast_blocks)
         slow_container = _rail_container(slow_blocks)
@@ -118,47 +118,83 @@ class P01S07CDriveVLM(StudioScene):
         action.move_to(RIGHT * 5.05 + UP * 0.5)
 
         fork_x = scene_in[0].get_right()[0] + 0.55
+        fork_y = scene_in[0].get_center()[1]
+        slow_y = slow_blocks[0][0].get_center()[1]
+        fast_y = fast_blocks[0][0].get_center()[1]
+
         fork_stem = Arrow(
             scene_in[0].get_right() + RIGHT * 0.06,
-            np.array([fork_x, scene_in[0].get_center()[1], 0.0]),
+            np.array([fork_x, fork_y, 0.0]),
             thickness=2.8,
             max_tip_length_to_length_ratio=0.01,
             fill_color=INK_MID,
             buff=0,
         )
-        fork_split = Line(
-            [fork_x, slow_blocks[0][0].get_center()[1], 0],
-            [fork_x, fast_blocks[0][0].get_center()[1], 0],
-            stroke_color=INK_MID,
+
+        # Slow branch (Top)
+        fork_split_slow = Line(
+            [fork_x, fork_y, 0],
+            [fork_x, slow_y, 0],
+            stroke_color=GOLD_RICH,
             stroke_width=2.8,
         )
-        in_fast = Arrow(
-            [fork_x, fast_blocks[0][0].get_center()[1], 0],
-            fast_blocks[0][0].get_left() + LEFT * 0.08,
-            thickness=2.8,
-            max_tip_length_to_length_ratio=0.18,
-            fill_color=INK_MID,
-            buff=0,
-        )
         in_slow = Arrow(
-            [fork_x, slow_blocks[0][0].get_center()[1], 0],
+            [fork_x, slow_y, 0],
             slow_blocks[0][0].get_left() + LEFT * 0.08,
             thickness=2.8,
             max_tip_length_to_length_ratio=0.18,
             fill_color=GOLD_RICH,
             buff=0,
         )
-        input_fork = VGroup(fork_stem, fork_split, in_fast, in_slow)
+        slow_fork = VGroup(fork_split_slow, in_slow)
+
+        # Fast branch (Bottom)
+        fork_split_fast = Line(
+            [fork_x, fork_y, 0],
+            [fork_x, fast_y, 0],
+            stroke_color=INK_MID,
+            stroke_width=2.8,
+        )
+        in_fast = Arrow(
+            [fork_x, fast_y, 0],
+            fast_blocks[0][0].get_left() + LEFT * 0.08,
+            thickness=2.8,
+            max_tip_length_to_length_ratio=0.18,
+            fill_color=INK_MID,
+            buff=0,
+        )
+        fast_fork = VGroup(fork_split_fast, in_fast)
+
         self.play(FadeIn(scene_in))
+
+        # 1. Show top (Slow) path first
         self.play(
-            ShowCreation(input_fork),
-            FadeIn(fast_group),
+            ShowCreation(fork_stem),
+            ShowCreation(slow_fork),
             FadeIn(slow_group),
-            ShowCreation(fast_container),
             ShowCreation(slow_container),
         )
+        self.add(slow_loader)
+        self.play(
+            UpdateFromAlphaFunc(
+                slow_loader,
+                lambda m, a: _update_loader(
+                    m, slow_container, a, loops=1.0, color=GOLD_RICH,
+                ),
+            ),
+            run_time=1.5,
+            rate_func=linear,
+        )
 
-        self.add(fast_loader, slow_loader)
+        # 2. Show bottom (Fast) path second
+        self.play(
+            ShowCreation(fast_fork),
+            FadeIn(fast_group),
+            ShowCreation(fast_container),
+        )
+
+        # 3. Both loaders running in parallel
+        self.add(fast_loader)
         self.play(
             UpdateFromAlphaFunc(
                 fast_loader,
@@ -210,7 +246,7 @@ class P01S07CDriveVLM(StudioScene):
             fill_color=GREEN_FIX,
             buff=0,
         )
-        output_merge = VGroup(fast_out, slow_out, merge_line, merge_arrow)
+        output_merge = VGroup(slow_out, fast_out, merge_line, merge_arrow)
         self.play(
             ShowCreation(output_merge),
             FadeIn(action),
@@ -221,6 +257,7 @@ class P01S07CDriveVLM(StudioScene):
             font=FONT_PRIMARY, font_size=SIZE_LABEL, color=INK_DARK, weight=BOLD,
         )
         place_footer(caption)
+        caption.shift(UP * 1.0)
         self.play(FadeIn(caption))
         self.wait(2)
         self._close()

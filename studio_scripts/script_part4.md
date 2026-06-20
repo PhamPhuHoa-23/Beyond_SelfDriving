@@ -64,11 +64,15 @@ Every component of this chain matters. Improving model-level inference speed wit
 
 ---
 
-### [P04S07ArithmeticCost — "Arithmetic Cost"]
+### [P04S07AArithmeticCost — "Arithmetic Cost"]
 
 Why is neural network inference expensive on edge hardware?
 
 Neural networks are dominated by two operations: multiply-accumulate in fully connected and convolutional layers, and memory reads to load weights from off-chip memory. The energy costs are revealing. A 32-bit floating-point multiplication costs roughly 3.7 picojoules. A 32-bit memory access from DRAM costs approximately 640 picojoules — more than 170 times more expensive than the computation itself.
+
+---
+
+### [P04S07BMemoryBound — "Memory-Bound Inference"]
 
 This means inference on edge hardware is memory-bound, not compute-bound. The bottleneck is not running the arithmetic but loading the model parameters. Reducing the bit-width of weights from 32-bit float to 8-bit integer cuts the memory footprint by 4×, replaces multiplications with cheaper integer additions, and enables hardware accelerators designed specifically for INT8 operations on modern edge chips.
 

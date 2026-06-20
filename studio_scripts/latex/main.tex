@@ -425,11 +425,13 @@ Two root causes. \textbf{Initialization sensitivity}: a complex architecture wit
 
 The result: 45 epochs instead of 120, higher final performance than the manual four-stage process, and no requirement for human expertise to manage the training schedule.
 
+% -- P02-S11c ----------------------------------------------
+\scene{P02S11CPlanningPivot}{From Understanding to Planning}{P02S11CPlanningPivot}
 The system can now perceive and predict reliably. The remaining question is: what do we do with that understanding? Perception and prediction are inputs to planning --- and planning must be safe enough to stake a life on.
 
 % -- P02-S12 -----------------------------------------------
 \scene{P02S12RiskMap}{RiskMap}{P02S12RiskMap}
-Perception and prediction enable the vehicle to understand the scene. Planning requires using that understanding to make safe decisions. And this is where interpretability becomes critical.
+And this is where interpretability becomes critical.
 
 \textbf{RiskMap} introduces an explicit Risk Map as middleware between the learned representation and the planner. The Risk Map is a probabilistic spatial-temporal representation of danger --- a map in which each cell encodes the likelihood of a hazardous event at that location and time. A learning-based Model Predictive Controller then uses this Risk Map to compute a safe trajectory.
 
@@ -639,12 +641,14 @@ Each agent runs local inference on its sensor data --- this takes time. The comp
 
 Every component of this chain matters. Improving model-level inference speed without addressing communication bandwidth misses half the problem.
 
-% -- P04-S07 -----------------------------------------------
-\scene{P04S07ArithmeticCost}{Arithmetic Cost}{P04S07ArithmeticCost}
+% -- P04-S07a ----------------------------------------------
+\scene{P04S07AArithmeticCost}{Arithmetic Cost}{P04S07AArithmeticCost}
 Why is neural network inference expensive on edge hardware?
 
 Neural networks are dominated by two operations: multiply-accumulate operations in fully connected and convolutional layers, and memory reads to load weights from off-chip memory. The energy costs are revealing. A 32-bit floating-point multiplication costs roughly 3.7 picojoules. A 32-bit memory access from DRAM costs approximately 640 picojoules --- more than 170$\times$ more expensive than the computation itself.
 
+% -- P04-S07b ----------------------------------------------
+\scene{P04S07BMemoryBound}{Memory-Bound Inference}{P04S07BMemoryBound}
 This means inference on edge hardware is \textit{memory-bound}, not compute-bound. Reducing the bit-width of weights from 32-bit float to 8-bit integer cuts the memory footprint by 4$\times$, replaces multiplications with cheaper integer additions, and enables hardware accelerators designed specifically for INT8 operations.
 
 % -- P04-S08 -----------------------------------------------

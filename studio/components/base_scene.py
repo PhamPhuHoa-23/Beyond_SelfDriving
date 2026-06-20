@@ -105,7 +105,6 @@ class StudioScene(Scene):
             d.set_stroke(color, width=1.4, opacity=1.0)
             dots.add(d)
         dots.arrange(RIGHT, buff=1.0)
-        dots.to_edge(DOWN, buff=0.35)
         lbl_group = VGroup()
         for i, (d, lbl) in enumerate(zip(dots, labels)):
             active = i + 1 == self.PART_NUM
@@ -114,7 +113,9 @@ class StudioScene(Scene):
             t.set_color(color)
             t.next_to(d, DOWN if i % 2 == 0 else UP, buff=0.12)
             lbl_group.add(t)
-        return VGroup(dots, lbl_group)
+        roadmap = VGroup(dots, lbl_group)
+        roadmap.to_edge(DOWN, buff=1.5)
+        return roadmap
 
 
 class Studio3DScene(Scene):

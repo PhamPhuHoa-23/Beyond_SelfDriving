@@ -37,7 +37,10 @@ class P05S10ChainOfSolutions(StudioScene):
             inner.move_to(bg)
             panels.add(VGroup(bg, inner))
         panels.arrange(RIGHT, buff=0.26).move_to(ORIGIN + DOWN * 0.2)
-        self.play(LaggedStart(*(FadeIn(p, shift=DOWN * 0.5) for p in panels), lag_ratio=0.2, run_time=1.5))
+        for i, p in enumerate(panels):
+            self.play(FadeIn(p, shift=DOWN * 0.5), run_time=0.6)
+            if i < len(panels) - 1:
+                self.wait(3.0)
         finale = Text("Five parts. Five solutions. One story.", font=FONT_PRIMARY, font_size=SIZE_LABEL, color=GOLD_RICH)
         finale.to_edge(DOWN, buff=0.4)
         self.play(FadeIn(finale, scale=1.05))

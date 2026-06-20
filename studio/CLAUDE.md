@@ -23,10 +23,12 @@ The PowerShell render script sets these automatically. All `manimgl` calls use t
 
 ## Render commands
 
-Single scene (low quality for iteration):
+Default for user-requested renders: use HD (`--hd`), not low-quality preview (`-l`), unless the user explicitly asks for preview/low quality.
+
+Single scene (HD by default):
 
 ```powershell
-manimgl -w -l studio/scenes/intro/i01_title_card.py I01TitleCard
+manimgl -w --hd studio/scenes/intro/i01_title_card.py I01TitleCard
 ```
 
 `-w` is **required**. Without it ManimGL opens an interactive window instead of writing a file.
@@ -44,6 +46,37 @@ Batch render all scenes:
 
 ```powershell
 .\render_studio_all.ps1
+```
+
+### macOS (this machine)
+
+**After finishing any scene change, always produce a final HD render (`--hd`) of every scene you
+touched** — preview (`-l`) is only for fast iteration while working. When the edit is done and
+verified, re-render that scene at `--hd` so the committed output is HD. Do this automatically;
+don't wait to be asked.
+
+`manimgl` lives in the `manim` conda env (there is **no** `manimgl` on the base PATH; the bare
+`manim` resolves to Manim CE — do not use it). Render a single scene from the repo root:
+
+```bash
+cd "/Users/phu-quynguyen-lam/o D/Beyond_SelfDriving"
+# fast preview while iterating
+PYTHONPATH="$PWD" /Users/phu-quynguyen-lam/miniforge3/envs/manim/bin/manimgl \
+  -w -l studio/scenes/part01/p01_s03b_e2e.py P01S03BE2E
+# final HD render once the change is done (REQUIRED before considering the task finished)
+PYTHONPATH="$PWD" /Users/phu-quynguyen-lam/miniforge3/envs/manim/bin/manimgl \
+  -w --hd studio/scenes/part01/p01_s03b_e2e.py P01S03BE2E
+```
+
+`PYTHONPATH="$PWD"` replaces the Windows `Lab01_3B1B` path so `from studio.components import …`
+resolves. `-w` is still required. Output: `videos/<ClassName>.mp4`.
+
+Extract a specific frame for review (ffmpeg/ffprobe are at `/opt/homebrew/bin`, not in the env):
+
+```bash
+# inspect duration, then grab the frame at timestamp t (seconds)
+ffprobe -v error -show_entries format=duration -of csv=p=0 videos/P01S03BE2E.mp4
+ffmpeg -y -loglevel error -ss 8.8 -i videos/P01S03BE2E.mp4 -frames:v 1 videos/check.png
 ```
 
 ## Runtime

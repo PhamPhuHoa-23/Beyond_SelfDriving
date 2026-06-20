@@ -1,4 +1,4 @@
-"""I-03 - Orbital Roadmap: 5-node orbital with lightning trace."""
+"""I-03 - Orbital Roadmap: 5-node orbital roadmap."""
 from manimlib import *
 from studio.components import (
     StudioScene,
@@ -8,7 +8,6 @@ from studio.components import (
     ACCENT_PINK,
     ACCENT_TEAL,
     BG_PAPER,
-    GOLD_RICH,
     INK_DARK,
     INK_MID,
     PASTEL_AMBER,
@@ -44,20 +43,11 @@ class I03Roadmap(StudioScene):
     def construct(self):
         self.camera.background_color = BG_PAPER
 
-        star = RegularPolygon(n=5, radius=0.34, fill_color=GOLD_RICH,
-                              fill_opacity=1.0, stroke_width=0)
-        self.play(GrowFromCenter(star, run_time=0.8))
-        self.play(
-            star.animate.scale(1.3).scale(1 / 1.3),
-            Flash(star, color=GOLD_RICH, line_length=0.2, num_lines=10),
-            run_time=0.4,
-            rate_func=there_and_back,
-        )
-
         orbit_r = 2.8
         nodes = VGroup()
         labels = VGroup()
         angles = [PI / 2 + i * TAU / 5 for i in range(5)]
+
         for i, (ang, color, pastel, lbl) in enumerate(
             zip(angles, PART_COLORS, PART_PASTELS, PART_LABELS)
         ):
@@ -80,34 +70,34 @@ class I03Roadmap(StudioScene):
                             stroke_width=0.8, stroke_opacity=0.25)
         self.play(ShowCreation(orbit_ring, run_time=0.8))
 
-        for node in nodes:
-            node.save_state()
-            node.scale(0.001)
-            node.move_to(ORIGIN)
-        self.play(LaggedStart(
-            *(
-                Restore(node, path_arc=PI * 0.6, run_time=0.75)
-                for node in nodes
-            ),
-            lag_ratio=0.18,
-        ))
-        self.play(LaggedStart(*(FadeIn(lbl) for lbl in labels),
-                              lag_ratio=0.15, run_time=1.0))
+        def node_reveal(node, label, color):
+            reveal_dir = normalize(node.get_center())
+            halo = Circle(radius=0.36, stroke_color=color,
+                          stroke_width=3.0, stroke_opacity=0.55)
+            halo.move_to(node)
+            self.play(
+                GrowFromCenter(node, run_time=0.45),
+                FadeIn(label, shift=0.12 * reveal_dir, run_time=0.45),
+                halo.animate.scale(1.45).set_stroke(opacity=0),
+            )
+            self.wait(0.06)
 
-        orbit_glow = orbit_ring.copy().set_stroke(GOLD_RICH, width=7.0, opacity=0.95)
-        orbit_afterglow = orbit_ring.copy().set_stroke(GOLD_RICH, width=2.5, opacity=0.22)
-        self.play(
-            ShowPassingFlash(orbit_glow, time_width=0.14, run_time=2.2),
-            FadeIn(orbit_afterglow, run_time=0.8),
-            rate_func=linear,
-        )
+        def travel_arc(start_angle, color):
+            arc = Arc(radius=orbit_r, start_angle=start_angle,
+                      angle=TAU / 5)
+            arc.set_stroke(color, width=5.0, opacity=1.0)
+            glow = Arc(radius=orbit_r, start_angle=start_angle,
+                       angle=TAU / 5)
+            glow.set_stroke(color, width=9.0, opacity=0.18)
+            self.play(
+                ShowPassingFlash(glow, time_width=0.35, run_time=0.55),
+                ShowPassingFlash(arc, time_width=0.25, run_time=0.55),
+            )
 
-        self.play(
-            Flash(nodes[0], color=ACCENT_BLUE, line_length=0.25, num_lines=10),
-            nodes[0][0].animate.set_fill(ACCENT_BLUE, opacity=0.45),
-            nodes[0][0].animate.set_stroke(ACCENT_BLUE, width=3.5),
-            run_time=0.8,
-        )
+        node_reveal(nodes[0], labels[0], PART_COLORS[0])
+        for i in range(1, len(nodes)):
+            travel_arc(angles[i - 1], PART_COLORS[i])
+            node_reveal(nodes[i], labels[i], PART_COLORS[i])
 
         caption = Text("Five parts. One road.", font=FONT_PRIMARY,
                        font_size=SIZE_BODY, color=INK_DARK)

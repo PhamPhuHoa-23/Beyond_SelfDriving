@@ -36,6 +36,20 @@ class P04S09EfficiencySummary(StudioScene):
             inner.move_to(bg)
             cards.add(VGroup(bg, inner))
         cards.arrange(RIGHT, buff=0.4).move_to(ORIGIN + DOWN * 0.2)
-        self.play(LaggedStart(*(FadeIn(c, scale=0.85) for c in cards), lag_ratio=0.25))
-        self.wait(2)
+        
+        # Wait a moment after the header is shown
+        self.wait(1.5)
+
+        # 1. Show the first card (Data - CooPre)
+        self.play(FadeIn(cards[0], scale=0.85), run_time=0.8)
+        self.wait(3.0)
+
+        # 2. Show the second card (Training - TurboTrain)
+        self.play(FadeIn(cards[1], scale=0.85), run_time=0.8)
+        self.wait(3.0)
+
+        # 3. Show the third card (Inference - QuantV2X)
+        self.play(FadeIn(cards[2], scale=0.85), run_time=0.8)
+        self.wait(4.0)
+
         self._close()

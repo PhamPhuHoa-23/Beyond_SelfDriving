@@ -21,16 +21,86 @@ from studio.scenes.part02._p02_helpers import mini_heatmap_grid, road_grid_2d
 SCRIPT = "Risk is a field, continuous and predictive."
 
 
-def _risk_rings(center: np.ndarray, *, color: str, radii: list[float], opacity: float) -> VGroup:
-    rings = VGroup()
-    for i, r in enumerate(reversed(radii)):
-        rings.add(Circle(
-            radius=r,
+def _risk_pulse_updater(
+    center: np.ndarray,
+    *,
+    color: str,
+    min_radius: float,
+    max_radius: float,
+    opacity: float,
+    period: float,
+    delay: float,
+):
+    elapsed = -delay
+
+    def update_pulse(mob: Mobject, dt: float = 0) -> None:
+        nonlocal elapsed
+        elapsed += dt
+        if elapsed < 0:
+            mob.become(Circle(
+                radius=min_radius,
+                fill_color=color,
+                fill_opacity=0,
+                stroke_width=0,
+            ).move_to(center))
+            return
+
+        phase = (elapsed / period) % 1.0
+        radius = min_radius + (max_radius - min_radius) * smooth(phase)
+        alpha = opacity * min(1.0, phase / 0.16) * (1.0 - phase) ** 1.35
+        mob.become(Circle(
+            radius=radius,
             fill_color=color,
-            fill_opacity=opacity * (0.42 + 0.12 * i),
+            fill_opacity=alpha,
             stroke_width=0,
         ).move_to(center))
-    return rings
+
+    return update_pulse
+
+
+def _risk_rings(center: np.ndarray, *, color: str, radii: list[float], opacity: float) -> VGroup:
+    base = VGroup()
+    for i, r in enumerate(reversed(radii)):
+        base.add(Circle(
+            radius=r,
+            fill_color=color,
+            fill_opacity=opacity * (0.18 + 0.07 * i),
+            stroke_width=0,
+        ).move_to(center))
+
+    pulses = VGroup()
+    min_radius = radii[0] * 0.42
+    max_radius = radii[-1] * 1.04
+    for i in range(len(radii)):
+        pulse = Circle(radius=min_radius, fill_color=color, fill_opacity=0, stroke_width=0)
+        pulse.move_to(center)
+        pulses.add(pulse)
+
+    return VGroup(base, pulses)
+
+
+def _start_risk_pulses(
+    field: VGroup,
+    center: np.ndarray,
+    *,
+    color: str,
+    radii: list[float],
+    opacity: float,
+    period: float = 3.6,
+) -> None:
+    pulses = field[1]
+    min_radius = radii[0] * 0.42
+    max_radius = radii[-1] * 1.04
+    for i, pulse in enumerate(pulses):
+        pulse.add_updater(_risk_pulse_updater(
+            center,
+            color=color,
+            min_radius=min_radius,
+            max_radius=max_radius,
+            opacity=opacity * 0.62,
+            period=period,
+            delay=i * period / len(pulses),
+        ))
 
 
 def _corridor(points: list[np.ndarray], *, width: float = 0.54) -> VGroup:
@@ -57,12 +127,15 @@ class P02S12RiskMap(StudioScene):
 
         other_center = RIGHT * 0.35 + UP * 0.48
         other = vehicle_icon(color=ORANGE_INFRA, scale=0.58).move_to(other_center).rotate(-PI / 7)
-        hot = _risk_rings(other.get_center(), color=RED_ERROR, radii=[0.55, 0.88, 1.22, 1.56], opacity=0.32)
+        hot_radii = [0.55, 0.88, 1.22, 1.56]
+        hot = _risk_rings(other.get_center(), color=RED_ERROR, radii=hot_radii, opacity=0.32)
 
         blocked_center = LEFT * 0.85 + UP * 1.18
-        unknown = _risk_rings(blocked_center, color=ORANGE_INFRA, radii=[0.55, 0.9, 1.2], opacity=0.18)
+        unknown_radii = [0.55, 0.9, 1.2]
+        unknown = _risk_rings(blocked_center, color=ORANGE_INFRA, radii=unknown_radii, opacity=0.18)
         safe_center = LEFT * 1.7 + DOWN * 1.22
-        safe = _risk_rings(safe_center, color=GREEN_FIX, radii=[0.48, 0.78, 1.05], opacity=0.18)
+        safe_radii = [0.48, 0.78, 1.05]
+        safe = _risk_rings(safe_center, color=GREEN_FIX, radii=safe_radii, opacity=0.18)
 
         pts = [
             start,
@@ -80,6 +153,9 @@ class P02S12RiskMap(StudioScene):
         inset_label.next_to(inset, DOWN, buff=0.12)
 
         self.play(FadeIn(road), FadeIn(unknown), FadeIn(hot), FadeIn(safe), FadeIn(other), FadeIn(ego))
+        _start_risk_pulses(unknown, blocked_center, color=ORANGE_INFRA, radii=unknown_radii, opacity=0.18)
+        _start_risk_pulses(hot, other.get_center(), color=RED_ERROR, radii=hot_radii, opacity=0.32)
+        _start_risk_pulses(safe, safe_center, color=GREEN_FIX, radii=safe_radii, opacity=0.18)
         self.play(FadeIn(inset), FadeIn(inset_label))
         self.play(ShowCreation(corridor[0]), ShowCreation(corridor[1]), ego.animate.move_to(end), run_time=1.45)
 
@@ -93,4 +169,7 @@ class P02S12RiskMap(StudioScene):
         quote.to_edge(DOWN, buff=0.72)
         self.play(FadeIn(quote))
         self.wait(0.9)
+        unknown.clear_updaters()
+        hot.clear_updaters()
+        safe.clear_updaters()
         self._close()

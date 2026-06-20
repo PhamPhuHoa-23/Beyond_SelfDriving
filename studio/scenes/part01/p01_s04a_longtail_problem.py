@@ -37,6 +37,12 @@ def _photo_card(filename: str, label: str) -> VGroup:
     return Group(frame, image, caption)
 
 
+def ease_out_back(t: float) -> float:
+    s = 1.70158
+    t = t - 1
+    return t * t * ((s + 1) * t + s) + 1
+
+
 class P01S04ALongtailProblem(StudioScene):
     PART_NUM = 1
     SCENE_TITLE = "The Long-Tail Problem"
@@ -50,8 +56,15 @@ class P01S04ALongtailProblem(StudioScene):
             _photo_card("p1_s06_long_tail_problem_011.png", "Snow-covered road"),
         ).arrange(RIGHT, buff=0.38)
         photo_row.move_to(UP * 0.85)
-        self.play(LaggedStart(*(FadeIn(card, scale=0.94) for card in photo_row), lag_ratio=0.2))
-        self.wait(1.0)
+        # Slower entry cascade with ease_out_back overshoot/bounce settle (more spaced out)
+        self.play(
+            LaggedStart(
+                *(FadeIn(card, shift=0.35 * UP, scale=0.92, rate_func=ease_out_back) for card in photo_row),
+                lag_ratio=0.95,
+                run_time=4.5
+            )
+        )
+        self.wait(1.5)
 
         axes, axes_anim = axes_deploy(
             (0, 5, 1), (0, 1.0, 0.2),

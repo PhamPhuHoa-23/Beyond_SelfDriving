@@ -117,15 +117,10 @@ class P02S08ThreeQuestions(StudioScene):
         how = _question_card("How?", "fusion mechanism", _attention_visual(), stroke=PURPLE_MODEL, fill=PASTEL_BLUE)
         cards = VGroup(what, when, how).arrange(RIGHT, buff=0.5).move_to(UP * 0.38)
 
-        self.play(LaggedStart(*(FadeIn(card, shift=UP * 0.12) for card in cards), lag_ratio=0.16))
-
-        highlights = VGroup(
-            SurroundingRectangle(what[3], buff=0.12, color=ACCENT_TEAL, stroke_width=2.0),
-            SurroundingRectangle(when[3], buff=0.12, color=GOLD_RICH, stroke_width=2.0),
-            SurroundingRectangle(how[3], buff=0.12, color=PURPLE_MODEL, stroke_width=2.0),
-        )
-        self.play(LaggedStart(*(ShowCreation(h) for h in highlights), lag_ratio=0.16), run_time=0.9)
-        self.play(FadeOut(highlights), run_time=0.35)
+        for i, card in enumerate((what, when, how)):
+            self.play(FadeIn(card, shift=UP * 0.12), run_time=0.45)
+            if i < 2:
+                self.wait(0.32)
 
         answer = _label("V2XPnP answers all three.", size=34, color=INK_DARK, weight=BOLD)
         answer["V2XPnP"].set_color(GOLD_RICH)

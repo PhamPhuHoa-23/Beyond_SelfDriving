@@ -47,16 +47,18 @@ class P01S06VLARoadmap(StudioScene):
 
         # Beads drop in
         bead_y = spine.get_y() + 0.3
-        for yr, label, color in BEADS:
+        for i, (yr, label, color) in enumerate(BEADS):
             x = (yr - 2023) / 2 * 11 - 5.5
             bead = Circle(radius=0.18, fill_color=color, fill_opacity=0.9, stroke_width=0)
             bead.move_to(np.array([x, bead_y, 0]))
             lbl = Text(label, font=FONT_PRIMARY, font_size=SIZE_LABEL, color=color, weight=BOLD)
             lbl.next_to(bead, UP, buff=0.12)
             self.play(
-                GrowFromCenter(bead, run_time=0.4),
-                FadeIn(lbl, shift=DOWN * 0.2, run_time=0.3),
+                GrowFromCenter(bead, run_time=0.6),
+                FadeIn(lbl, shift=DOWN * 0.2, run_time=0.55),
             )
+            if i < len(BEADS) - 1:
+                self.wait(0.7)
 
         # Dataset chips drop below
         chip_group = VGroup(*(
@@ -64,7 +66,13 @@ class P01S06VLARoadmap(StudioScene):
         ))
         chip_group.arrange(RIGHT, buff=1.35)
         chip_group.next_to(spine, DOWN, buff=1.35)
-        self.play(LaggedStart(*(FadeIn(c, shift=UP * 0.3) for c in chip_group), lag_ratio=0.2))
+        self.play(
+            LaggedStart(
+                *(FadeIn(c, shift=0.3 * UP, scale=0.96) for c in chip_group),
+                lag_ratio=0.90,
+                run_time=2.2
+            )
+        )
 
         # Quote
         quote = Text(

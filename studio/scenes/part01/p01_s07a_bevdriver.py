@@ -58,12 +58,6 @@ class P01S07ABEVDriver(StudioScene):
         traj.move_to(road.get_center() + UP * 0.05)
         wp_inner = VGroup(road, traj)
 
-        # Hide all inner content until its beat
-        sensors.set_opacity(0)
-        bev[1].set_opacity(0)
-        llm_inner.set_opacity(0)
-        wp_inner.set_opacity(0)
-
         stages = [
             _stage_shell("Sensors", sensors, fill=PASTEL_TEAL, stroke=ACCENT_TEAL),
             _stage_shell("BEV map", bev, fill=PASTEL_TEAL, stroke=ACCENT_TEAL),
@@ -77,27 +71,36 @@ class P01S07ABEVDriver(StudioScene):
         def _show_shell(idx):
             return FadeIn(stages[idx][0]), FadeIn(stages[idx][2])
 
+        # Inner contents are naturally invisible until added to the scene in their specific animations
+
         self.play(*_show_shell(0))
-        self.play(sensors.animate.set_opacity(1), run_time=0.9)
+        self.play(FadeIn(sensors, shift=UP * 0.15), run_time=0.9)
 
         self.play(ShowCreation(pipeline_arrow(stages[0][0], stages[1][0])), *_show_shell(1))
-        self.play(bev[1].animate.set_opacity(1), run_time=0.15)
-        self.play(LaggedStart(*(GrowFromCenter(c) for c in bev[1]), lag_ratio=0.03, run_time=0.95))
+        self.play(
+            FadeIn(bev[0]),
+            LaggedStart(*(GrowFromCenter(c) for c in bev[1]), lag_ratio=0.03, run_time=0.95)
+        )
 
         self.play(ShowCreation(pipeline_arrow(stages[1][0], stages[2][0])), *_show_shell(2))
-        self.play(llm_inner.animate.set_opacity(1), run_time=0.15)
-        self.play(LaggedStart(*(FadeIn(b) for b in llm_stack), lag_ratio=0.1), FadeIn(llm_lbl))
+        self.play(
+            LaggedStart(*(FadeIn(b, shift=RIGHT * 0.15) for b in llm_stack), lag_ratio=0.1),
+            FadeIn(llm_lbl)
+        )
 
         self.play(ShowCreation(pipeline_arrow(stages[2][0], stages[3][0])), *_show_shell(3))
-        self.play(wp_inner.animate.set_opacity(1), run_time=0.15)
-        self.play(FadeIn(road), ShowCreation(traj[0]),
-                  LaggedStart(*(FadeIn(d) for d in traj[1]), lag_ratio=0.12))
+        self.play(
+            FadeIn(road),
+            ShowCreation(traj[0]),
+            LaggedStart(*(FadeIn(d) for d in traj[1]), lag_ratio=0.12)
+        )
 
         key = Text(
             "3D sensors  \u2192  BEV  \u2192  language model  \u2192  trajectory",
             font=FONT_PRIMARY, font_size=SIZE_LABEL, color=INK_DARK, weight=BOLD,
         )
         place_footer(key)
+        key.shift(UP * 0.5)
         self.play(FadeIn(key))
         self.wait(2)
         self._close()

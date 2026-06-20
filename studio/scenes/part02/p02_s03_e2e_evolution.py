@@ -63,30 +63,80 @@ class P02S03E2EEvolution(StudioScene):
             labels.add(label)
             notes.add(note_mob)
 
-        self.play(LaggedStart(*(FadeIn(n, shift=DOWN * 0.12) for n in nodes), lag_ratio=0.16))
-        self.play(LaggedStart(*(FadeIn(l) for l in labels), lag_ratio=0.12))
-        self.play(LaggedStart(*(FadeIn(n) for n in notes), lag_ratio=0.12))
+        # Animate each milestone group (dot + label + note) sequentially from left to right
+        animations = []
+        for i in range(len(data)):
+            anim = AnimationGroup(
+                FadeIn(nodes[i], shift=DOWN * 0.12),
+                FadeIn(labels[i]),
+                FadeIn(notes[i]),
+                lag_ratio=0.15
+            )
+            animations.append(anim)
+        self.play(LaggedStart(*animations, lag_ratio=0.8, run_time=3.5))
 
         modular = Text("modular", font=FONT_PRIMARY, font_size=SIZE_LABEL, color=RED_ERROR, weight=BOLD)
         modular.next_to(nodes[0], DOWN, buff=0.85)
         e2e = Text("end-to-end", font=FONT_PRIMARY, font_size=SIZE_LABEL, color=GREEN_FIX, weight=BOLD)
         e2e.next_to(nodes[2], UP, buff=0.9)
-        adv = VGroup(
-            Text("less error accumulation", font=FONT_PRIMARY, font_size=SIZE_CAPS, color=INK_DARK),
-            Text("less information loss", font=FONT_PRIMARY, font_size=SIZE_CAPS, color=INK_DARK),
-            Text("joint optimization", font=FONT_PRIMARY, font_size=SIZE_CAPS, color=INK_DARK),
-        ).arrange(DOWN, aligned_edge=LEFT, buff=0.12)
-        adv_box = RoundedRectangle(
-            width=adv.get_width() + 0.45,
-            height=adv.get_height() + 0.35,
+        # Brainstormed E2E Advantages Card design
+        def get_checkmark(color=GREEN_FIX, scale=0.12):
+            chk = VMobject()
+            chk.set_points_as_corners([
+                LEFT * 0.35 + DOWN * 0.08,
+                LEFT * 0.08 + DOWN * 0.35,
+                RIGHT * 0.35 + UP * 0.35
+            ])
+            chk.set_stroke(color, width=2.8)
+            chk.scale(scale)
+            return chk
+
+        title = Text("E2E ADVANTAGES", font=FONT_PRIMARY, font_size=SIZE_CAPS, color=GREEN_FIX, weight=BOLD)
+        
+        bullets_data = [
+            "less error accumulation",
+            "less information loss",
+            "joint optimization"
+        ]
+        
+        bullets = VGroup()
+        for text_str in bullets_data:
+            chk = get_checkmark()
+            lbl = Text(text_str, font=FONT_PRIMARY, font_size=SIZE_CAPS, color=INK_DARK, weight=BOLD)
+            bullet = VGroup(chk, lbl).arrange(RIGHT, buff=0.16)
+            bullets.add(bullet)
+        bullets.arrange(DOWN, aligned_edge=LEFT, buff=0.16)
+        
+        content_no_sep = VGroup(title, bullets).arrange(DOWN, aligned_edge=LEFT, buff=0.18)
+        sep = Line(LEFT * 0.5, RIGHT * 0.5, stroke_color=GREEN_FIX, stroke_width=1.0, stroke_opacity=0.3)
+        sep.match_width(content_no_sep)
+        
+        content = VGroup(title, sep, bullets).arrange(DOWN, aligned_edge=LEFT, buff=0.18)
+        
+        card_box = RoundedRectangle(
+            width=content.get_width() + 0.5,
+            height=content.get_height() + 0.4,
             corner_radius=0.12,
             fill_color=BG_CARD,
             fill_opacity=1.0,
             stroke_color=GREEN_FIX,
-            stroke_width=2,
+            stroke_width=2.0,
         )
-        adv_group = VGroup(adv_box, adv).move_to(RIGHT * 3.25 + DOWN * 1.55)
-        adv.move_to(adv_box)
+        glow_box = RoundedRectangle(
+            width=card_box.get_width() + 0.12,
+            height=card_box.get_height() + 0.12,
+            corner_radius=0.14,
+            fill_color=GREEN_FIX,
+            fill_opacity=0.06,
+            stroke_color=GREEN_FIX,
+            stroke_width=4.0,
+            stroke_opacity=0.15,
+        )
+        
+        adv_group = VGroup(glow_box, card_box, content).move_to(RIGHT * 3.4 + DOWN * 1.85)
+        content.move_to(card_box)
+        glow_box.move_to(card_box)
+        
         self.play(FadeIn(modular), FadeIn(e2e), FadeIn(adv_group, shift=LEFT * 0.15))
 
         q = small_caption("Has end-to-end solved everything?", color=INK_DARK)

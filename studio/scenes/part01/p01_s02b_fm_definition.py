@@ -174,6 +174,7 @@ class P01S02BFMDefinition(StudioScene):
             font=FONT_PRIMARY, font_size=SIZE_LABEL, color=INK_DARK,
         )
         place_footer(caption)
+        caption.set_y(-3.05)
         self.play(FadeIn(caption))
         self.wait(1.5)
         self._close()

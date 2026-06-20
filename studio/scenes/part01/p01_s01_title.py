@@ -64,6 +64,7 @@ class P01S01Title(StudioScene):
 
         # Roadmap strip P1 lit
         roadmap = self._roadmap_strip()
+        roadmap.move_to(DOWN * 2.25)
         self.play(FadeIn(roadmap))
 
         self.wait(2)

@@ -49,16 +49,25 @@ merge_videos.ps1        — Post-render video concatenation
 
 See `studio/CLAUDE.md` for full environment setup, render flags, ManimGL vs. Manim CE API differences, component map, and known quirks (white text, curly quotes, depth testing).
 
-Quick render reference:
+Default for user-requested renders: use HD (`--hd`), not low-quality preview (`-l`), unless the user explicitly asks for preview/low quality.
+
+Quick render reference (Windows):
 ```powershell
 $env:PYTHONPATH = "C:\Users\admin\Downloads\ML\Lab01_3B1B"
-# Single scene (480p preview)
-manimgl -w -l studio/scenes/part01/p01_s02a_genai_timeline.py P01S02AGenAITimeline
+# Single scene (HD)
+manimgl -w --hd studio/scenes/part01/p01_s02a_genai_timeline.py P01S02AGenAITimeline
 # All scenes
 .\render_studio_all.ps1
 ```
 
-Output: `videos/<ClassName>.mp4`
+Quick render reference (macOS — this machine; `manimgl` lives in the `manim` conda env, NOT on base PATH):
+```bash
+cd "/Users/phu-quynguyen-lam/o D/Beyond_SelfDriving"
+PYTHONPATH="$PWD" /Users/phu-quynguyen-lam/miniforge3/envs/manim/bin/manimgl \
+  -w --hd studio/scenes/part01/p01_s02a_genai_timeline.py P01S02AGenAITimeline
+```
+
+Output: `videos/<ClassName>.mp4`. Frame extraction with ffmpeg + more detail in `studio/CLAUDE.md`.
 
 ---
 
